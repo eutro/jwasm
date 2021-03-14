@@ -8,7 +8,7 @@ public class MemoriesVisitor extends BaseVisitor<MemoriesVisitor> {
         super(dl);
     }
 
-    public void visitMemory(int min, int max) {
+    public void visitMemory(int min, Integer max) {
         if (dl != null) dl.visitMemory(min, max);
     }
 }

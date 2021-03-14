@@ -11,6 +11,17 @@ repositories {
     mavenCentral()
 }
 
+sourceSets {
+    val tree = create("tree") {
+        compileClasspath += main.get().output
+        runtimeClasspath += main.get().output
+    }
+    test {
+        compileClasspath += tree.output
+        runtimeClasspath += tree.output
+    }
+}
+
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")

@@ -1,6 +1,5 @@
 package io.github.eutro.jwasm;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -119,17 +118,21 @@ public class ModuleReader<E extends Exception> {
 
         section = acceptCustoms(mv, bb, section);
 
-        int[] funcs = null;
         if (section == SECTION_FUNCTION) {
             sbb = bb.sectionBuffer();
 
-            int typeCount = sbb.getVarUInt32();
-            funcs = new int[typeCount];
-            for (int i = 0; i < typeCount; i++) {
-                funcs[i] = sbb.getVarUInt32();
-            }
+            FunctionsVisitor fv = mv.visitFuncs();
+            if (fv == null) {
+                sbb.skipAll();
+            } else {
+                int typeCount = sbb.getVarUInt32();
+                for (int i = 0; i < typeCount; i++) {
+                    fv.visitFunc(sbb.getVarUInt32());
+                }
 
-            sbb.expectEmpty();
+                fv.visitEnd();
+                sbb.expectEmpty();
+            }
             section = bb.get();
         }
 
@@ -311,18 +314,13 @@ public class ModuleReader<E extends Exception> {
         if (section == SECTION_CODE) {
             sbb = bb.sectionBuffer();
 
-            FunctionsVisitor fv = mv.visitFuncs();
-            if (fv == null) {
+            CodesVisitor cv = mv.visitCode();
+            if (cv == null) {
                 sbb.skipAll();
             } else {
                 int codeCount = sbb.getVarUInt32();
-                int expectedFuncs = funcs == null ? 0 : funcs.length;
-                if (codeCount != expectedFuncs) {
-                    throw new ValidationException("code count doesn't match func count");
-                }
                 for (int i = 0; i < codeCount; i++) {
                     ByteStream<E> fbb = sbb.sectionBuffer();
-                    int type = funcs[i];
 
                     byte[] locals;
                     int localsCount = fbb.getVarUInt32();
@@ -348,7 +346,7 @@ public class ModuleReader<E extends Exception> {
                         }
                     }
 
-                    ExprVisitor ev = fv.visitFunc(type, locals);
+                    ExprVisitor ev = cv.visitCode(locals);
                     if (ev == null) {
                         fbb.skipAll();
                     } else {
@@ -356,7 +354,7 @@ public class ModuleReader<E extends Exception> {
                         fbb.expectEmpty();
                     }
                 }
-                fv.visitEnd();
+                cv.visitEnd();
 
                 sbb.expectEmpty();
             }
@@ -377,16 +375,20 @@ public class ModuleReader<E extends Exception> {
                     throw new ValidationException("Data count mismatch");
                 }
                 for (int i = 0; i < dataCount; i++) {
+                    DataVisitor ddv = dv.visitData();
                     byte dataType = sbb.expect();
                     if (dataType >= 0x04 || dataType < 0) {
                         throw new ValidationException(String.format("Unrecognised data section type 0x%02x", dataType));
                     }
                     if ((dataType & DATA_PASSIVE) == 0) {
                         int memory = (dataType & DATA_EXPLICIT) == 0 ? 0 : sbb.getVarUInt32();
-                        acceptExpr(sbb, dv.visitActive(memory));
+                        acceptExpr(sbb, ddv.visitActive(memory));
                     }
                     byte[] init = sbb.getByteArray();
-                    dv.visitData(init);
+                    if (ddv != null) {
+                        ddv.visitInit(init);
+                        ddv.visitEnd();
+                    }
                 }
 
                 dv.visitEnd();
@@ -402,25 +404,28 @@ public class ModuleReader<E extends Exception> {
     }
 
     private void acceptExpr(ByteStream<E> bb, ExprVisitor ev) throws E {
+        int depth = 0;
         if (ev == null) ev = new ExprVisitor();
         byte opcode;
         while (true) {
             opcode = bb.expect();
             switch (opcode) {
-                case END:
-                    ev.visitEnd();
-                    return;
                 case BLOCK:
                 case LOOP:
                 case IF:
-                    acceptExpr(bb, ev.visitBlock(opcode, bb.getBlockType()));
+                    ++depth;
+                    ev.visitBlockInsn(opcode, bb.getBlockType());
                     break;
                 case ELSE:
-                    ev.visitElse();
+                    ev.visitElseInsn();
+                    break;
+                case END:
+                    ev.visitEndInsn();
+                    if (--depth < 0) return;
                     break;
                 case BR:
                 case BR_IF:
-                    ev.visitBreak(opcode, bb.getVarUInt32());
+                    ev.visitBreakInsn(opcode, bb.getVarUInt32());
                     break;
                 case BR_TABLE: {
                     int indexCount = bb.getVarUInt32();
@@ -428,16 +433,16 @@ public class ModuleReader<E extends Exception> {
                     for (int i = 0; i < indexCount; i++) {
                         indeces[i] = bb.getVarUInt32();
                     }
-                    ev.visitTableBreak(indeces, bb.getVarUInt32());
+                    ev.visitTableBreakInsn(indeces, bb.getVarUInt32());
                     break;
                 }
                 case CALL:
-                    ev.visitCall(bb.getVarUInt32());
+                    ev.visitCallInsn(bb.getVarUInt32());
                     break;
                 case CALL_INDIRECT: {
                     int y = bb.getVarUInt32();
                     int x = bb.getVarUInt32();
-                    ev.visitCallIndirect(x, y);
+                    ev.visitCallIndirectInsn(x, y);
                     break;
                 }
                 case REF_NULL:
@@ -508,13 +513,13 @@ public class ModuleReader<E extends Exception> {
                         case TABLE_INIT: {
                             int y = bb.getVarUInt32();
                             int x = bb.getVarUInt32();
-                            ev.visitPrefixTableInsn(intOpcode, x, y);
+                            ev.visitPrefixBinaryTableInsn(intOpcode, x, y);
                             break;
                         }
                         case TABLE_COPY: {
                             int x = bb.getVarUInt32();
                             int y = bb.getVarUInt32();
-                            ev.visitPrefixTableInsn(intOpcode, x, y);
+                            ev.visitPrefixBinaryTableInsn(intOpcode, x, y);
                             break;
                         }
                         case ELEM_DROP:

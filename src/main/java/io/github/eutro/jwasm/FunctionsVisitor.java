@@ -8,8 +8,7 @@ public class FunctionsVisitor extends BaseVisitor<FunctionsVisitor> {
         super(dl);
     }
 
-    public ExprVisitor visitFunc(int type, byte[] locals) {
-        if (dl != null) return dl.visitFunc(type, locals);
-        return null;
+    public void visitFunc(int type) {
+        if (dl != null) dl.visitFunc(type);
     }
 }

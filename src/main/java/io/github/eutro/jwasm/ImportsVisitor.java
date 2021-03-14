@@ -12,11 +12,11 @@ public class ImportsVisitor extends BaseVisitor<ImportsVisitor> {
         if (dl != null) dl.visitFuncImport(module, name, index);
     }
 
-    public void visitTableImport(String module, String name, int min, int max, byte type) {
+    public void visitTableImport(String module, String name, int min, Integer max, byte type) {
         if (dl != null) dl.visitTableImport(module, name, min, max, type);
     }
 
-    public void visitMemImport(String module, String name, int min, int max) {
+    public void visitMemImport(String module, String name, int min, Integer max) {
         if (dl != null) dl.visitMemImport(module, name, min, max);
     }
 

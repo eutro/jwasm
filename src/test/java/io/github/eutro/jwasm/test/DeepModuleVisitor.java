@@ -13,9 +13,14 @@ public class DeepModuleVisitor extends ModuleVisitor {
 
     @Override
     public FunctionsVisitor visitFuncs() {
-        return new FunctionsVisitor() {
+        return new FunctionsVisitor();
+    }
+
+    @Override
+    public CodesVisitor visitCode() {
+        return new CodesVisitor() {
             @Override
-            public ExprVisitor visitFunc(int type, byte[] locals) {
+            public ExprVisitor visitCode(byte[] locals) {
                 return new ExprVisitor();
             }
         };
@@ -65,8 +70,13 @@ public class DeepModuleVisitor extends ModuleVisitor {
     public DataSegmentsVisitor visitDatas() {
         return new DataSegmentsVisitor() {
             @Override
-            public ExprVisitor visitActive(int memory) {
-                return new ExprVisitor();
+            public DataVisitor visitData() {
+                return new DataVisitor() {
+                    @Override
+                    public ExprVisitor visitActive(int memory) {
+                        return new ExprVisitor();
+                    }
+                };
             }
         };
     }

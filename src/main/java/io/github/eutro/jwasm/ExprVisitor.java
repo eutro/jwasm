@@ -16,19 +16,7 @@ public class ExprVisitor extends BaseVisitor<ExprVisitor> {
         if (dl != null) dl.visitPrefixInsn(opcode);
     }
 
-    public void visitConstInsn(int v) {
-        if (dl != null) dl.visitConstInsn(v);
-    }
-
-    public void visitConstInsn(long v) {
-        if (dl != null) dl.visitConstInsn(v);
-    }
-
-    public void visitConstInsn(float v) {
-        if (dl != null) dl.visitConstInsn(v);
-    }
-
-    public void visitConstInsn(double v) {
+    public void visitConstInsn(Object v) {
         if (dl != null) dl.visitConstInsn(v);
     }
 
@@ -56,40 +44,39 @@ public class ExprVisitor extends BaseVisitor<ExprVisitor> {
         if (dl != null) dl.visitPrefixTableInsn(opcode, index);
     }
 
-    public void visitPrefixTableInsn(int opcode, int sourceIndex, int targetIndex) {
-        if (dl != null) dl.visitPrefixTableInsn(opcode, sourceIndex, targetIndex);
+    public void visitPrefixBinaryTableInsn(int opcode, int sourceIndex, int targetIndex) {
+        if (dl != null) dl.visitPrefixBinaryTableInsn(opcode, sourceIndex, targetIndex);
     }
 
     public void visitMemInsn(byte opcode, int align, int offset) {
         if (dl != null) dl.visitMemInsn(opcode, align, offset);
     }
 
-    public void visitMemInsn(byte opcode, int index) {
-        if (dl != null) dl.visitMemInsn(opcode, index);
+    public void visitBlockInsn(byte opcode, int blockType) {
+        if (dl != null) dl.visitBlockInsn(opcode, blockType);
     }
 
-    public ExprVisitor visitBlock(byte opcode, int blockType) {
-        if (dl != null) return dl.visitBlock(opcode, blockType);
-        return this;
+    public void visitElseInsn() {
+        if (dl != null) dl.visitElseInsn();
     }
 
-    public void visitElse() {
-        if (dl != null) dl.visitElse();
+    public void visitEndInsn() {
+        if (dl != null) dl.visitEndInsn();
     }
 
-    public void visitBreak(byte opcode, int index) {
-        if (dl != null) dl.visitBreak(opcode, index);
+    public void visitBreakInsn(byte opcode, int index) {
+        if (dl != null) dl.visitBreakInsn(opcode, index);
     }
 
-    public void visitTableBreak(int[] table, int index) {
-        if (dl != null) dl.visitTableBreak(table, index);
+    public void visitTableBreakInsn(int[] table, int index) {
+        if (dl != null) dl.visitTableBreakInsn(table, index);
     }
 
-    public void visitCall(int index) {
-        if (dl != null) dl.visitCall(index);
+    public void visitCallInsn(int index) {
+        if (dl != null) dl.visitCallInsn(index);
     }
 
-    public void visitCallIndirect(int table, int index) {
-        if (dl != null) dl.visitCallIndirect(table, index);
+    public void visitCallIndirectInsn(int table, int index) {
+        if (dl != null) dl.visitCallIndirectInsn(table, index);
     }
 }

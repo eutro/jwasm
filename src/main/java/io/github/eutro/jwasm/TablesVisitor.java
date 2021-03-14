@@ -8,7 +8,7 @@ public class TablesVisitor extends BaseVisitor<TablesVisitor> {
         super(dl);
     }
 
-    public void visitTable(int min, int max, byte type) {
+    public void visitTable(int min, Integer max, byte type) {
         if (dl != null) dl.visitTable(min, max, type);
     }
 }

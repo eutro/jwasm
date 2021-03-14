@@ -46,6 +46,11 @@ public class ModuleVisitor extends BaseVisitor<ModuleVisitor> {
         return null;
     }
 
+    public CodesVisitor visitCode() {
+        if (dl != null) return dl.visitCode();
+        return null;
+    }
+
     public DataSegmentsVisitor visitDatas() {
         if (dl != null) return dl.visitDatas();
         return null;
