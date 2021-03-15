@@ -124,10 +124,10 @@ public interface ByteInputStream<E extends Exception> {
     }
 
     /**
-     * Gets a 32 bit floating point number from the stream, in little endian byte order, throwing an exception
+     * Gets a 32 bit floating point value from the stream, in little endian byte order, throwing an exception
      * if there aren't enough bytes in the stream.
      *
-     * @return The floating point number interpreted from the next 4 bytes in the stream.
+     * @return The floating point value interpreted from the next 4 bytes in the stream.
      * @throws E                   If a read error occured.
      * @throws ValidationException If there are less than 4 bytes left in the stream.
      */
@@ -136,10 +136,10 @@ public interface ByteInputStream<E extends Exception> {
     }
 
     /**
-     * Gets a 64 bit floating point number from the stream, in little endian byte order, throwing an exception
+     * Gets a 64 bit floating point value from the stream, in little endian byte order, throwing an exception
      * if there aren't enough bytes in the stream.
      *
-     * @return The floating point number interpreted from the next 8 bytes in the stream.
+     * @return The floating point value interpreted from the next 8 bytes in the stream.
      * @throws E                   If a read error occured.
      * @throws ValidationException If there are less than 8 bytes left in the stream.
      */
