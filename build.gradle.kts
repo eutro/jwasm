@@ -17,6 +17,9 @@ subprojects {
         "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.6.2")
         "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine")
         "testImplementation"(project(":jwasm-test"))
+        if (path != ":jwasm") {
+            "implementation"(project(":jwasm"))
+        }
     }
 
     tasks.named<Test>("test") {
@@ -27,11 +30,5 @@ subprojects {
 project(":jwasm-test") {
     dependencies {
         "implementation"("org.junit.jupiter:junit-jupiter-api:5.6.2")
-    }
-}
-
-project(":jwasm-tree") {
-    dependencies {
-        "implementation"(project(":jwasm"))
     }
 }
