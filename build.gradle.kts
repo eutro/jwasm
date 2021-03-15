@@ -2,6 +2,8 @@ plugins {
     `java-library`
 }
 
+val libVersion = "${properties["ver_major"]}.${properties["ver_minor"]}.${properties["ver_patch"]}"
+
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -29,4 +31,18 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.jar {
+    archiveVersion.set(libVersion)
+}
+
+tasks.register<Jar>("treeJar") {
+    archiveAppendix.set("tree")
+    archiveVersion.set(libVersion)
+    from(sourceSets.named("tree").get().output)
+}
+
+tasks.build {
+    dependsOn("treeJar")
 }
