@@ -179,7 +179,7 @@ public interface ByteOutputStream<E extends Exception> {
         }
 
         /**
-         * @inheritDoc
+         * {@inheritDoc}
          */
         @Override
         public byte[] toByteArray() {
@@ -187,7 +187,7 @@ public interface ByteOutputStream<E extends Exception> {
         }
 
         /**
-         * @inheritDoc
+         * {@inheritDoc}
          */
         @Override
         public void put(byte b) throws RuntimeException {
@@ -195,7 +195,7 @@ public interface ByteOutputStream<E extends Exception> {
         }
 
         /**
-         * @inheritDoc
+         * {@inheritDoc}
          */
         @Override
         public void put(byte[] bytes) throws RuntimeException {
@@ -208,14 +208,14 @@ public interface ByteOutputStream<E extends Exception> {
      */
     class Dummy implements ByteOutputStream<RuntimeException> {
         /**
-         * @inheritDoc
+         * {@inheritDoc}
          */
         @Override
         public void put(byte b) throws RuntimeException {
         }
 
         /**
-         * @inheritDoc
+         * {@inheritDoc}
          */
         @Override
         public void put(byte[] bytes) throws RuntimeException {

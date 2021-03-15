@@ -19,7 +19,7 @@ public interface ByteInputStream<E extends Exception> {
     /**
      * Get a single unsigned byte from the stream.
      *
-     * @return An unsigned byte b (<code>0x00 <= b <= 0xFF</code>), or -1 if the end of the stream has been reached.
+     * @return An unsigned byte b (<code>0x00 &lt;= b &lt;= 0xFF</code>), or -1 if the end of the stream has been reached.
      * @throws E If a read error occured.
      */
     int get() throws E;
@@ -168,7 +168,7 @@ public interface ByteInputStream<E extends Exception> {
      * @return The integer that was read.
      * @throws E                   If a read error occured.
      * @throws ValidationException If the stream ends before the number is fully read.
-     * @throws ValidationException If the number excedes <bytes>bytes</bytes> bytes.
+     * @throws ValidationException If the number excedes <code>bytes</code> bytes.
      */
     default long getVarUIntX(int bytes) throws E {
         long v = 0;
@@ -209,13 +209,13 @@ public interface ByteInputStream<E extends Exception> {
 
     /**
      * Gets an LEB128 encoded signed integer from the stream, throwing an exception if the stream ends before
-     * the full integer is read, or if the number excedes <bytes>bytes</bytes> bytes.
+     * the full integer is read, or if the number excedes <code>bytes</code> bytes.
      *
      * @param bytes The maximum number of bytes to read.
      * @return The integer that was read.
      * @throws E                   If a read error occured.
      * @throws ValidationException If the stream ends before the number is fully read.
-     * @throws ValidationException If the number excedes <bytes>bytes</bytes> bytes.
+     * @throws ValidationException If the number excedes <code>bytes</code> bytes.
      */
     default long getVarSIntX(int bytes) throws E {
         return getVarSIntX0(bytes, 0, 0);
@@ -225,7 +225,7 @@ public interface ByteInputStream<E extends Exception> {
     /**
      * Gets the rest of an LEB128 encoded signed integer from the stream,
      * throwing an exception if the stream ends before the full integer is read,
-     * or if the number excedes <bytes>bytes</bytes> bytes.
+     * or if the number excedes <code>bytes</code> bytes.
      * <p>
      * This may be used if part of the number is already read before this is called.
      *
@@ -235,7 +235,7 @@ public interface ByteInputStream<E extends Exception> {
      * @return The integer that was read.
      * @throws E                   If a read error occured.
      * @throws ValidationException If the stream ends before the number is fully read.
-     * @throws ValidationException If the number excedes <bytes>bytes</bytes> bytes.
+     * @throws ValidationException If the number excedes <code>bytes</code> bytes.
      */
     default long getVarSIntX0(int bytes, long v, int count) throws E {
         byte b;
@@ -285,7 +285,7 @@ public interface ByteInputStream<E extends Exception> {
     /**
      * Read a vector of bytes from the stream.
      * <p>
-     * This reads a {@link #getVarSInt32() <code>size</code>} followed immediately by <code>size</code> bytes.
+     * This reads a {@link #getVarSInt32() size} followed immediately by <code>size</code> bytes.
      *
      * @return The byte array that was read.
      * @throws E                   If a read error occured.
@@ -400,7 +400,7 @@ public interface ByteInputStream<E extends Exception> {
         }
 
         /**
-         * @inheritDoc
+         * {@inheritDoc}
          */
         @Override
         public int get() throws E {
@@ -410,7 +410,7 @@ public interface ByteInputStream<E extends Exception> {
         }
 
         /**
-         * @inheritDoc
+         * {@inheritDoc}
          */
         @Override
         public int get(byte[] buf, int offset, int len) throws E {
@@ -423,7 +423,7 @@ public interface ByteInputStream<E extends Exception> {
         }
 
         /**
-         * @inheritDoc
+         * {@inheritDoc}
          */
         @Override
         public int skip(int count) throws E {
@@ -433,7 +433,7 @@ public interface ByteInputStream<E extends Exception> {
         }
 
         /**
-         * @inheritDoc
+         * {@inheritDoc}
          */
         @Override
         public void skipAll() throws E {
@@ -463,7 +463,7 @@ public interface ByteInputStream<E extends Exception> {
         }
 
         /**
-         * @inheritDoc
+         * {@inheritDoc}
          */
         @Override
         public int get() {
@@ -471,7 +471,7 @@ public interface ByteInputStream<E extends Exception> {
         }
 
         /**
-         * @inheritDoc
+         * {@inheritDoc}
          */
         @Override
         public int get(byte[] buf, int offset, int len) {
@@ -483,7 +483,7 @@ public interface ByteInputStream<E extends Exception> {
         }
 
         /**
-         * @inheritDoc
+         * {@inheritDoc}
          */
         @Override
         public int skip(int count) throws RuntimeException {
@@ -513,7 +513,7 @@ public interface ByteInputStream<E extends Exception> {
         }
 
         /**
-         * @inheritDoc
+         * {@inheritDoc}
          */
         @Override
         public int get() throws IOException {
@@ -521,7 +521,7 @@ public interface ByteInputStream<E extends Exception> {
         }
 
         /**
-         * @inheritDoc
+         * {@inheritDoc}
          */
         @Override
         public int get(byte[] buf, int offset, int len) throws IOException {
@@ -529,7 +529,7 @@ public interface ByteInputStream<E extends Exception> {
         }
 
         /**
-         * @inheritDoc
+         * {@inheritDoc}
          */
         @Override
         public int skip(int count) throws IOException {
