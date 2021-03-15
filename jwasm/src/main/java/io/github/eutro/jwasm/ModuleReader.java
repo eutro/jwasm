@@ -44,7 +44,7 @@ public class ModuleReader<E extends Exception> {
         section = acceptCustoms(mv, bb, section);
 
         if (section == Opcodes.SECTION_TYPE) {
-            sbb = bb.sectionBuffer();
+            sbb = bb.sectionStream();
 
             TypesVisitor tv = mv.visitTypes();
             if (tv == null) {
@@ -69,7 +69,7 @@ public class ModuleReader<E extends Exception> {
         section = acceptCustoms(mv, bb, section);
 
         if (section == Opcodes.SECTION_IMPORT) {
-            sbb = bb.sectionBuffer();
+            sbb = bb.sectionStream();
 
             ImportsVisitor iv = mv.visitImports();
             if (iv == null) {
@@ -117,7 +117,7 @@ public class ModuleReader<E extends Exception> {
         section = acceptCustoms(mv, bb, section);
 
         if (section == Opcodes.SECTION_FUNCTION) {
-            sbb = bb.sectionBuffer();
+            sbb = bb.sectionStream();
 
             FunctionsVisitor fv = mv.visitFuncs();
             if (fv == null) {
@@ -137,7 +137,7 @@ public class ModuleReader<E extends Exception> {
         section = acceptCustoms(mv, bb, section);
 
         if (section == Opcodes.SECTION_TABLE) {
-            sbb = bb.sectionBuffer();
+            sbb = bb.sectionStream();
 
             TablesVisitor tv = mv.visitTables();
             if (tv == null) {
@@ -159,7 +159,7 @@ public class ModuleReader<E extends Exception> {
         section = acceptCustoms(mv, bb, section);
 
         if (section == Opcodes.SECTION_MEMORY) {
-            sbb = bb.sectionBuffer();
+            sbb = bb.sectionStream();
 
             MemoriesVisitor mmv = mv.visitMems();
             if (mmv == null) {
@@ -180,7 +180,7 @@ public class ModuleReader<E extends Exception> {
         section = acceptCustoms(mv, bb, section);
 
         if (section == Opcodes.SECTION_GLOBAL) {
-            sbb = bb.sectionBuffer();
+            sbb = bb.sectionStream();
 
             GlobalsVisitor gv = mv.visitGlobals();
             if (gv == null) {
@@ -202,7 +202,7 @@ public class ModuleReader<E extends Exception> {
         section = acceptCustoms(mv, bb, section);
 
         if (section == Opcodes.SECTION_EXPORT) {
-            sbb = bb.sectionBuffer();
+            sbb = bb.sectionStream();
 
             ExportsVisitor ev = mv.visitExports();
             if (ev == null) {
@@ -225,7 +225,7 @@ public class ModuleReader<E extends Exception> {
         section = acceptCustoms(mv, bb, section);
 
         if (section == Opcodes.SECTION_START) {
-            sbb = bb.sectionBuffer();
+            sbb = bb.sectionStream();
 
             int index = sbb.getVarUInt32();
             mv.visitStart(index);
@@ -237,7 +237,7 @@ public class ModuleReader<E extends Exception> {
         section = acceptCustoms(mv, bb, section);
 
         if (section == Opcodes.SECTION_ELEMENT) {
-            sbb = bb.sectionBuffer();
+            sbb = bb.sectionStream();
 
             ElementSegmentsVisitor ev = mv.visitElems();
             if (ev == null) {
@@ -299,7 +299,7 @@ public class ModuleReader<E extends Exception> {
         section = acceptCustoms(mv, bb, section);
 
         if (section == Opcodes.SECTION_DATA_COUNT) {
-            sbb = bb.sectionBuffer();
+            sbb = bb.sectionStream();
             mv.visitDataCount(sbb.getVarUInt32());
             sbb.expectEmpty();
             section = bb.get();
@@ -308,7 +308,7 @@ public class ModuleReader<E extends Exception> {
         section = acceptCustoms(mv, bb, section);
 
         if (section == Opcodes.SECTION_CODE) {
-            sbb = bb.sectionBuffer();
+            sbb = bb.sectionStream();
 
             CodesVisitor cv = mv.visitCode();
             if (cv == null) {
@@ -316,7 +316,7 @@ public class ModuleReader<E extends Exception> {
             } else {
                 int codeCount = sbb.getVarUInt32();
                 for (int i = 0; i < codeCount; i++) {
-                    ByteInputStream<E> fbb = sbb.sectionBuffer();
+                    ByteInputStream<E> fbb = sbb.sectionStream();
 
                     byte[] locals;
                     int localsCount = fbb.getVarUInt32();
@@ -360,7 +360,7 @@ public class ModuleReader<E extends Exception> {
         section = acceptCustoms(mv, bb, section);
 
         if (section == Opcodes.SECTION_DATA) {
-            sbb = bb.sectionBuffer();
+            sbb = bb.sectionStream();
 
             DataSegmentsVisitor dv = mv.visitDatas();
             if (dv == null) {
@@ -552,7 +552,7 @@ public class ModuleReader<E extends Exception> {
         ByteInputStream<E> sbb;
         for (; section == Opcodes.SECTION_CUSTOM; section = bb.get()) {
             int length = bb.getVarUInt32();
-            sbb = bb.sectionBuffer(length);
+            sbb = bb.sectionStream(length);
 
             byte[] stringBytes = sbb.getByteArray();
             String name = new String(stringBytes, StandardCharsets.UTF_8);

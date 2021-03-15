@@ -163,47 +163,55 @@ public interface ByteInputStream<E extends Exception> {
         return new Integer[] { min, max };
     }
 
-    default ByteInputStream<E> sectionBuffer() throws E {
-        return sectionBuffer(getVarUInt32());
+    default ByteInputStream<E> sectionStream() throws E {
+        return sectionStream(getVarUInt32());
     }
 
-    default ByteInputStream<E> sectionBuffer(int length) {
-        ByteInputStream<E> us = this;
-        return new ByteInputStream<E>() {
-            int gotten = 0;
+    default ByteInputStream<E> sectionStream(int length) {
+        return new SectionInputStream<>(this, length);
+    }
 
-            @Override
-            public int get() throws E {
-                if (gotten >= length) return -1;
-                ++gotten;
-                return us.get();
-            }
+    class SectionInputStream<E extends Exception> implements ByteInputStream<E> {
+        private final ByteInputStream<E> source;
+        private final int length;
+        private int gotten = 0;
 
-            @Override
-            public int get(byte[] buf, int offset, int len) throws E {
-                if (len == 0) return 0;
-                int remaining = length - gotten;
-                if (remaining == 0) return -1;
-                int read = us.get(buf, offset, Math.min(remaining, len));
-                gotten += read;
-                return read;
-            }
+        public SectionInputStream(ByteInputStream<E> source, int length) {
+            this.source = source;
+            this.length = length;
+        }
 
-            @Override
-            public int skip(int count) throws E {
-                int skipped = us.skip(Math.min(length - gotten, count));
-                gotten += skipped;
-                return skipped;
-            }
+        @Override
+        public int get() throws E {
+            if (gotten >= length) return -1;
+            ++gotten;
+            return source.get();
+        }
 
-            @Override
-            public void skipAll() throws E {
-                gotten += us.skip(length - gotten);
-                if (gotten < length) {
-                    throw new ValidationException("Not enough bytes in section");
-                }
+        @Override
+        public int get(byte[] buf, int offset, int len) throws E {
+            if (len == 0) return 0;
+            int remaining = length - gotten;
+            if (remaining == 0) return -1;
+            int read = source.get(buf, offset, Math.min(remaining, len));
+            gotten += read;
+            return read;
+        }
+
+        @Override
+        public int skip(int count) throws E {
+            int skipped = source.skip(Math.min(length - gotten, count));
+            gotten += skipped;
+            return skipped;
+        }
+
+        @Override
+        public void skipAll() throws E {
+            gotten += source.skip(length - gotten);
+            if (gotten < length) {
+                throw new ValidationException("Not enough bytes in section");
             }
-        };
+        }
     }
 
     class ByteBufferByteInputStream implements ByteInputStream<RuntimeException> {
