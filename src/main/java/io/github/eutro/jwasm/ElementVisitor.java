@@ -21,6 +21,10 @@ public class ElementVisitor extends BaseVisitor<ElementVisitor> {
         if (dl != null) dl.visitType(type);
     }
 
+    public void visitElemIneces(int[] indeces) {
+        if (dl != null) dl.visitElemIneces(indeces);
+    }
+
     public ExprVisitor visitInit() {
         if (dl != null) return dl.visitInit();
         return null;

@@ -11,6 +11,7 @@ public class ElementNode extends ElementVisitor {
     public int table;
     public ExprNode offset;
     public byte type;
+    public int[] indeces;
     public List<ExprNode> init;
 
     public void accept(ElementVisitor eev) {
@@ -21,7 +22,9 @@ public class ElementNode extends ElementVisitor {
             if (ev != null) offset.accept(ev);
         }
         eev.visitType(type);
-        if (init != null) {
+        if (indeces != null) {
+            eev.visitElemIneces(indeces);
+        } else if (init != null) {
             for (ExprNode en : init) {
                 ExprVisitor ev = eev.visitInit();
                 if (ev != null) en.accept(ev);
@@ -43,6 +46,11 @@ public class ElementNode extends ElementVisitor {
     @Override
     public void visitType(byte type) {
         super.visitType(type);
+    }
+
+    @Override
+    public void visitElemIneces(int[] indeces) {
+        this.indeces = indeces;
     }
 
     @Override

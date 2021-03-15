@@ -12,9 +12,9 @@ import java.util.function.Supplier;
 import static io.github.eutro.jwasm.Opcodes.*;
 
 public class ModuleReader<E extends Exception> {
-    private final Supplier<ByteStream<E>> source;
+    private final Supplier<ByteInputStream<E>> source;
 
-    public ModuleReader(Supplier<ByteStream<E>> source) {
+    public ModuleReader(Supplier<ByteInputStream<E>> source) {
         this.source = source;
     }
 
@@ -23,25 +23,25 @@ public class ModuleReader<E extends Exception> {
     }
 
     public static ModuleReader<RuntimeException> fromBytes(byte[] b, int offset, int len) {
-        return new ModuleReader<>(() -> new ByteStream.ByteBufferByteStream(ByteBuffer.wrap(b, offset, len).order(ByteOrder.LITTLE_ENDIAN)));
+        return new ModuleReader<>(() -> new ByteInputStream.ByteBufferByteInputStream(ByteBuffer.wrap(b, offset, len).order(ByteOrder.LITTLE_ENDIAN)));
     }
 
     public static ModuleReader<IOException> fromInputStream(InputStream is) {
         AtomicBoolean gotten = new AtomicBoolean(false);
         return new ModuleReader<>(() -> {
             if (gotten.getAndSet(true)) throw new IllegalStateException("Cannot get byte stream more than once");
-            return new ByteStream.InputStreamByteStream(is);
+            return new ByteInputStream.InputStreamByteInputStream(is);
         });
     }
 
     public void accept(ModuleVisitor mv) throws E {
-        ByteStream<E> bb = source.get();
+        ByteInputStream<E> bb = source.get();
         if (bb.getUInt32() != MAGIC) throw new ValidationException("Wrong magic");
         if (bb.getUInt32() != VERSION) throw new ValidationException("Wrong version");
-        mv.visit(VERSION);
+        mv.visitHeader(VERSION);
 
         int section = bb.get();
-        ByteStream<E> sbb;
+        ByteInputStream<E> sbb;
 
         section = acceptCustoms(mv, bb, section);
 
@@ -90,12 +90,12 @@ public class ModuleReader<E extends Exception> {
                         }
                         case IMPORTS_TABLE: {
                             byte type = sbb.expect();
-                            int[] limit = sbb.getLimit();
+                            Integer[] limit = sbb.getLimit();
                             iv.visitTableImport(module, name, limit[0], limit[1], type);
                             break;
                         }
                         case IMPORTS_MEM: {
-                            int[] limit = sbb.getLimit();
+                            Integer[] limit = sbb.getLimit();
                             iv.visitMemImport(module, name, limit[0], limit[1]);
                             break;
                         }
@@ -148,7 +148,7 @@ public class ModuleReader<E extends Exception> {
                 int tableCount = sbb.getVarUInt32();
                 for (int i = 0; i < tableCount; i++) {
                     byte type = sbb.expect();
-                    int[] limit = sbb.getLimit();
+                    Integer[] limit = sbb.getLimit();
                     tv.visitTable(limit[0], limit[1], type);
                 }
 
@@ -169,7 +169,7 @@ public class ModuleReader<E extends Exception> {
             } else {
                 int memCount = sbb.getVarUInt32();
                 for (int i = 0; i < memCount; i++) {
-                    int[] limit = sbb.getLimit();
+                    Integer[] limit = sbb.getLimit();
                     mmv.visitMemory(limit[0], limit[1]);
                 }
 
@@ -250,7 +250,9 @@ public class ModuleReader<E extends Exception> {
                     ElementVisitor elv = ev.visitElem();
                     byte elemType = sbb.expect();
 
-                    if (elemType >= 0x08 || elemType < 0) throw new ValidationException("Unrecognised element type");
+                    if (elemType >= 0x08 || elemType < 0) {
+                        throw new ValidationException(String.format("Unrecognised element type 0x%02x", elemType));
+                    }
 
                     if ((elemType & ELEM_PASSIVE_OR_DECLARATIVE) != 0) {
                         if (elv != null) elv.visitNonActiveMode((elemType & ELEM_TABLE_INDEX) != 0);
@@ -280,13 +282,12 @@ public class ModuleReader<E extends Exception> {
                             if (elv != null) elv.visitType(FUNCREF);
                         }
 
-                        ExprVisitor exv = elv == null ? null : elv.visitInit();
                         int funcIndeces = sbb.getVarUInt32();
+                        int[] indeces = new int[funcIndeces];
                         for (int j = 0; j < funcIndeces; j++) {
-                            int index = sbb.getVarUInt32();
-                            if (exv != null) exv.visitFuncInsn(index);
+                            indeces[j] = sbb.getVarUInt32();
                         }
-                        if (exv != null) exv.visitEnd();
+                        if (elv != null) elv.visitElemIneces(indeces);
                     }
                     if (elv != null) elv.visitEnd();
                 }
@@ -299,12 +300,9 @@ public class ModuleReader<E extends Exception> {
 
         section = acceptCustoms(mv, bb, section);
 
-        boolean countedData = false;
-        int sectionDataCount = 0;
         if (section == SECTION_DATA_COUNT) {
             sbb = bb.sectionBuffer();
-            sectionDataCount = sbb.getVarUInt32();
-            countedData = true;
+            mv.visitDataCount(sbb.getVarUInt32());
             sbb.expectEmpty();
             section = bb.get();
         }
@@ -320,7 +318,7 @@ public class ModuleReader<E extends Exception> {
             } else {
                 int codeCount = sbb.getVarUInt32();
                 for (int i = 0; i < codeCount; i++) {
-                    ByteStream<E> fbb = sbb.sectionBuffer();
+                    ByteInputStream<E> fbb = sbb.sectionBuffer();
 
                     byte[] locals;
                     int localsCount = fbb.getVarUInt32();
@@ -371,9 +369,6 @@ public class ModuleReader<E extends Exception> {
                 sbb.skipAll();
             } else {
                 int dataCount = sbb.getVarUInt32();
-                if (countedData && sectionDataCount != dataCount) {
-                    throw new ValidationException("Data count mismatch");
-                }
                 for (int i = 0; i < dataCount; i++) {
                     DataVisitor ddv = dv.visitData();
                     byte dataType = sbb.expect();
@@ -403,7 +398,7 @@ public class ModuleReader<E extends Exception> {
         mv.visitEnd();
     }
 
-    private void acceptExpr(ByteStream<E> bb, ExprVisitor ev) throws E {
+    private void acceptExpr(ByteInputStream<E> bb, ExprVisitor ev) throws E {
         int depth = 0;
         if (ev == null) ev = new ExprVisitor();
         byte opcode;
@@ -421,7 +416,10 @@ public class ModuleReader<E extends Exception> {
                     break;
                 case END:
                     ev.visitEndInsn();
-                    if (--depth < 0) return;
+                    if (--depth < 0) {
+                        ev.visitEnd();
+                        return;
+                    }
                     break;
                 case BR:
                 case BR_IF:
@@ -528,6 +526,18 @@ public class ModuleReader<E extends Exception> {
                         case TABLE_FILL:
                             ev.visitPrefixTableInsn(intOpcode, bb.getVarUInt32());
                             break;
+                        case MEMORY_INIT:
+                        case DATA_DROP:
+                            int index = bb.getVarUInt32();
+                            if (intOpcode == MEMORY_INIT) bb.expect();
+                            ev.visitIndexedMemInsn(intOpcode, index);
+                            break;
+                        case MEMORY_COPY:
+                            bb.expect();
+                            // fall through
+                        case MEMORY_FILL:
+                            bb.expect();
+                            // fall through
                         default:
                             ev.visitPrefixInsn(intOpcode);
                             break;
@@ -540,15 +550,16 @@ public class ModuleReader<E extends Exception> {
         }
     }
 
-    private int acceptCustoms(ModuleVisitor mv, ByteStream<E> bb, int section) throws E {
-        ByteStream<E> sbb;
+    private int acceptCustoms(ModuleVisitor mv, ByteInputStream<E> bb, int section) throws E {
+        ByteInputStream<E> sbb;
         for (; section == SECTION_CUSTOM; section = bb.get()) {
             int length = bb.getVarUInt32();
             sbb = bb.sectionBuffer(length);
 
             byte[] stringBytes = sbb.getByteArray();
             String name = new String(stringBytes, StandardCharsets.UTF_8);
-            byte[] payload = new byte[length - stringBytes.length];
+            int payloadLength = length - stringBytes.length - ByteOutputStream.DUMMY.putVarUInt(stringBytes.length);
+            byte[] payload = new byte[payloadLength];
             sbb.get(payload, 0, payload.length);
             mv.visitCustom(name, payload);
         }

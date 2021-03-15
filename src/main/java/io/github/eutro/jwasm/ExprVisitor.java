@@ -52,6 +52,10 @@ public class ExprVisitor extends BaseVisitor<ExprVisitor> {
         if (dl != null) dl.visitMemInsn(opcode, align, offset);
     }
 
+    public void visitIndexedMemInsn(int opcode, int index) {
+        if (dl != null) dl.visitIndexedMemInsn(opcode, index);
+    }
+
     public void visitBlockInsn(byte opcode, int blockType) {
         if (dl != null) dl.visitBlockInsn(opcode, blockType);
     }

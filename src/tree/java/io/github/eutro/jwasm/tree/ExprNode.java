@@ -78,6 +78,11 @@ public class ExprNode extends ExprVisitor {
     }
 
     @Override
+    public void visitIndexedMemInsn(int opcode, int index) {
+        insns().addLast(new IndexedMemInsnNode(opcode, index));
+    }
+
+    @Override
     public void visitBlockInsn(byte opcode, int blockType) {
         insns().addLast(new BlockInsnNode(opcode, blockType));
     }

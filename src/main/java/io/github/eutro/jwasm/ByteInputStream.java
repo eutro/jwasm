@@ -3,12 +3,11 @@ package io.github.eutro.jwasm;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 
 import static io.github.eutro.jwasm.Opcodes.*;
 
-public interface ByteStream<E extends Exception> {
+public interface ByteInputStream<E extends Exception> {
 
     int get() throws E;
 
@@ -66,7 +65,7 @@ public interface ByteStream<E extends Exception> {
     }
 
     default double getFloat64() throws E {
-        return Double.longBitsToDouble((long) getUInt32() << 32 | getUInt32());
+        return Double.longBitsToDouble(getUInt32() | (long) getUInt32() << 32);
     }
 
     default int getVarUInt32() throws E {
@@ -127,8 +126,7 @@ public interface ByteStream<E extends Exception> {
             case EXTERNREF:
                 return first;
             default:
-                if ((first & 0x80) == 0)
-                    throw new ValidationException(String.format("Unrecognised type 0x%02x", first));
+                if ((first & 0x80) == 0) return first;
                 long x = getVarSIntX0(5, first & 0x7F, 1);
                 if (x < 0) throw new ValidationException("Negative type index");
                 return (int) x;
@@ -146,13 +144,14 @@ public interface ByteStream<E extends Exception> {
         return new String(getByteArray(), StandardCharsets.UTF_8);
     }
 
-    default int[] getLimit() throws E {
-        int min, max;
+    default Integer[] getLimit() throws E {
+        int min;
+        Integer max;
         byte type = expect();
         switch (type) {
             case Opcodes.LIMIT_NOMAX:
                 min = getVarUInt32();
-                max = 0;
+                max = null;
                 break;
             case Opcodes.LIMIT_WMAX:
                 min = getVarUInt32();
@@ -161,16 +160,16 @@ public interface ByteStream<E extends Exception> {
             default:
                 throw new ValidationException(String.format("Unrecognised limit type 0x%02x", type));
         }
-        return new int[] { min, max };
+        return new Integer[] { min, max };
     }
 
-    default ByteStream<E> sectionBuffer() throws E {
+    default ByteInputStream<E> sectionBuffer() throws E {
         return sectionBuffer(getVarUInt32());
     }
 
-    default ByteStream<E> sectionBuffer(int length) {
-        ByteStream<E> us = this;
-        return new ByteStream<E>() {
+    default ByteInputStream<E> sectionBuffer(int length) {
+        ByteInputStream<E> us = this;
+        return new ByteInputStream<E>() {
             int gotten = 0;
 
             @Override
@@ -207,17 +206,16 @@ public interface ByteStream<E extends Exception> {
         };
     }
 
-    class ByteBufferByteStream implements ByteStream<RuntimeException> {
+    class ByteBufferByteInputStream implements ByteInputStream<RuntimeException> {
         private final ByteBuffer bb;
 
-        public ByteBufferByteStream(ByteBuffer bb) {
-            if (bb.order() != ByteOrder.LITTLE_ENDIAN) throw new IllegalArgumentException();
+        public ByteBufferByteInputStream(ByteBuffer bb) {
             this.bb = bb;
         }
 
         @Override
         public int get() {
-            return bb.hasRemaining() ? bb.get() : -1;
+            return bb.hasRemaining() ? Byte.toUnsignedInt(bb.get()) : -1;
         }
 
         @Override
@@ -237,10 +235,10 @@ public interface ByteStream<E extends Exception> {
         }
     }
 
-    class InputStreamByteStream implements ByteStream<IOException> {
+    class InputStreamByteInputStream implements ByteInputStream<IOException> {
         private final InputStream is;
 
-        public InputStreamByteStream(InputStream is) {
+        public InputStreamByteInputStream(InputStream is) {
             this.is = is;
         }
 
