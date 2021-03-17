@@ -4,7 +4,14 @@ import java.util.function.Consumer;
 
 import static io.github.eutro.jwasm.Opcodes.*;
 
+/**
+ * A {@link DataVisitor} that generates the corresponding WebAssembly bytecode as it is visited.
+ * This can be retrieved using {@link #toByteArray()} after {@link #visitEnd()}.
+ */
 public class ElementWriter extends ElementVisitor implements ByteArrayConvertible {
+    /**
+     * A callback that is called from {@link #visitEnd()}, or {@code null}.
+     */
     public Consumer<byte[]> onEnd;
 
     private byte elemType = 0x00;
@@ -15,9 +22,17 @@ public class ElementWriter extends ElementVisitor implements ByteArrayConvertibl
     private ByteOutputStream.BaosByteOutputStream exprs;
     private int[] elemIndeces;
 
+    /**
+     * Constructs a writer with no {@link #onEnd end callback}.
+     */
     public ElementWriter() {
     }
 
+    /**
+     * Constructs a writer with an optional {@link #onEnd end callback}.
+     *
+     * @param onEnd A callback that is called from {@link #visitEnd()}, or {@code null}.
+     */
     public ElementWriter(Consumer<byte[]> onEnd) {
         this.onEnd = onEnd;
     }

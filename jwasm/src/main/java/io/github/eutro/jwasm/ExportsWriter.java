@@ -1,18 +1,42 @@
 package io.github.eutro.jwasm;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
+/**
+ * A {@link ExportsVisitor} that generates the corresponding WebAssembly bytecode as it is visited.
+ * This can be retrieved using {@link #toByteArray()} after {@link #visitEnd()}.
+ */
 public class ExportsWriter extends ExportsVisitor implements VectorWriter {
+    /**
+     * The {@link ByteOutputStream} that this visitor will write raw bytes to.
+     */
     private final ByteOutputStream.BaosByteOutputStream out = new ByteOutputStream.BaosByteOutputStream();
-    private int count;
-    public Consumer<ExportsWriter> onEnd;
 
+    /**
+     * Records number of elements in the vector.
+     */
+    private int count;
+
+    /**
+     * A callback that is called from {@link #visitEnd()}, or {@code null}.
+     */
+    public @Nullable Consumer<ExportsWriter> onEnd;
+
+    /**
+     * Constructs a writer with no {@link #onEnd end callback}.
+     */
     public ExportsWriter() {
     }
 
-    public ExportsWriter(Consumer<ExportsWriter> onEnd) {
+    /**
+     * Constructs a writer with an optional {@link #onEnd end callback}.
+     *
+     * @param onEnd A callback that is called from {@link #visitEnd()}, or {@code null}.
+     */
+    public ExportsWriter(@Nullable Consumer<ExportsWriter> onEnd) {
         this.onEnd = onEnd;
     }
 

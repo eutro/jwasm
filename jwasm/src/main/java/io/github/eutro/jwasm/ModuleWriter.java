@@ -6,7 +6,15 @@ import org.jetbrains.annotations.Nullable;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
+/**
+ * A {@link ModuleVisitor} that generates the corresponding WebAssembly bytecode as it is visited.
+ * This can be retrieved using {@link #toByteArray()} after {@link #visitEnd()}.
+ */
+
 public class ModuleWriter extends ModuleVisitor implements ByteArrayConvertible {
+    /**
+     * The {@link ByteOutputStream} that this visitor will write raw bytes to.
+     */
     private final ByteOutputStream.BaosByteOutputStream out = new ByteOutputStream.BaosByteOutputStream();
 
     @Override

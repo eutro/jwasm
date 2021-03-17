@@ -2,14 +2,37 @@ package io.github.eutro.jwasm;
 
 import java.util.function.Consumer;
 
+/**
+ * A {@link DataVisitor} that generates the corresponding WebAssembly bytecode as it is visited.
+ * This can be retrieved using {@link #toByteArray()} after {@link #visitEnd()}.
+ */
 public class DataWriter extends DataVisitor implements ByteArrayConvertible {
+    /**
+     * The {@link ByteOutputStream} that this visitor will write raw bytes to.
+     */
     private final ByteOutputStream.BaosByteOutputStream out = new ByteOutputStream.BaosByteOutputStream();
+
+    /**
+     * Whether {@link #visitActive(int)} has been called.
+     */
     private boolean active = false;
+
+    /**
+     * A callback that is called from {@link #visitEnd()}, or {@code null}.
+     */
     public Consumer<byte[]> onEnd;
 
+    /**
+     * Constructs a writer with no {@link #onEnd end callback}.
+     */
     public DataWriter() {
     }
 
+    /**
+     * Constructs a writer with an optional {@link #onEnd end callback}.
+     *
+     * @param onEnd A callback that is called from {@link #visitEnd()}, or {@code null}.
+     */
     public DataWriter(Consumer<byte[]> onEnd) {
         this.onEnd = onEnd;
     }

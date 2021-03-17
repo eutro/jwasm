@@ -230,12 +230,4 @@ public class ModuleVisitor extends BaseVisitor<ModuleVisitor> {
         if (dl != null) return dl.visitDatas();
         return null;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void visitEnd() {
-        super.visitEnd();
-    }
 }

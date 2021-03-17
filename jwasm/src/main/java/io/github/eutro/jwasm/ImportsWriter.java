@@ -5,15 +5,38 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 
+/**
+ * A {@link ImportsVisitor} that generates the corresponding WebAssembly bytecode as it is visited.
+ * This can be retrieved using {@link #toByteArray()} after {@link #visitEnd()}.
+ */
 public class ImportsWriter extends ImportsVisitor implements VectorWriter {
+    /**
+     * The {@link ByteOutputStream} that this visitor will write raw bytes to.
+     */
     private final ByteOutputStream.BaosByteOutputStream out = new ByteOutputStream.BaosByteOutputStream();
-    private int count;
-    public Consumer<ImportsWriter> onEnd;
 
+    /**
+     * Records number of elements in the vector.
+     */
+    private int count;
+
+    /**
+     * A callback that is called from {@link #visitEnd()}, or {@code null}.
+     */
+    public @Nullable Consumer<ImportsWriter> onEnd;
+
+    /**
+     * Constructs a writer with no {@link #onEnd end callback}.
+     */
     public ImportsWriter() {
     }
 
-    public ImportsWriter(Consumer<ImportsWriter> onEnd) {
+    /**
+     * Constructs a writer with an optional {@link #onEnd end callback}.
+     *
+     * @param onEnd A callback that is called from {@link #visitEnd()}, or {@code null}.
+     */
+    public ImportsWriter(@Nullable Consumer<ImportsWriter> onEnd) {
         this.onEnd = onEnd;
     }
 
