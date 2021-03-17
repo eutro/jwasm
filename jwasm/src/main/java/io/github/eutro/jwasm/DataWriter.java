@@ -1,5 +1,7 @@
 package io.github.eutro.jwasm;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.function.Consumer;
 
 /**
@@ -43,7 +45,7 @@ public class DataWriter extends DataVisitor implements ByteArrayConvertible {
     }
 
     @Override
-    public ExprVisitor visitActive(int memory) {
+    public @Nullable ExprVisitor visitActive(int memory) {
         active = true;
         if (memory == 0) {
             out.put((byte) 0x00);

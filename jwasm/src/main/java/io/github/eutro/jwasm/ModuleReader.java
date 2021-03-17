@@ -285,7 +285,7 @@ public class ModuleReader<E extends Exception> {
                         for (int j = 0; j < funcIndeces; j++) {
                             indeces[j] = sbb.getVarUInt32();
                         }
-                        if (elv != null) elv.visitElemIneces(indeces);
+                        if (elv != null) elv.visitElemIndeces(indeces);
                     }
                     if (elv != null) elv.visitEnd();
                 }

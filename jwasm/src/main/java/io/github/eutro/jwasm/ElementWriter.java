@@ -89,7 +89,7 @@ public class ElementWriter extends ElementVisitor implements ByteArrayConvertibl
     }
 
     @Override
-    public void visitElemIneces(int[] indeces) {
+    public void visitElemIndeces(int[] indeces) {
         this.elemIndeces = indeces;
     }
 

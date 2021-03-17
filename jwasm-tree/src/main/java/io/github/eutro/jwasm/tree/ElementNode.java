@@ -23,7 +23,7 @@ public class ElementNode extends ElementVisitor {
         }
         eev.visitType(type);
         if (indeces != null) {
-            eev.visitElemIneces(indeces);
+            eev.visitElemIndeces(indeces);
         } else if (init != null) {
             for (ExprNode en : init) {
                 ExprVisitor ev = eev.visitInit();
@@ -49,7 +49,7 @@ public class ElementNode extends ElementVisitor {
     }
 
     @Override
-    public void visitElemIneces(int[] indeces) {
+    public void visitElemIndeces(int[] indeces) {
         this.indeces = indeces;
     }
 

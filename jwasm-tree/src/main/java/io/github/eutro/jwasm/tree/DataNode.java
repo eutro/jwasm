@@ -2,6 +2,7 @@ package io.github.eutro.jwasm.tree;
 
 import io.github.eutro.jwasm.DataVisitor;
 import io.github.eutro.jwasm.ExprVisitor;
+import org.jetbrains.annotations.Nullable;
 
 public class DataNode extends DataVisitor {
     public byte[] init;
@@ -32,7 +33,7 @@ public class DataNode extends DataVisitor {
     }
 
     @Override
-    public ExprVisitor visitActive(int memory) {
+    public @Nullable ExprVisitor visitActive(int memory) {
         this.memory = memory;
         return offset = new ExprNode();
     }
