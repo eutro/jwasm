@@ -4,15 +4,15 @@ import io.github.eutro.jwasm.ExprVisitor;
 
 public class CallIndirectInsnNode extends AbstractInsnNode {
     public int table;
-    public int index;
+    public int type;
 
-    public CallIndirectInsnNode(int table, int index) {
+    public CallIndirectInsnNode(int table, int type) {
         this.table = table;
-        this.index = index;
+        this.type = type;
     }
 
     @Override
     void accept(ExprVisitor ev) {
-        ev.visitCallIndirectInsn(table, index);
+        ev.visitCallIndirectInsn(table, type);
     }
 }

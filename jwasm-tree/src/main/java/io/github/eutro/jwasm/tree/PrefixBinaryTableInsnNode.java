@@ -4,17 +4,17 @@ import io.github.eutro.jwasm.ExprVisitor;
 
 public class PrefixBinaryTableInsnNode extends AbstractInsnNode {
     public int opcode;
-    public int sourceIndex;
-    public int targetIndex;
+    public int firstIndex;
+    public int secondIndex;
 
-    public PrefixBinaryTableInsnNode(int opcode, int sourceIndex, int targetIndex) {
+    public PrefixBinaryTableInsnNode(int opcode, int firstIndex, int secondIndex) {
         this.opcode = opcode;
-        this.sourceIndex = sourceIndex;
-        this.targetIndex = targetIndex;
+        this.firstIndex = firstIndex;
+        this.secondIndex = secondIndex;
     }
 
     @Override
     void accept(ExprVisitor ev) {
-        ev.visitPrefixBinaryTableInsn(opcode, sourceIndex, targetIndex);
+        ev.visitPrefixBinaryTableInsn(opcode, firstIndex, secondIndex);
     }
 }
