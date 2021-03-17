@@ -2,13 +2,33 @@ package io.github.eutro.jwasm;
 
 import java.util.function.Consumer;
 
+
+/**
+ * A {@link DataVisitor} that generates the corresponding WebAssembly bytecode as it is visited.
+ * This can be retrieved using {@link #toByteArray()} after {@link #visitEnd()}.
+ */
 public class ExprWriter extends ExprVisitor implements ByteArrayConvertible {
+    /**
+     * The {@link ByteOutputStream} that this visitor will write raw bytes to.
+     */
     private final ByteOutputStream.BaosByteOutputStream out = new ByteOutputStream.BaosByteOutputStream();
+
+    /**
+     * A callback that is called from {@link #visitEnd()}, or {@code null}.
+     */
     public Consumer<byte[]> onEnd;
 
+    /**
+     * Constructs a writer with no {@link #onEnd end callback}.
+     */
     public ExprWriter() {
     }
 
+    /**
+     * Constructs a writer with an optional {@link #onEnd end callback}.
+     *
+     * @param onEnd A callback that is called from {@link #visitEnd()}, or {@code null}.
+     */
     public ExprWriter(Consumer<byte[]> onEnd) {
         this.onEnd = onEnd;
     }
@@ -100,17 +120,17 @@ public class ExprWriter extends ExprVisitor implements ByteArrayConvertible {
     }
 
     @Override
-    public void visitPrefixBinaryTableInsn(int opcode, int sourceIndex, int targetIndex) {
+    public void visitPrefixBinaryTableInsn(int opcode, int firstIndex, int secondIndex) {
         out.put(Opcodes.INSN_PREFIX);
         out.putVarUInt(opcode);
         switch (opcode) {
             case Opcodes.TABLE_COPY:
-                out.putVarUInt(targetIndex);
-                out.putVarUInt(sourceIndex);
+                out.putVarUInt(secondIndex);
+                out.putVarUInt(firstIndex);
                 break;
             case Opcodes.TABLE_INIT:
-                out.putVarUInt(sourceIndex);
-                out.putVarUInt(targetIndex);
+                out.putVarUInt(firstIndex);
+                out.putVarUInt(secondIndex);
                 break;
         }
     }
@@ -181,9 +201,9 @@ public class ExprWriter extends ExprVisitor implements ByteArrayConvertible {
     }
 
     @Override
-    public void visitCallIndirectInsn(int table, int index) {
+    public void visitCallIndirectInsn(int table, int type) {
         out.put(Opcodes.CALL_INDIRECT);
-        out.putVarUInt(index);
+        out.putVarUInt(type);
         out.putVarUInt(table);
     }
 

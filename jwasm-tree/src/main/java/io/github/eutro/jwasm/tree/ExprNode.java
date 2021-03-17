@@ -68,8 +68,8 @@ public class ExprNode extends ExprVisitor {
     }
 
     @Override
-    public void visitPrefixBinaryTableInsn(int opcode, int sourceIndex, int targetIndex) {
-        insns().addLast(new PrefixBinaryTableInsnNode(opcode, sourceIndex, targetIndex));
+    public void visitPrefixBinaryTableInsn(int opcode, int firstIndex, int secondIndex) {
+        insns().addLast(new PrefixBinaryTableInsnNode(opcode, firstIndex, secondIndex));
     }
 
     @Override
@@ -113,7 +113,7 @@ public class ExprNode extends ExprVisitor {
     }
 
     @Override
-    public void visitCallIndirectInsn(int table, int index) {
-        insns().addLast(new CallIndirectInsnNode(table, index));
+    public void visitCallIndirectInsn(int table, int type) {
+        insns().addLast(new CallIndirectInsnNode(table, type));
     }
 }
