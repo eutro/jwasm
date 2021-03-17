@@ -89,9 +89,9 @@ public class ExprWriter extends ExprVisitor implements ByteArrayConvertible {
     }
 
     @Override
-    public void visitFuncInsn(int index) {
+    public void visitFuncInsn(int function) {
         out.put(Opcodes.REF_FUNC);
-        out.putVarUInt(index);
+        out.putVarUInt(function);
     }
 
     @Override
@@ -179,25 +179,25 @@ public class ExprWriter extends ExprVisitor implements ByteArrayConvertible {
     }
 
     @Override
-    public void visitBreakInsn(byte opcode, int index) {
+    public void visitBreakInsn(byte opcode, int label) {
         out.put(opcode);
-        out.putVarUInt(index);
+        out.putVarUInt(label);
     }
 
     @Override
-    public void visitTableBreakInsn(int[] table, int index) {
+    public void visitTableBreakInsn(int[] labels, int defaultLabel) {
         out.put(Opcodes.BR_TABLE);
-        out.putVarUInt(table.length);
-        for (int i : table) {
+        out.putVarUInt(labels.length);
+        for (int i : labels) {
             out.putVarUInt(i);
         }
-        out.putVarUInt(index);
+        out.putVarUInt(defaultLabel);
     }
 
     @Override
-    public void visitCallInsn(int index) {
+    public void visitCallInsn(int function) {
         out.put(Opcodes.CALL);
-        out.putVarUInt(index);
+        out.putVarUInt(function);
     }
 
     @Override

@@ -43,8 +43,8 @@ public class ExprNode extends ExprVisitor {
     }
 
     @Override
-    public void visitFuncInsn(int index) {
-        insns().addLast(new FuncInsnNode(index));
+    public void visitFuncInsn(int function) {
+        insns().addLast(new FuncInsnNode(function));
     }
 
     @Override
@@ -98,18 +98,18 @@ public class ExprNode extends ExprVisitor {
     }
 
     @Override
-    public void visitBreakInsn(byte opcode, int index) {
-        insns().addLast(new BreakInsnNode(opcode, index));
+    public void visitBreakInsn(byte opcode, int label) {
+        insns().addLast(new BreakInsnNode(opcode, label));
     }
 
     @Override
-    public void visitTableBreakInsn(int[] table, int index) {
-        insns().addLast(new TableBreakInsnNode(table, index));
+    public void visitTableBreakInsn(int[] labels, int defaultLabel) {
+        insns().addLast(new TableBreakInsnNode(labels, defaultLabel));
     }
 
     @Override
-    public void visitCallInsn(int index) {
-        insns().addLast(new CallInsnNode(index));
+    public void visitCallInsn(int function) {
+        insns().addLast(new CallInsnNode(function));
     }
 
     @Override

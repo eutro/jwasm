@@ -4,15 +4,15 @@ import io.github.eutro.jwasm.ExprVisitor;
 
 public class BreakInsnNode extends AbstractInsnNode {
     public byte opcode;
-    public int index;
+    public int label;
 
-    public BreakInsnNode(byte opcode, int index) {
+    public BreakInsnNode(byte opcode, int label) {
         this.opcode = opcode;
-        this.index = index;
+        this.label = label;
     }
 
     @Override
     void accept(ExprVisitor ev) {
-        ev.visitBreakInsn(opcode, index);
+        ev.visitBreakInsn(opcode, label);
     }
 }

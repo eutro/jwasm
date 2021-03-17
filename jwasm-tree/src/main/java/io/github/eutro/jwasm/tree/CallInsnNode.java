@@ -3,14 +3,14 @@ package io.github.eutro.jwasm.tree;
 import io.github.eutro.jwasm.ExprVisitor;
 
 public class CallInsnNode extends AbstractInsnNode {
-    public int index;
+    public int function;
 
-    public CallInsnNode(int index) {
-        this.index = index;
+    public CallInsnNode(int function) {
+        this.function = function;
     }
 
     @Override
     void accept(ExprVisitor ev) {
-        ev.visitCallInsn(index);
+        ev.visitCallInsn(function);
     }
 }

@@ -85,12 +85,12 @@ public class ExprVisitor extends BaseVisitor<ExprVisitor> {
      * <a href="https://webassembly.github.io/spec/core/syntax/instructions.html#syntax-instr-ref">ref.func</a>
      * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>.
      *
-     * @param index The
-     *              <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-funcidx">index</a>
-     *              of the function to reference.
+     * @param function The
+     *                 <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-funcidx">index</a>
+     *                 of the function to reference.
      */
-    public void visitFuncInsn(int index) {
-        if (dl != null) dl.visitFuncInsn(index);
+    public void visitFuncInsn(int function) {
+        if (dl != null) dl.visitFuncInsn(function);
     }
 
     /**
@@ -232,12 +232,12 @@ public class ExprVisitor extends BaseVisitor<ExprVisitor> {
      * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>.
      *
      * @param opcode The opcode of the instruction.
-     * @param index  The
+     * @param label  The
      *               <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">index</a>
      *               of the label.
      */
-    public void visitBreakInsn(byte opcode, int index) {
-        if (dl != null) dl.visitBreakInsn(opcode, index);
+    public void visitBreakInsn(byte opcode, int label) {
+        if (dl != null) dl.visitBreakInsn(opcode, label);
     }
 
     /**
@@ -245,14 +245,14 @@ public class ExprVisitor extends BaseVisitor<ExprVisitor> {
      * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#control-instructions">br_table</a>
      * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>.
      *
-     * @param table The table of label
-     *              <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">indeces</a>.
-     * @param index The
-     *              <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">index</a>
-     *              of the default label.
+     * @param labels       The table of label
+     *                     <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">indeces</a>.
+     * @param defaultLabel The
+     *                     <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">index</a>
+     *                     of the default label.
      */
-    public void visitTableBreakInsn(int[] table, int index) {
-        if (dl != null) dl.visitTableBreakInsn(table, index);
+    public void visitTableBreakInsn(int[] labels, int defaultLabel) {
+        if (dl != null) dl.visitTableBreakInsn(labels, defaultLabel);
     }
 
     /**
@@ -260,12 +260,12 @@ public class ExprVisitor extends BaseVisitor<ExprVisitor> {
      * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#control-instructions">call</a>
      * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>.
      *
-     * @param index The
-     *              <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-funcidx">index</a>
-     *              of the function to call.
+     * @param function The
+     *                 <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-funcidx">index</a>
+     *                 of the function to call.
      */
-    public void visitCallInsn(int index) {
-        if (dl != null) dl.visitCallInsn(index);
+    public void visitCallInsn(int function) {
+        if (dl != null) dl.visitCallInsn(function);
     }
 
     /**
