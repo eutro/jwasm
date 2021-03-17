@@ -9,21 +9,61 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
+/**
+ * A parser that makes a {@link ModuleVisitor} visit a WebAssembly module structure.
+ * <p>
+ * This class parses a binary module's contents, calling the appropriate {@code visit} methods
+ * of the {@link ModuleVisitor} and any other relevant {@code *Visitor}s it returns.
+ *
+ * @param <E> The exception that may be thrown on read errors by {@link #accept(ModuleVisitor)}.
+ */
 public class ModuleReader<E extends Exception> {
+    /**
+     * The supplier of {@link ByteInputStream}s to read the module from.
+     */
     private final Supplier<ByteInputStream<E>> source;
 
+    /**
+     * Construct a {@link ModuleReader} with the given source of bytes.
+     *
+     * @param source The supplier of {@link ByteInputStream}s to read the module from.
+     */
     public ModuleReader(Supplier<ByteInputStream<E>> source) {
         this.source = source;
     }
 
+    /**
+     * Construct a {@link ModuleReader} that reads from the given byte array.
+     *
+     * @param b The byte array to read from.
+     * @return The new {@link ModuleReader}.
+     */
     public static ModuleReader<RuntimeException> fromBytes(byte[] b) {
         return fromBytes(b, 0, b.length);
     }
 
+    /**
+     * Construct a {@link ModuleReader} that reads from a subarray of the given byte array,
+     * starting at {@code offset} with a length of {@code len} bytes.
+     *
+     * @param b The byte array to read from.
+     * @param offset The offset of the subarray to use.
+     * @param len The length of the subarray to use.
+     * @return The new {@link ModuleReader}.
+     */
     public static ModuleReader<RuntimeException> fromBytes(byte[] b, int offset, int len) {
         return new ModuleReader<>(() -> new ByteInputStream.ByteBufferByteInputStream(ByteBuffer.wrap(b, offset, len).order(ByteOrder.LITTLE_ENDIAN)));
     }
 
+    /**
+     * Construct a {@link ModuleReader} that reads from the given input stream.
+     * <p>
+     * The {@link #accept(ModuleVisitor)} method of the returned {@link ModuleReader} can only be called once,
+     * or an {@link IllegalStateException} will be thrown.
+     *
+     * @param is The input stream to read from.
+     * @return The new {@link ModuleReader}.
+     */
     public static ModuleReader<IOException> fromInputStream(InputStream is) {
         AtomicBoolean gotten = new AtomicBoolean(false);
         return new ModuleReader<>(() -> {
@@ -32,6 +72,15 @@ public class ModuleReader<E extends Exception> {
         });
     }
 
+    /**
+     * Makes the given {@link ModuleVisitor} visit the structure of the module.
+     *
+     * @param mv The {@link ModuleVisitor}.
+     * @throws E                   If the {@link ByteInputStream} throws an error while reading.
+     * @throws ValidationException If the bytes represent an invalid module file that inhibits the parsing of the file.
+     *                             Not all invalid modules will cause this method to throw this exception,
+     *                             only those errors that prevent the parsing.
+     */
     public void accept(ModuleVisitor mv) throws E {
         ByteInputStream<E> bb = source.get();
         if (bb.getUInt32() != Opcodes.MAGIC) throw new ValidationException("Wrong magic");
