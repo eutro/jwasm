@@ -1,5 +1,8 @@
 package io.github.eutro.jwasm;
 
+/**
+ * An exception that may be thrown when reading an invalid module file.
+ */
 public class ValidationException extends RuntimeException {
     public ValidationException() {
     }

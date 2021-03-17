@@ -1,10 +1,12 @@
 package io.github.eutro.jwasm;
 
+import org.jetbrains.annotations.Nullable;
+
 public class DataVisitor extends BaseVisitor<DataVisitor> {
     public DataVisitor() {
     }
 
-    public DataVisitor(DataVisitor dl) {
+    public DataVisitor(@Nullable DataVisitor dl) {
         super(dl);
     }
 

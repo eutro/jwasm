@@ -1,5 +1,7 @@
 package io.github.eutro.jwasm;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.function.Consumer;
 
 public class TypesWriter extends TypesVisitor implements VectorWriter {
@@ -25,7 +27,7 @@ public class TypesWriter extends TypesVisitor implements VectorWriter {
     }
 
     @Override
-    public void visitType(byte[] params, byte[] returns) {
+    public void visitFuncType(byte @NotNull [] params, byte @NotNull [] returns) {
         ++count;
         out.put(Opcodes.TYPES_FUNCTION);
         out.putByteArray(params);

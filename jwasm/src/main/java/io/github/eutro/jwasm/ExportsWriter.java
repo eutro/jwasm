@@ -1,5 +1,7 @@
 package io.github.eutro.jwasm;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.function.Consumer;
 
 public class ExportsWriter extends ExportsVisitor implements VectorWriter {
@@ -25,7 +27,7 @@ public class ExportsWriter extends ExportsVisitor implements VectorWriter {
     }
 
     @Override
-    public void visitExport(String name, byte type, int index) {
+    public void visitExport(@NotNull String name, byte type, int index) {
         ++count;
         out.putName(name);
         out.put(type);

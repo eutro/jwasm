@@ -57,7 +57,7 @@ public class ModuleReader<E extends Exception> {
                     }
                     byte[] params = sbb.getByteArray();
                     byte[] returns = sbb.getByteArray();
-                    tv.visitType(params, returns);
+                    tv.visitFuncType(params, returns);
                 }
 
                 tv.visitEnd();

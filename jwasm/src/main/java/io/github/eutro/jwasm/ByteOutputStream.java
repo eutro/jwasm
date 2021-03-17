@@ -129,7 +129,7 @@ public interface ByteOutputStream<E extends Exception> {
     }
 
     /**
-     * Write a WebAssembly <code>limit</code> to the stream, consisting of a minimum and an optional maximum.
+     * Write a WebAssembly {@code limit} to the stream, consisting of a minimum and an optional maximum.
      *
      * @param min The minimum.
      * @param max The maximum, or null if there is none.
@@ -147,7 +147,7 @@ public interface ByteOutputStream<E extends Exception> {
     }
 
     /**
-     * Write a string as a WebAssembly <code>name</code>: a vector of UTF-8 bytes.
+     * Write a string as a WebAssembly {@code name}: a vector of UTF-8 bytes.
      *
      * @param name The name to write.
      * @throws E If a write error occurs.

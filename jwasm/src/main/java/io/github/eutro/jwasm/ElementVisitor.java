@@ -1,10 +1,12 @@
 package io.github.eutro.jwasm;
 
+import org.jetbrains.annotations.Nullable;
+
 public class ElementVisitor extends BaseVisitor<ElementVisitor> {
     public ElementVisitor() {
     }
 
-    public ElementVisitor(ElementVisitor dl) {
+    public ElementVisitor(@Nullable ElementVisitor dl) {
         super(dl);
     }
 

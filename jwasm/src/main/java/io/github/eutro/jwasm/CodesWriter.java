@@ -1,5 +1,8 @@
 package io.github.eutro.jwasm;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.function.Consumer;
 
 public class CodesWriter extends CodesVisitor implements VectorWriter {
@@ -25,7 +28,7 @@ public class CodesWriter extends CodesVisitor implements VectorWriter {
     }
 
     @Override
-    public ExprVisitor visitCode(byte[] locals) {
+    public @Nullable ExprVisitor visitCode(byte @NotNull [] locals) {
         ++count;
         ByteOutputStream.BaosByteOutputStream fout = new ByteOutputStream.BaosByteOutputStream();
 

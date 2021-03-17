@@ -1,6 +1,8 @@
 package io.github.eutro.jwasm.tree;
 
 import io.github.eutro.jwasm.ImportsVisitor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,25 +20,25 @@ public class ImportsNode extends ImportsVisitor {
     }
 
     @Override
-    public void visitFuncImport(String module, String name, int index) {
+    public void visitFuncImport(@NotNull String module, @NotNull String name, int index) {
         if (imports == null) imports = new ArrayList<>();
         imports.add(new FuncImportNode(module, name, index));
     }
 
     @Override
-    public void visitTableImport(String module, String name, int min, Integer max, byte type) {
+    public void visitTableImport(@NotNull String module, @NotNull String name, int min, @Nullable Integer max, byte type) {
         if (imports == null) imports = new ArrayList<>();
         imports.add(new TableImportNode(module, name, new LimitsNode(min, max), type));
     }
 
     @Override
-    public void visitMemImport(String module, String name, int min, Integer max) {
+    public void visitMemImport(@NotNull String module, @NotNull String name, int min, @Nullable Integer max) {
         if (imports == null) imports = new ArrayList<>();
         imports.add(new MemImportNode(module, name, new LimitsNode(min, max)));
     }
 
     @Override
-    public void visitGlobalImport(String module, String name, byte mut, byte type) {
+    public void visitGlobalImport(@NotNull String module, @NotNull String name, byte mut, byte type) {
         if (imports == null) imports = new ArrayList<>();
         imports.add(new GlobalImportNode(module, name, new GlobalTypeNode(mut, type)));
     }

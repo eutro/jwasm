@@ -1,5 +1,8 @@
 package io.github.eutro.jwasm;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.function.Consumer;
 
 public class ImportsWriter extends ImportsVisitor implements VectorWriter {
@@ -25,7 +28,7 @@ public class ImportsWriter extends ImportsVisitor implements VectorWriter {
     }
 
     @Override
-    public void visitFuncImport(String module, String name, int index) {
+    public void visitFuncImport(@NotNull String module, @NotNull String name, int index) {
         ++count;
         out.putName(module);
         out.putName(name);
@@ -34,7 +37,7 @@ public class ImportsWriter extends ImportsVisitor implements VectorWriter {
     }
 
     @Override
-    public void visitTableImport(String module, String name, int min, Integer max, byte type) {
+    public void visitTableImport(@NotNull String module, @NotNull String name, int min, @Nullable Integer max, byte type) {
         ++count;
         out.putName(module);
         out.putName(name);
@@ -44,7 +47,7 @@ public class ImportsWriter extends ImportsVisitor implements VectorWriter {
     }
 
     @Override
-    public void visitMemImport(String module, String name, int min, Integer max) {
+    public void visitMemImport(@NotNull String module, @NotNull String name, int min, @Nullable Integer max) {
         ++count;
         out.putName(module);
         out.putName(name);
@@ -53,7 +56,7 @@ public class ImportsWriter extends ImportsVisitor implements VectorWriter {
     }
 
     @Override
-    public void visitGlobalImport(String module, String name, byte mut, byte type) {
+    public void visitGlobalImport(@NotNull String module, @NotNull String name, byte mut, byte type) {
         ++count;
         out.putName(module);
         out.putName(name);

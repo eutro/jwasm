@@ -1,5 +1,8 @@
 package io.github.eutro.jwasm;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 
@@ -18,7 +21,7 @@ public class ModuleWriter extends ModuleVisitor implements ByteArrayConvertible 
     }
 
     @Override
-    public void visitCustom(String name, byte[] payload) {
+    public void visitCustom(@NotNull String name, byte @NotNull [] payload) {
         out.put(Opcodes.SECTION_CUSTOM);
         byte[] nameBytes = name.getBytes(StandardCharsets.UTF_8);
         out.putVarUInt(ByteOutputStream.DUMMY.putVarUInt(nameBytes.length) + nameBytes.length + payload.length);
@@ -39,37 +42,37 @@ public class ModuleWriter extends ModuleVisitor implements ByteArrayConvertible 
     }
 
     @Override
-    public TypesVisitor visitTypes() {
+    public @Nullable TypesVisitor visitTypes() {
         return new TypesWriter(putVectorSection(Opcodes.SECTION_TYPE));
     }
 
     @Override
-    public ImportsVisitor visitImports() {
+    public @Nullable ImportsVisitor visitImports() {
         return new ImportsWriter(putVectorSection(Opcodes.SECTION_IMPORT));
     }
 
     @Override
-    public FunctionsVisitor visitFuncs() {
+    public @Nullable FunctionsVisitor visitFuncs() {
         return new FunctionsWriter(putVectorSection(Opcodes.SECTION_FUNCTION));
     }
 
     @Override
-    public TablesVisitor visitTables() {
+    public @Nullable TablesVisitor visitTables() {
         return new TablesWriter(putVectorSection(Opcodes.SECTION_TABLE));
     }
 
     @Override
-    public MemoriesVisitor visitMems() {
+    public @Nullable MemoriesVisitor visitMems() {
         return new MemoriesWriter(putVectorSection(Opcodes.SECTION_MEMORY));
     }
 
     @Override
-    public GlobalsVisitor visitGlobals() {
+    public @Nullable GlobalsVisitor visitGlobals() {
         return new GlobalsWriter(putVectorSection(Opcodes.SECTION_GLOBAL));
     }
 
     @Override
-    public ExportsVisitor visitExports() {
+    public @Nullable ExportsVisitor visitExports() {
         return new ExportsWriter(putVectorSection(Opcodes.SECTION_EXPORT));
     }
 
@@ -80,7 +83,7 @@ public class ModuleWriter extends ModuleVisitor implements ByteArrayConvertible 
     }
 
     @Override
-    public ElementSegmentsVisitor visitElems() {
+    public @Nullable ElementSegmentsVisitor visitElems() {
         return new ElementSegmentsWriter(putVectorSection(Opcodes.SECTION_ELEMENT));
     }
 
@@ -91,12 +94,12 @@ public class ModuleWriter extends ModuleVisitor implements ByteArrayConvertible 
     }
 
     @Override
-    public CodesVisitor visitCode() {
+    public @Nullable CodesVisitor visitCode() {
         return new CodesWriter(putVectorSection(Opcodes.SECTION_CODE));
     }
 
     @Override
-    public DataSegmentsVisitor visitDatas() {
+    public @Nullable DataSegmentsVisitor visitDatas() {
         return new DataSegmentsWriter(putVectorSection(Opcodes.SECTION_DATA));
     }
 }

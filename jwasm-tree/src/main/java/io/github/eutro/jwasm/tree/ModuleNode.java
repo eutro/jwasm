@@ -1,6 +1,8 @@
 package io.github.eutro.jwasm.tree;
 
 import io.github.eutro.jwasm.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -134,48 +136,48 @@ public class ModuleNode extends ModuleVisitor {
     }
 
     @Override
-    public void visitCustom(String name, byte[] payload) {
+    public void visitCustom(@NotNull String name, byte @NotNull [] payload) {
         getCustoms(section).add(new CustomNode(name, payload));
     }
 
     @Override
-    public TypesVisitor visitTypes() {
+    public @Nullable TypesVisitor visitTypes() {
         section = SECTION_TYPE;
         return types = new TypesNode();
     }
 
     @Override
-    public ImportsVisitor visitImports() {
+    public @Nullable ImportsVisitor visitImports() {
         section = SECTION_IMPORT;
         return imports = new ImportsNode();
     }
 
     @Override
-    public FunctionsVisitor visitFuncs() {
+    public @Nullable FunctionsVisitor visitFuncs() {
         section = SECTION_FUNCTION;
         return funcs = new FunctionsNode();
     }
 
     @Override
-    public TablesVisitor visitTables() {
+    public @Nullable TablesVisitor visitTables() {
         section = SECTION_TABLE;
         return tables = new TablesNode();
     }
 
     @Override
-    public MemoriesVisitor visitMems() {
+    public @Nullable MemoriesVisitor visitMems() {
         section = SECTION_MEMORY;
         return mems = new MemoriesNode();
     }
 
     @Override
-    public GlobalsVisitor visitGlobals() {
+    public @Nullable GlobalsVisitor visitGlobals() {
         section = SECTION_GLOBAL;
         return globals = new GlobalsNode();
     }
 
     @Override
-    public ExportsVisitor visitExports() {
+    public @Nullable ExportsVisitor visitExports() {
         section = SECTION_EXPORT;
         return exports = new ExportsNode();
     }
@@ -187,7 +189,7 @@ public class ModuleNode extends ModuleVisitor {
     }
 
     @Override
-    public ElementSegmentsVisitor visitElems() {
+    public @Nullable ElementSegmentsVisitor visitElems() {
         section = SECTION_ELEMENT;
         return elems = new ElementSegmentsNode();
     }
@@ -199,13 +201,13 @@ public class ModuleNode extends ModuleVisitor {
     }
 
     @Override
-    public CodesVisitor visitCode() {
+    public @Nullable CodesVisitor visitCode() {
         section = SECTION_CODE;
         return codes = new CodesNode();
     }
 
     @Override
-    public DataSegmentsVisitor visitDatas() {
+    public @Nullable DataSegmentsVisitor visitDatas() {
         section = SECTION_DATA;
         return datas = new DataSegmentsNode();
     }

@@ -1,7 +1,7 @@
 package io.github.eutro.jwasm;
 
 /**
- * An interface for *Writers that write a vector of values.
+ * An interface for {@code *Writer}s that write a vector of values.
  */
 public interface VectorWriter extends ByteArrayConvertible {
     /**

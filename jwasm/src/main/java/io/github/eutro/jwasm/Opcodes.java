@@ -54,6 +54,13 @@ public final class Opcodes {
     public static final byte IMPORTS_GLOBAL = 0x03;
     // endregion
 
+    // region Exports Section
+    public static final byte EXPORTS_FUNC = 0x00;
+    public static final byte EXPORTS_TABLE = 0x01;
+    public static final byte EXPORTS_MEM = 0x02;
+    public static final byte EXPORTS_GLOBAL = 0x03;
+    // endregion
+
     // region Limit Constants
     public static final byte LIMIT_NOMAX = 0x00;
     public static final byte LIMIT_WMAX = 0x01;

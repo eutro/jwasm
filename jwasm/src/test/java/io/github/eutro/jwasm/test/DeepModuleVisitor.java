@@ -1,43 +1,45 @@
 package io.github.eutro.jwasm.test;
 
 import io.github.eutro.jwasm.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class DeepModuleVisitor extends ModuleVisitor {
     public DeepModuleVisitor() {
     }
 
     @Override
-    public TypesVisitor visitTypes() {
+    public @Nullable TypesVisitor visitTypes() {
         return new TypesVisitor();
     }
 
     @Override
-    public FunctionsVisitor visitFuncs() {
+    public @Nullable FunctionsVisitor visitFuncs() {
         return new FunctionsVisitor();
     }
 
     @Override
-    public CodesVisitor visitCode() {
+    public @Nullable CodesVisitor visitCode() {
         return new CodesVisitor() {
             @Override
-            public ExprVisitor visitCode(byte[] locals) {
+            public ExprVisitor visitCode(byte @NotNull [] locals) {
                 return new ExprVisitor();
             }
         };
     }
 
     @Override
-    public TablesVisitor visitTables() {
+    public @Nullable TablesVisitor visitTables() {
         return new TablesVisitor();
     }
 
     @Override
-    public MemoriesVisitor visitMems() {
+    public @Nullable MemoriesVisitor visitMems() {
         return new MemoriesVisitor();
     }
 
     @Override
-    public GlobalsVisitor visitGlobals() {
+    public @Nullable GlobalsVisitor visitGlobals() {
         return new GlobalsVisitor() {
             @Override
             public ExprVisitor visitGlobal(byte mut, byte type) {
@@ -47,7 +49,7 @@ public class DeepModuleVisitor extends ModuleVisitor {
     }
 
     @Override
-    public ElementSegmentsVisitor visitElems() {
+    public @Nullable ElementSegmentsVisitor visitElems() {
         return new ElementSegmentsVisitor() {
             @Override
             public ElementVisitor visitElem() {
@@ -67,7 +69,7 @@ public class DeepModuleVisitor extends ModuleVisitor {
     }
 
     @Override
-    public DataSegmentsVisitor visitDatas() {
+    public @Nullable DataSegmentsVisitor visitDatas() {
         return new DataSegmentsVisitor() {
             @Override
             public DataVisitor visitData() {
@@ -82,12 +84,12 @@ public class DeepModuleVisitor extends ModuleVisitor {
     }
 
     @Override
-    public ExportsVisitor visitExports() {
+    public @Nullable ExportsVisitor visitExports() {
         return new ExportsVisitor();
     }
 
     @Override
-    public ImportsVisitor visitImports() {
+    public @Nullable ImportsVisitor visitImports() {
         return new ImportsVisitor();
     }
 }

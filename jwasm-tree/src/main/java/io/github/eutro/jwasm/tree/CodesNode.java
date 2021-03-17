@@ -2,6 +2,8 @@ package io.github.eutro.jwasm.tree;
 
 import io.github.eutro.jwasm.CodesVisitor;
 import io.github.eutro.jwasm.ExprVisitor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +22,7 @@ public class CodesNode extends CodesVisitor {
     }
 
     @Override
-    public ExprVisitor visitCode(byte[] locals) {
+    public @Nullable ExprVisitor visitCode(byte @NotNull [] locals) {
         if (codes == null) codes = new ArrayList<>();
         ExprNode en = new ExprNode();
         codes.add(new CodeNode(locals, en));
