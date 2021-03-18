@@ -319,27 +319,20 @@ public interface ByteInputStream<E extends Exception> {
     /**
      * Read a WebAssembly {@code limit} from the stream, which is a minimum and an optional maximum.
      *
-     * @return An array of {@code {minimum, maximum}</code>, where <code>maximum} may be null.
      * @throws E                   If a read error occured.
      * @throws ValidationException If the limit type wasn't recognised.
+     * @return A {@link Limits} value read from the stream.
      */
-    default Integer[] getLimit() throws E {
-        int min;
-        Integer max;
+    default Limits getLimits() throws E {
         byte type = expect();
         switch (type) {
             case Opcodes.LIMIT_NOMAX:
-                min = getVarUInt32();
-                max = null;
-                break;
+                return new Limits(getVarUInt32(), null);
             case Opcodes.LIMIT_WMAX:
-                min = getVarUInt32();
-                max = getVarUInt32();
-                break;
+                return new Limits(getVarUInt32(), getVarUInt32());
             default:
                 throw new ValidationException(String.format("Unrecognised limit type 0x%02x", type));
         }
-        return new Integer[] { min, max };
     }
 
     /**

@@ -1,11 +1,12 @@
 package io.github.eutro.jwasm.tree;
 
 import io.github.eutro.jwasm.ImportsVisitor;
+import io.github.eutro.jwasm.Limits;
 
 public class MemImportNode extends AbstractImportNode {
-    public LimitsNode limits;
+    public Limits limits;
 
-    public MemImportNode(String module, String name, LimitsNode limits) {
+    public MemImportNode(String module, String name, Limits limits) {
         super(module, name);
         this.limits = limits;
     }

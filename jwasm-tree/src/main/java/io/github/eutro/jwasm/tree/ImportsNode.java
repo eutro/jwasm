@@ -1,6 +1,7 @@
 package io.github.eutro.jwasm.tree;
 
 import io.github.eutro.jwasm.ImportsVisitor;
+import io.github.eutro.jwasm.Limits;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,13 +29,13 @@ public class ImportsNode extends ImportsVisitor {
     @Override
     public void visitTableImport(@NotNull String module, @NotNull String name, int min, @Nullable Integer max, byte type) {
         if (imports == null) imports = new ArrayList<>();
-        imports.add(new TableImportNode(module, name, new LimitsNode(min, max), type));
+        imports.add(new TableImportNode(module, name, new Limits(min, max), type));
     }
 
     @Override
     public void visitMemImport(@NotNull String module, @NotNull String name, int min, @Nullable Integer max) {
         if (imports == null) imports = new ArrayList<>();
-        imports.add(new MemImportNode(module, name, new LimitsNode(min, max)));
+        imports.add(new MemImportNode(module, name, new Limits(min, max)));
     }
 
     @Override

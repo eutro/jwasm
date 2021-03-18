@@ -1,9 +1,11 @@
 package io.github.eutro.jwasm.tree;
 
-public class MemoryNode {
-    public LimitsNode limits;
+import io.github.eutro.jwasm.Limits;
 
-    public MemoryNode(LimitsNode limits) {
+public class MemoryNode {
+    public Limits limits;
+
+    public MemoryNode(Limits limits) {
         this.limits = limits;
     }
 }

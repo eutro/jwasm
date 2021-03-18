@@ -209,8 +209,8 @@ int&nbsp;len)</code></th>
 </td>
 </tr>
 <tr class="alt-color" id="i8">
-<td class="col-first"><code>default java.lang.Integer[]</code></td>
-<th class="col-second" scope="row"><code><span class="member-name-link"><a href="#getLimit()">getLimit</a></span>()</code></th>
+<td class="col-first"><code>default <a href="Limits.html" title="class in io.github.eutro.jwasm">Limits</a></code></td>
+<th class="col-second" scope="row"><code><span class="member-name-link"><a href="#getLimits()">getLimits</a></span>()</code></th>
 <td class="col-last">
 <div class="block">Read a WebAssembly <code>limit</code> from the stream, which is a minimum and an optional maximum.</div>
 </td>
@@ -636,14 +636,14 @@ int&nbsp;count)</span>
 </section>
 </li>
 <li>
-<section class="detail" id="getLimit()">
-<h3>getLimit</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">java.lang.Integer[]</span>&nbsp;<span class="member-name">getLimit</span>()
-                              throws <span class="exceptions"><a href="ByteInputStream.html" title="type parameter in ByteInputStream">E</a> extends java.lang.Exception</span></div>
+<section class="detail" id="getLimits()">
+<h3>getLimits</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="Limits.html" title="class in io.github.eutro.jwasm">Limits</a></span>&nbsp;<span class="member-name">getLimits</span>()
+                  throws <span class="exceptions"><a href="ByteInputStream.html" title="type parameter in ByteInputStream">E</a> extends java.lang.Exception</span></div>
 <div class="block">Read a WebAssembly <code>limit</code> from the stream, which is a minimum and an optional maximum.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>An array of <code>{minimum, maximum}&lt;/code&gt;, where &lt;code&gt;maximum</code> may be null.</dd>
+<dd>A <a href="Limits.html" title="class in io.github.eutro.jwasm"><code>Limits</code></a> value read from the stream.</dd>
 <dt>Throws:</dt>
 <dd><code><a href="ByteInputStream.html" title="type parameter in ByteInputStream">E</a></code> - If a read error occured.</dd>
 <dd><code><a href="ValidationException.html" title="class in io.github.eutro.jwasm">ValidationException</a></code> - If the limit type wasn't recognised.</dd>

@@ -1,5 +1,6 @@
 package io.github.eutro.jwasm.tree;
 
+import io.github.eutro.jwasm.Limits;
 import io.github.eutro.jwasm.TablesVisitor;
 
 import java.util.ArrayList;
@@ -20,6 +21,6 @@ public class TablesNode extends TablesVisitor {
     @Override
     public void visitTable(int min, Integer max, byte type) {
         if (tables == null) tables = new ArrayList<>();
-        tables.add(new TableNode(new LimitsNode(min, max), type));
+        tables.add(new TableNode(new Limits(min, max), type));
     }
 }

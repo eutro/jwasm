@@ -47,7 +47,9 @@ val javadocModules = listOf(":jwasm", ":jwasm-tree")
 tasks.register<Copy>("assembleDocs") {
     val javadocTasks = javadocModules.map { project(it).tasks.javadoc.get() }.toTypedArray()
     dependsOn(*javadocTasks)
-    delete("docs")
+    doFirst {
+        delete("docs")
+    }
     javadocTasks.forEach { jdoc ->
         from(jdoc) {
             into(jdoc.project.name)

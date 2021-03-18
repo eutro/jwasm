@@ -137,13 +137,13 @@ public class ModuleReader<E extends Exception> {
                         }
                         case Opcodes.IMPORTS_TABLE: {
                             byte type = sbb.expect();
-                            Integer[] limit = sbb.getLimit();
-                            iv.visitTableImport(module, name, limit[0], limit[1], type);
+                            Limits limit = sbb.getLimits();
+                            iv.visitTableImport(module, name, limit.min, limit.max, type);
                             break;
                         }
                         case Opcodes.IMPORTS_MEM: {
-                            Integer[] limit = sbb.getLimit();
-                            iv.visitMemImport(module, name, limit[0], limit[1]);
+                            Limits limit = sbb.getLimits();
+                            iv.visitMemImport(module, name, limit.min, limit.max);
                             break;
                         }
                         case Opcodes.IMPORTS_GLOBAL: {
@@ -195,8 +195,8 @@ public class ModuleReader<E extends Exception> {
                 int tableCount = sbb.getVarUInt32();
                 for (int i = 0; i < tableCount; i++) {
                     byte type = sbb.expect();
-                    Integer[] limit = sbb.getLimit();
-                    tv.visitTable(limit[0], limit[1], type);
+                    Limits limit = sbb.getLimits();
+                    tv.visitTable(limit.min, limit.max, type);
                 }
 
                 tv.visitEnd();
@@ -216,8 +216,8 @@ public class ModuleReader<E extends Exception> {
             } else {
                 int memCount = sbb.getVarUInt32();
                 for (int i = 0; i < memCount; i++) {
-                    Integer[] limit = sbb.getLimit();
-                    mmv.visitMemory(limit[0], limit[1]);
+                    Limits limit = sbb.getLimits();
+                    mmv.visitMemory(limit.min, limit.max);
                 }
 
                 mmv.visitEnd();

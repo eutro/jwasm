@@ -64,6 +64,7 @@ public final class Opcodes {
     // region Limit Constants
     public static final byte LIMIT_NOMAX = 0x00;
     public static final byte LIMIT_WMAX = 0x01;
+    public static final int PAGE_SIZE = 65534;
     // endregion
 
     // region Global Type Constants
