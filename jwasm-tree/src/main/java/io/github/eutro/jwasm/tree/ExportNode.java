@@ -1,11 +1,13 @@
 package io.github.eutro.jwasm.tree;
 
+import org.jetbrains.annotations.NotNull;
+
 public class ExportNode {
-    public String name;
+    public @NotNull String name;
     public byte type;
     public int index;
 
-    public ExportNode(String name, byte type, int index) {
+    public ExportNode(@NotNull String name, byte type, int index) {
         this.name = name;
         this.type = type;
         this.index = index;

@@ -7,7 +7,7 @@ public class VariableInsnNode extends AbstractInsnNode {
     public int index;
 
     public VariableInsnNode(byte opcode, int index) {
-        this.opcode = opcode;
+        super(opcode);
         this.index = index;
     }
 

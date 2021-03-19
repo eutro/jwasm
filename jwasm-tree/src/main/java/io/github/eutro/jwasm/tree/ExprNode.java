@@ -1,11 +1,15 @@
 package io.github.eutro.jwasm.tree;
 
 import io.github.eutro.jwasm.ExprVisitor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 
-public class ExprNode extends ExprVisitor {
-    public LinkedList<AbstractInsnNode> instructions;
+public class ExprNode extends ExprVisitor implements Iterable<AbstractInsnNode> {
+    public @Nullable LinkedList<AbstractInsnNode> instructions;
 
     public void accept(ExprVisitor ev) {
         if (instructions != null) {
@@ -115,5 +119,11 @@ public class ExprNode extends ExprVisitor {
     @Override
     public void visitCallIndirectInsn(int table, int type) {
         insns().addLast(new CallIndirectInsnNode(table, type));
+    }
+
+    @NotNull
+    @Override
+    public Iterator<AbstractInsnNode> iterator() {
+        return instructions == null ? Collections.emptyIterator() : instructions.iterator();
     }
 }

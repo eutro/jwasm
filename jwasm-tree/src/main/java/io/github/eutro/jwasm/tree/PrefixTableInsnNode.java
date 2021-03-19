@@ -2,17 +2,16 @@ package io.github.eutro.jwasm.tree;
 
 import io.github.eutro.jwasm.ExprVisitor;
 
-public class PrefixTableInsnNode extends AbstractInsnNode {
-    public int opcode;
+public class PrefixTableInsnNode extends PrefixInsnNode {
     public int index;
 
-    public PrefixTableInsnNode(int opcode, int index) {
-        this.opcode = opcode;
+    public PrefixTableInsnNode(int intOpcode, int index) {
+        super(intOpcode);
         this.index = index;
     }
 
     @Override
     void accept(ExprVisitor ev) {
-        ev.visitPrefixTableInsn(opcode, index);
+        ev.visitPrefixTableInsn(intOpcode, index);
     }
 }

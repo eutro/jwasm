@@ -6,10 +6,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
-public class CodesNode extends CodesVisitor {
-    public List<CodeNode> codes;
+public class CodesNode extends CodesVisitor implements Iterable<CodeNode> {
+    public @Nullable List<CodeNode> codes;
 
     public void accept(CodesVisitor cv) {
         if (codes != null) {
@@ -27,5 +29,11 @@ public class CodesNode extends CodesVisitor {
         ExprNode en = new ExprNode();
         codes.add(new CodeNode(locals, en));
         return en;
+    }
+
+    @NotNull
+    @Override
+    public Iterator<CodeNode> iterator() {
+        return codes == null ? Collections.emptyIterator() : codes.iterator();
     }
 }

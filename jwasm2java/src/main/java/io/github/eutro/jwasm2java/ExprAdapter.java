@@ -1,694 +1,561 @@
 package io.github.eutro.jwasm2java;
 
-import io.github.eutro.jwasm.ExprVisitor;
 import io.github.eutro.jwasm.Opcodes;
+import io.github.eutro.jwasm.tree.AbstractInsnNode;
+import io.github.eutro.jwasm.tree.*;
+import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
-import org.objectweb.asm.commons.Method;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.*;
 
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 
 import static io.github.eutro.jwasm.Opcodes.*;
+import static io.github.eutro.jwasm2java.Util.*;
 import static org.objectweb.asm.Opcodes.*;
 
-public class ExprAdapter extends ExprVisitor {
-    private final GeneratorAdapter mv;
+public class ExprAdapter {
+    private final MethodNode mn;
     private final String internalName;
-    private final FuncType type;
-    private final byte[] localTypes;
     private final int[] localIndeces;
-    private final Function[] functions;
-    private final LinkedList<Block> blocks = new LinkedList<>();
-    private final LinkedList<Type> stack = new LinkedList<>();
+    private final Type[] localTypes;
+    private final ExprNode expr;
 
-    public ExprAdapter(GeneratorAdapter mv,
+    public ExprAdapter(ExprNode expr,
+                       MethodNode mn,
                        String internalName,
-                       FuncType type,
-                       byte[] localTypes,
-                       Function[] functions) {
-        this.mv = mv;
-        this.localTypes = localTypes;
-        localIndeces = new int[localTypes.length];
-        for (int i = 0; i < localTypes.length; i++) {
-            Type localType = Types.toJava(localTypes[i]);
-            int local = localIndeces[i] = mv.newLocal(localType);
-            if (localType.equals(Type.INT_TYPE)) mv.push(0);
-            else if (localType.equals(Type.LONG_TYPE)) mv.push(0L);
-            else if (localType.equals(Type.FLOAT_TYPE)) mv.push(0F);
-            else if (localType.equals(Type.DOUBLE_TYPE)) mv.push(0D);
-            else mv.push((String) null);
-            mv.storeLocal(local);
-        }
+                       int[] localIndeces,
+                       Type[] localTypes) {
+        this.expr = expr;
+        this.mn = mn;
         this.internalName = internalName;
-        this.type = type;
-        this.functions = functions;
+        this.localIndeces = localIndeces;
+        this.localTypes = localTypes;
     }
 
-    private Type localType(int index) {
-        return Types.toJava(index < type.params.length ? type.params[index] : localTypes[index - type.params.length]);
+    public void translateInto() {
+        Context context = new Context();
+        for (AbstractInsnNode insn : expr) {
+            Rule<AbstractInsnNode> rule = getRule(insn);
+            if (rule == null) {
+                throw new UnsupportedOperationException(String.format("Opcode 0x%02x not supported", insn.opcode));
+            }
+            rule.apply(context, insn);
+        }
     }
 
-    private Label getLabel(int label) {
-        return blocks.get(label).label();
+    private class Context extends GeneratorAdapter {
+        LinkedList<Type> stack = new LinkedList<>();
+        LinkedList<Block> blocks = new LinkedList<>();
+
+        public Context() {
+            super(ASM9, mn, mn.access, mn.name, mn.desc);
+        }
+
+        public Type localType(int local) {
+            return localTypes[local];
+        }
+
+        public int localIndex(int local) {
+            return localIndeces[local];
+        }
+
+        public String internalName() {
+            return internalName;
+        }
+
+        public void pushBlock(Block b) {
+            blocks.push(b);
+        }
+
+        public Block peekBlock() {
+            return blocks.peek();
+        }
+
+        public Block popBlock() {
+            return blocks.pop();
+        }
+
+        public Label getLabel(int label) {
+            return blocks.get(label).label();
+        }
+
+        public Type popType() {
+            return stack.pop();
+        }
+
+        public Context remType() {
+            popType();
+            return this;
+        }
+
+        public Context expectType(Type t) {
+            if (!popType().equals(t)) throw new IllegalStateException();
+            return this;
+        }
+
+        public Type peekType() {
+            return stack.peek();
+        }
+
+        public Context pushType(Type t) {
+            stack.push(t);
+            return this;
+        }
+
+        public Context addInsns(org.objectweb.asm.tree.AbstractInsnNode... insns) {
+            for (org.objectweb.asm.tree.AbstractInsnNode insn : insns) {
+                insn.accept(this);
+            }
+            return this;
+        }
+
+        public Context addInsns(InsnList insns) {
+            insns.accept(this);
+            return this;
+        }
+
+        public void ifThenElse(int opcode, InsnList ifn, InsnList ifj) {
+            Label elsl = new Label();
+            Label endl = new Label();
+            visitJumpInsn(opcode, elsl);
+            ifn.accept(this);
+            goTo(endl);
+            mark(elsl);
+            ifj.accept(this);
+            mark(endl);
+        }
+
+        public void jumpStack(int opcode) {
+            ifThenElse(opcode, makeList(new InsnNode(ICONST_0)), makeList(new InsnNode(ICONST_1)));
+        }
     }
 
-    protected void doReturn() {
-        if (type.returns.length >= 2) {
+    private static final Rule<?>[] RULES = new Rule[Byte.MAX_VALUE - Byte.MIN_VALUE];
+
+    static {
+        // region Control
+        putRule(UNREACHABLE, (ctx, insn) -> ctx.throwException(Type.getType(AssertionError.class), "Unreachable"));
+        putRule(Opcodes.NOP, (ctx, insn) -> { /* NOP */ });
+        ExprAdapter.<BlockInsnNode>putRule(BLOCK, (ctx, insn) -> ctx.pushBlock(new Block.BBlock(insn.blockType)));
+        ExprAdapter.<BlockInsnNode>putRule(LOOP, (ctx, insn) ->
+                ctx.pushBlock(new Block.Loop(insn.blockType, ctx.mark())));
+        ExprAdapter.<BlockInsnNode>putRule(IF, (ctx, insn) -> {
+            ctx.expectType(Type.INT_TYPE);
+            Block.If block = new Block.If(insn.blockType, new LinkedList<>(ctx.stack));
+            ctx.visitJumpInsn(IFEQ, block.elseLabel);
+            ctx.pushBlock(block);
+        });
+        ExprAdapter.putRule(ELSE, (ctx, insn) -> {
+            Block.If ifBlock = (Block.If) ctx.peekBlock();
+            ctx.goTo(ifBlock.endLabel());
+            ctx.stack = ifBlock.types;
+            ctx.mark(ifBlock.elseLabel);
+        });
+        ExprAdapter.putRule(END, (ctx, insn) -> {
+            if (ctx.peekBlock() != null) {
+                ctx.popBlock().end(ctx);
+            }
+        });
+        ExprAdapter.<BreakInsnNode>putRule(BR, (ctx, insn) -> ctx.goTo(ctx.blocks.get(insn.label).label()));
+        ExprAdapter.<BreakInsnNode>putRule(BR_IF, (ctx, insn) -> ctx.expectType(Type.INT_TYPE)
+                .visitJumpInsn(IFNE, ctx.getLabel(insn.label)));
+        // endregion
+        // region Parametric
+        putRule(DROP, (ctx, insn) -> {
+            if (ctx.popType().getSize() == 2) {
+                ctx.pop2();
+            } else {
+                ctx.pop();
+            }
+        });
+        Rule<AbstractInsnNode> select = (ctx, insn) -> {
+            ctx.expectType(Type.INT_TYPE);
+            Type type = ctx.popType();
+            if (!type.equals(ctx.peekType())) throw new IllegalArgumentException();
+            // WASM: if the top stack value is not 0, keep the bottom value, otherwise the top value.
+            // JVM: if the top stack value is not zero, pop the top value, otherwise swap before popping
+            Label end = new Label();
+            ctx.ifZCmp(GeneratorAdapter.NE, end);
+            ctx.swap(type, type);
+            ctx.visitLabel(end);
+            if (type.getSize() == 2) {
+                ctx.pop2();
+            } else {
+                ctx.pop();
+            }
+        };
+        putRule(SELECT, select);
+        putRule(SELECTT, select);
+        // endregion
+        // region Variable
+        ExprAdapter.<VariableInsnNode>putRule(LOCAL_GET, (ctx, insn) -> ctx
+                .pushType(ctx.localType(insn.index))
+                .visitVarInsn(ctx.localType(insn.index).getOpcode(ILOAD), ctx.localIndex(insn.index)));
+        ExprAdapter.<VariableInsnNode>putRule(LOCAL_SET, (ctx, insn) -> ctx
+                .remType()
+                .visitVarInsn(ctx.localType(insn.index).getOpcode(ISTORE), ctx.localIndex(insn.index)));
+        ExprAdapter.<VariableInsnNode>putRule(LOCAL_TEE, (ctx, insn) -> {
+            if (ctx.peekType().getSize() == 2) {
+                ctx.dup2();
+            } else {
+                ctx.dup();
+            }
+            ctx.visitVarInsn(ctx.localType(insn.index).getOpcode(ISTORE), ctx.localIndex(insn.index));
+        });
+        ExprAdapter.<VariableInsnNode>putRule(GLOBAL_GET, (ctx, insn) -> {
+            // TODO
             throw new UnsupportedOperationException();
-        }
-        mv.returnValue();
-    }
-
-    @Override
-    public void visitInsn(byte opcode) {
-        switch (opcode) {
-            // region Control
-            case UNREACHABLE:
-                mv.throwException(Type.getType(AssertionError.class), "Unreachable");
-                break;
-            case Opcodes.NOP:
-                mv.visitInsn(org.objectweb.asm.Opcodes.NOP);
-                break;
-            case Opcodes.RETURN:
-                doReturn();
-                break;
-            // endregion
-            // region Parametric
-            case DROP:
-                if (stack.pop().getSize() == 2) {
-                    mv.pop2();
-                } else {
-                    mv.pop();
-                }
-                break;
-            case SELECT: {
-                stack.pop();
-                Type type = stack.pop();
-                Label end = new Label();
-                mv.ifZCmp(GeneratorAdapter.NE, end);
-                mv.swap(type, type);
-                mv.mark(end);
-                if (type.getSize() == 2) {
-                    mv.pop2();
-                } else {
-                    mv.pop();
-                }
-                break;
-            }
-            // endregion
-            // region Memory
-            case MEMORY_SIZE:
-                getMemory();
-                mv.invokeVirtual(Type.getType(ByteBuffer.class), new Method("capacity", "()I"));
-                mv.push(PAGE_SIZE);
-                mv.visitInsn(IDIV);
-                break;
-            case MEMORY_GROW:
-                // TODO
-                mv.invokeVirtual(Type.getObjectType(internalName), new Method("__resizeMemory", "(I)I"));
-                break;
-            // endregion
-            // region Comparisons
-            // region i32
-            case I32_EQZ: {
-                zcmpBool(GeneratorAdapter.EQ);
-                break;
-            }
-            case I32_EQ:
-                cmpBool(GeneratorAdapter.EQ);
-                break;
-            case I32_NE:
-                cmpBool(GeneratorAdapter.NE);
-                break;
-            case I32_LT_S:
-                cmpBool(GeneratorAdapter.LT);
-                break;
-            case I32_LT_U: {
-                intStatic("compareUnsigned", "(II)I");
-                zcmpBool(GeneratorAdapter.LT);
-                stack.pop();
-                break;
-            }
-            case I32_GT_S:
-                cmpBool(GeneratorAdapter.GT);
-                break;
-            case I32_GT_U:
-                intStatic("compareUnsigned", "(II)I");
-                zcmpBool(GeneratorAdapter.GT);
-                stack.pop();
-                break;
-            case I32_LE_S:
-                cmpBool(GeneratorAdapter.LE);
-                break;
-            case I32_LE_U:
-                intStatic("compareUnsigned", "(II)I");
-                zcmpBool(GeneratorAdapter.LE);
-                stack.pop();
-                break;
-            case I32_GE_S:
-                cmpBool(GeneratorAdapter.GE);
-                break;
-            case I32_GE_U:
-                intStatic("compareUnsigned", "(II)I");
-                zcmpBool(GeneratorAdapter.GE);
-                stack.pop();
-                break;
-            // endregion
-            // endregion
-            // region Mathematical
-            // region i32
-            case I32_CLZ:
-                // Integer.numberOfLeadingZeros(i)
-                intStatic("numberOfLeadingZeros", "(I)I");
-                break;
-            case I32_CTZ:
-                // Integer.numberOfTrailingZeros(i)
-                intStatic("numberOfTrailingZeros", "(I)I");
-                break;
-            case I32_POPCNT:
-                // Integer.bitCount(i)
-                intStatic("bitCount", "(I)I");
-                break;
-            case I32_ADD:
-                mv.visitInsn(IADD);
-                stack.pop();
-                break;
-            case I32_SUB:
-                mv.visitInsn(ISUB);
-                stack.pop();
-                break;
-            case I32_MUL:
-                mv.visitInsn(IMUL);
-                stack.pop();
-                break;
-            case I32_DIV_S:
-                mv.visitInsn(IDIV);
-                stack.pop();
-                break;
-            case I32_DIV_U:
-                // Integer.divideUnsigned(a, b)
-                intStatic("divideUnsigned", "(II)I");
-                stack.pop();
-                break;
-            case I32_REM_S:
-                mv.visitInsn(IREM);
-                stack.pop();
-                break;
-            case I32_REM_U:
-                // Integer.remainderUnsigned(a, b)
-                intStatic("remainderUnsigned", "(II)I");
-                break;
-            case I32_AND:
-                mv.visitInsn(IAND);
-                stack.pop();
-                break;
-            case I32_OR:
-                mv.visitInsn(IOR);
-                stack.pop();
-                break;
-            case I32_XOR:
-                mv.visitInsn(IXOR);
-                stack.pop();
-                break;
-            case I32_SHL:
-                mv.visitInsn(ISHL);
-                stack.pop();
-                break;
-            case I32_SHR_S:
-                mv.visitInsn(ISHR);
-                stack.pop();
-                break;
-            case I32_SHR_U:
-                mv.visitInsn(IUSHR);
-                stack.pop();
-                break;
-            case I32_ROTL:
-                // Integer.rotateLeft(a, b)
-                intStatic("rotateLeft", "(II)I");
-                stack.pop();
-                break;
-            case I32_ROTR:
-                // Integer.rotateRight(a, b)
-                intStatic("rotateRight", "(II)I");
-                stack.pop();
-                break;
-            // endregion
-            // region i64
-            case I64_CLZ:
-                // Long.numberOfLeadingZeros(i)
-                longStatic("numberOfLeadingZeros", "(J)I");
-                mv.visitInsn(I2L);
-                break;
-            case I64_CTZ:
-                // Long.numberOfTrailingZeros(i)
-                longStatic("numberOfTrailingZeros", "(J)I");
-                mv.visitInsn(I2L);
-                break;
-            case I64_POPCNT:
-                // Long.bitCount(i)
-                longStatic("bitCount", "(J)I");
-                mv.visitInsn(I2L);
-                break;
-            case I64_ADD:
-                mv.visitInsn(LADD);
-                stack.pop();
-                break;
-            case I64_SUB:
-                mv.visitInsn(LSUB);
-                stack.pop();
-                break;
-            case I64_MUL:
-                mv.visitInsn(LMUL);
-                stack.pop();
-                break;
-            case I64_DIV_S:
-                mv.visitInsn(LDIV);
-                stack.pop();
-                break;
-            case I64_DIV_U:
-                // Long.divideUnsigned(a, b)
-                longStatic("divideUnsigned", "(JJ)J");
-                stack.pop();
-                break;
-            case I64_REM_S:
-                mv.visitInsn(LREM);
-                stack.pop();
-                break;
-            case I64_REM_U:
-                // Long.remainderUnsigned(a, b)
-                longStatic("remainderUnsigned", "(JJ)J");
-                stack.pop();
-                break;
-            case I64_AND:
-                mv.visitInsn(LAND);
-                stack.pop();
-                break;
-            case I64_OR:
-                mv.visitInsn(LOR);
-                stack.pop();
-                break;
-            case I64_XOR:
-                mv.visitInsn(LXOR);
-                stack.pop();
-                break;
-            case I64_SHL:
-                mv.visitInsn(LSHL);
-                stack.pop();
-                break;
-            case I64_SHR_S:
-                mv.visitInsn(LSHR);
-                stack.pop();
-                break;
-            case I64_SHR_U:
-                mv.visitInsn(LUSHR);
-                stack.pop();
-                break;
-            case I64_ROTL:
-                // Long.rotateLeft(a, b)
-                longStatic("rotateLeft", "(JJ)J");
-                stack.pop();
-                break;
-            case I64_ROTR:
-                // Long.rotateRight(a, b)
-                longStatic("rotateRight", "(JJ)J");
-                stack.pop();
-                break;
-            // endregion
-            // region f32
-            case F32_ADD:
-                mv.visitInsn(FADD);
-                stack.pop();
-                break;
-            case F32_SUB:
-                mv.visitInsn(FSUB);
-                stack.pop();
-                break;
-            case F32_MUL:
-                mv.visitInsn(FMUL);
-                stack.pop();
-                break;
-            // endregion
-            // region f64
-            case F64_ADD:
-                mv.visitInsn(DADD);
-                stack.pop();
-                break;
-            case F64_SUB:
-                mv.visitInsn(DSUB);
-                stack.pop();
-                break;
-            case F64_MUL:
-                mv.visitInsn(DMUL);
-                stack.pop();
-                break;
-            // endregion
-            // endregion
-            default:
-                throw new UnsupportedOperationException();
-        }
-    }
-
-    public void zcmpBool(int type) {
-        Label els = new Label();
-        mv.ifZCmp(type, els);
-        jumpBool(els);
-    }
-
-    public void cmpBool(int type) {
-        Label els = new Label();
-        mv.ifCmp(Type.INT_TYPE, type, els);
-        jumpBool(els);
-        stack.pop();
-    }
-
-    private void jumpBool(Label els) {
-        Label end = new Label();
-        mv.push(0);
-        mv.goTo(end);
-        mv.mark(els);
-        mv.push(1);
-        mv.mark(end);
-    }
-
-    private void intStatic(String name, String desc) {
-        mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", name, desc, false);
-    }
-
-    private void longStatic(String name, String desc) {
-        mv.visitMethodInsn(INVOKESTATIC, "java/lang/Long", name, desc, false);
-    }
-
-    @Override
-    public void visitPrefixInsn(int opcode) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void visitConstInsn(Object v) {
-        if (v instanceof Integer) {
-            mv.push((Integer) v);
-            stack.push(Type.INT_TYPE);
-        } else if (v instanceof Long) {
-            mv.push((Long) v);
-            stack.push(Type.LONG_TYPE);
-        } else if (v instanceof Float) {
-            mv.push((Float) v);
-            stack.push(Type.FLOAT_TYPE);
-        } else if (v instanceof Double) {
-            mv.push((Double) v);
-            stack.push(Type.DOUBLE_TYPE);
-        } else {
-            throw new IllegalArgumentException();
-        }
-    }
-
-    @Override
-    public void visitNullInsn(byte type) {
-        mv.push((String) null);
-        stack.push(Type.getType(Object.class));
-    }
-
-    @Override
-    public void visitFuncInsn(int function) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void visitSelectInsn(byte[] type) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void visitVariableInsn(byte opcode, int index) {
-        switch (opcode) {
-            case GLOBAL_GET:
-            case GLOBAL_SET:
-                throw new UnsupportedOperationException();
-            case LOCAL_GET:
-            case LOCAL_TEE:
-            case LOCAL_SET:
-                boolean arg;
-                int i;
-                if (index < type.params.length) {
-                    arg = true;
-                    i = index;
-                } else {
-                    arg = false;
-                    i = localIndeces[index - type.params.length];
-                }
-                Type type = localType(index);
-                switch (opcode) {
-                    case LOCAL_GET:
-                        if (arg) mv.loadArg(i);
-                        else mv.loadLocal(i);
-                        stack.push(type);
-                        break;
-                    case LOCAL_TEE:
-                        if (type.getSize() == 2) {
-                            mv.dup2();
-                        } else {
-                            mv.dup();
-                        }
-                        if (arg) mv.storeArg(i);
-                        else mv.storeLocal(i);
-                        break;
-                    case LOCAL_SET:
-                        stack.pop();
-                        if (arg) mv.storeArg(i);
-                        else mv.storeLocal(i);
-                        break;
-                }
-                break;
-            default:
-                throw new AssertionError();
-        }
-    }
-
-    @Override
-    public void visitTableInsn(byte opcode, int index) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void visitPrefixTableInsn(int opcode, int index) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void visitPrefixBinaryTableInsn(int opcode, int firstIndex, int secondIndex) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void visitMemInsn(byte opcode, int align, int offset) {
-        if (opcode >= I32_LOAD && opcode <= I64_LOAD32_U) {
-            stack.pop();
-            getMemory();
-            mv.swap();
-            if (offset != 0) {
-                mv.push(offset);
-                mv.visitInsn(IADD);
-            }
-            Method method;
-            switch (opcode) {
-                case I32_LOAD8_S:
-                case I32_LOAD8_U:
-                case I64_LOAD8_S:
-                case I64_LOAD8_U:
-                    method = new Method("get", "(I)B");
-                    break;
-                case I32_LOAD16_S:
-                case I32_LOAD16_U:
-                case I64_LOAD16_S:
-                case I64_LOAD16_U:
-                    method = new Method("getShort", "(I)S");
-                    break;
-                case I64_LOAD32_S:
-                case I64_LOAD32_U:
-                case I32_LOAD:
-                    method = new Method("getInt", "(I)I");
-                    break;
-                case I64_LOAD:
-                    method = new Method("getLong", "(I)J");
-                    stack.push(Type.LONG_TYPE);
-                    break;
-                case F32_LOAD:
-                    method = new Method("getFloat", "(I)F");
-                    stack.push(Type.FLOAT_TYPE);
-                    break;
-                case F64_LOAD:
-                    method = new Method("getDouble", "(I)D");
-                    stack.push(Type.DOUBLE_TYPE);
-                    break;
-                default:
-                    throw new AssertionError();
-            }
-            mv.invokeVirtual(Type.getType(ByteBuffer.class), method);
-            switch (opcode) {
-                case I32_LOAD:
-                case I32_LOAD8_S:
-                case I32_LOAD16_S:
-                    // Do these casts just magically work?
-                    stack.push(Type.INT_TYPE);
-                    break;
-                case I64_LOAD8_S:
-                case I64_LOAD16_S:
-                case I64_LOAD32_S:
-                    mv.visitInsn(I2L);
-                    stack.push(Type.LONG_TYPE);
-                    break;
-
-                case I32_LOAD8_U:
-                    // Byte.toUnsignedInt(x)
-                    mv.invokeStatic(Type.getType(Byte.class), new Method("toUnsignedInt", "(B)I"));
-                    break;
-                case I32_LOAD16_U:
-                    // Short.toUnsignedInt(x)
-                    mv.invokeStatic(Type.getType(Short.class), new Method("toUnsignedInt", "(S)I"));
-                    break;
-                case I64_LOAD8_U:
-                    // Byte.toUnsignedLong(x)
-                    mv.invokeStatic(Type.getType(Byte.class), new Method("toUnsignedLong", "(B)J"));
-                    break;
-                case I64_LOAD16_U:
-                    // Short.toUnsignedLong(x)
-                    mv.invokeStatic(Type.getType(Short.class), new Method("toUnsignedLong", "(S)J"));
-                    break;
-                case I64_LOAD32_U:
-                    // Integer.toUnsignedLong(x)
-                    mv.invokeStatic(Type.getType(Integer.class), new Method("toUnsignedLong", "(I)J"));
-                    break;
-            }
-        } else if (opcode >= I32_STORE && opcode <= I64_STORE32) {
-            {
-                Type type = stack.pop();
-                int value = -1;
-                if (type.getSize() == 2) {
-                    value = mv.newLocal(type);
-                    stack.pop();
-                    mv.storeLocal(value);
-                    getMemory();
-                } else {
-                    getMemory();
-                    mv.dupX2();
-                    mv.pop();
-                }
-                mv.swap();
-                if (offset != 0) {
-                    mv.push(offset);
-                    mv.visitInsn(IADD);
-                }
-                if (value != -1) {
-                    mv.loadLocal(value);
-                } else {
-                    mv.swap();
-                }
-            }
-            Method method;
-            switch (opcode) {
-                case I32_STORE:
-                    method = new Method("putInt", "(II)Ljava/nio/ByteBuffer;");
-                    break;
-                case I64_STORE:
-                    method = new Method("putLong", "(IJ)Ljava/nio/ByteBuffer;");
-                    break;
-                case F32_STORE:
-                    method = new Method("putFloat", "(IF)Ljava/nio/ByteBuffer;");
-                    break;
-                case F64_STORE:
-                    method = new Method("putDouble", "(ID)Ljava/nio/ByteBuffer;");
-                    break;
-                default:
-                    throw new AssertionError();
-            }
-            mv.invokeVirtual(Type.getType(ByteBuffer.class), method);
-            mv.pop();
-        } else {
+        });
+        ExprAdapter.<VariableInsnNode>putRule(GLOBAL_SET, (ctx, insn) -> {
+            // TODO
             throw new UnsupportedOperationException();
+        });
+        // endregion
+        // region Memory
+        // region Load
+        ExprAdapter.<MemInsnNode>putRule(I32_LOAD, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(offsetFor(insn))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getInt", "(I)I")));
+        ExprAdapter.<MemInsnNode>putRule(I64_LOAD, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(offsetFor(insn))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getLong", "(I)J")));
+        ExprAdapter.<MemInsnNode>putRule(F32_LOAD, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).pushType(Type.FLOAT_TYPE)
+                .addInsns(offsetFor(insn))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getFloat", "(I)F")));
+        ExprAdapter.<MemInsnNode>putRule(F64_LOAD, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).pushType(Type.DOUBLE_TYPE)
+                .addInsns(offsetFor(insn))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getDouble", "(I)D")));
+        // endregion
+        // region Store
+        ExprAdapter.<MemInsnNode>putRule(I32_STORE, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE)
+                .addInsns(new InsnNode(SWAP))
+                .addInsns(offsetFor(insn))
+                .addInsns(new InsnNode(SWAP))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(DUP_X2), new InsnNode(POP),
+                        virtualNode("java/nio/ByteBuffer", "putInt", "(II)Ljava/nio/ByteBuffer;"),
+                        new InsnNode(POP)));
+        ExprAdapter.<MemInsnNode>putRule(I64_STORE, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.INT_TYPE)
+                .addInsns(new InsnNode(DUP2_X1), new InsnNode(POP2))
+                .addInsns(offsetFor(insn))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(SWAP), new InsnNode(DUP2_X1), new InsnNode(POP2),
+                        virtualNode("java/nio/ByteBuffer", "putLong", "(IJ)Ljava/nio/ByteBuffer;"),
+                        new InsnNode(POP)));
+        ExprAdapter.<MemInsnNode>putRule(F32_STORE, (ctx, insn) -> ctx.expectType(Type.FLOAT_TYPE).expectType(Type.INT_TYPE)
+                .addInsns(new InsnNode(SWAP))
+                .addInsns(offsetFor(insn))
+                .addInsns(new InsnNode(SWAP))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(DUP_X2), new InsnNode(POP),
+                        virtualNode("java/nio/ByteBuffer", "putInt", "(IF)Ljava/nio/ByteBuffer;"),
+                        new InsnNode(POP)));
+        ExprAdapter.<MemInsnNode>putRule(F64_STORE, (ctx, insn) -> ctx.expectType(Type.DOUBLE_TYPE).expectType(Type.INT_TYPE)
+                .addInsns(new InsnNode(DUP2_X1), new InsnNode(POP2))
+                .addInsns(offsetFor(insn))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(SWAP), new InsnNode(DUP2_X1), new InsnNode(POP2),
+                        virtualNode("java/nio/ByteBuffer", "putDouble", "(ID)Ljava/nio/ByteBuffer;"),
+                        new InsnNode(POP)));
+        // endregion
+        // endregion
+        // region Numeric
+        Type[] ptypes = { Type.INT_TYPE, Type.LONG_TYPE, Type.FLOAT_TYPE, Type.DOUBLE_TYPE };
+        // region Const
+        byte[] consts = { I32_CONST, I64_CONST, F32_CONST, F64_CONST };
+        for (int i = 0; i < consts.length; i++) {
+            Type type = ptypes[i];
+            ExprAdapter.<ConstInsnNode>putRule(consts[i], (ctx, insn) -> ctx.pushType(type).addInsns(constant(insn.value)));
         }
+        // endregion
+        // region Comparisons
+        // region i32
+        MethodInsnNode compareUnsignedI = staticNode("java/lang/Integer", "compareUnsigned", "(II)I");
+        putRule(I32_EQZ, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).jumpStack(IFEQ));
+        putRule(I32_EQ, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .jumpStack(IF_ICMPEQ));
+        putRule(I32_NE, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .jumpStack(IF_ICMPNE));
+        putRule(I32_LT_S, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .jumpStack(IF_ICMPLT));
+        putRule(I32_LT_U, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(compareUnsignedI.clone(null)).jumpStack(IFLT));
+        putRule(I32_GT_S, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .jumpStack(IF_ICMPGT));
+        putRule(I32_GT_U, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(compareUnsignedI.clone(null)).jumpStack(IFGT));
+        putRule(I32_LE_S, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .jumpStack(IF_ICMPLE));
+        putRule(I32_LE_U, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(compareUnsignedI.clone(null)).jumpStack(IFLE));
+        putRule(I32_GE_S, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .jumpStack(IF_ICMPGE));
+        putRule(I32_GE_U, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(compareUnsignedI.clone(null)).jumpStack(IFGE));
+        // endregion
+        // region i64
+        MethodInsnNode compareUnsignedL = staticNode("java/lang/Long", "compareUnsigned", "(JJ)I");
+        putRule(I64_EQZ, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).addInsns(new InsnNode(L2I)).jumpStack(IFEQ));
+        putRule(I64_EQ, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(LCMP)).jumpStack(IFEQ));
+        putRule(I64_NE, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(LCMP)).jumpStack(IFNE));
+        putRule(I64_LT_S, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(LCMP)).jumpStack(IFLT));
+        putRule(I64_LT_U, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(compareUnsignedL.clone(null)).jumpStack(IFLT));
+        putRule(I64_GT_S, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(LCMP)).jumpStack(IFGT));
+        putRule(I64_GT_U, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(compareUnsignedL.clone(null)).jumpStack(IFGT));
+        putRule(I64_LE_S, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(LCMP)).jumpStack(IFLE));
+        putRule(I64_LE_U, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(compareUnsignedL.clone(null)).jumpStack(IFLE));
+        putRule(I64_GE_S, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(LCMP)).jumpStack(IFGE));
+        putRule(I64_GE_U, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(compareUnsignedL.clone(null)).jumpStack(IFGE));
+        // endregion
+        // region f32
+        putRule(F32_EQ, (ctx, insn) -> ctx.expectType(Type.FLOAT_TYPE).expectType(Type.FLOAT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(FCMPG)).jumpStack(IFEQ));
+        putRule(F32_NE, (ctx, insn) -> ctx.expectType(Type.FLOAT_TYPE).expectType(Type.FLOAT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(FCMPG)).jumpStack(IFNE));
+        putRule(F32_LT, (ctx, insn) -> ctx.expectType(Type.FLOAT_TYPE).expectType(Type.FLOAT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(FCMPG)).jumpStack(IFLT));
+        putRule(F32_GT, (ctx, insn) -> ctx.expectType(Type.FLOAT_TYPE).expectType(Type.FLOAT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(FCMPL)).jumpStack(IFGT));
+        putRule(F32_LE, (ctx, insn) -> ctx.expectType(Type.FLOAT_TYPE).expectType(Type.FLOAT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(FCMPG)).jumpStack(IFLE));
+        putRule(F32_GE, (ctx, insn) -> ctx.expectType(Type.FLOAT_TYPE).expectType(Type.FLOAT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(FCMPL)).jumpStack(IFGE));
+        // endregion
+        // region f64
+        putRule(F64_EQ, (ctx, insn) -> ctx.expectType(Type.DOUBLE_TYPE).expectType(Type.DOUBLE_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(DCMPG)).jumpStack(IFEQ));
+        putRule(F64_NE, (ctx, insn) -> ctx.expectType(Type.DOUBLE_TYPE).expectType(Type.DOUBLE_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(DCMPG)).jumpStack(IFNE));
+        putRule(F64_LT, (ctx, insn) -> ctx.expectType(Type.DOUBLE_TYPE).expectType(Type.DOUBLE_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(DCMPG)).jumpStack(IFLT));
+        putRule(F64_GT, (ctx, insn) -> ctx.expectType(Type.DOUBLE_TYPE).expectType(Type.DOUBLE_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(DCMPL)).jumpStack(IFGT));
+        putRule(F64_LE, (ctx, insn) -> ctx.expectType(Type.DOUBLE_TYPE).expectType(Type.DOUBLE_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(DCMPG)).jumpStack(IFLE));
+        putRule(F64_GE, (ctx, insn) -> ctx.expectType(Type.DOUBLE_TYPE).expectType(Type.DOUBLE_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(DCMPL)).jumpStack(IFGE));
+        // endregion
+        // endregion
+        // region Mathematical
+        // region i32
+        putRule(I32_CLZ, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(staticNode("java/lang/Integer", "numberOfLeadingZeros", "(I)I")));
+        putRule(I32_CTZ, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(staticNode("java/lang/Integer", "numberOfTrailingZeros", "(I)I")));
+        putRule(I32_POPCNT, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(staticNode("java/lang/Integer", "numberOfTrailingZeros", "(I)I")));
+        putRule(I32_ADD, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(IADD)));
+        putRule(I32_SUB, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(ISUB)));
+        putRule(I32_MUL, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(IMUL)));
+        putRule(I32_DIV_S, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(IDIV)));
+        putRule(I32_DIV_U, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(staticNode("java/lang/Integer", "divideUnsigned", "(II)I")));
+        putRule(I32_REM_S, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(IREM)));
+        putRule(I32_REM_U, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(staticNode("java/lang/Integer", "remainderUnsigned", "(II)I")));
+        putRule(I32_AND, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(IAND)));
+        putRule(I32_OR, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(IOR)));
+        putRule(I32_XOR, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(IXOR)));
+        putRule(I32_SHL, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(ISHL)));
+        putRule(I32_SHR_S, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(ISHR)));
+        putRule(I32_SHR_U, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(IUSHR)));
+        putRule(I32_ROTL, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(staticNode("java/lang/Integer", "rotateLeft", "(II)I")));
+        putRule(I32_ROTR, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(staticNode("java/lang/Integer", "rotateRight", "(II)I")));
+        // endregion
+        // region i64
+        putRule(I64_CLZ, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(makeList(staticNode("java/lang/Long", "numberOfLeadingZeros", "(J)I"), new InsnNode(I2L))));
+        putRule(I64_CTZ, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(makeList(staticNode("java/lang/Long", "numberOfTrailingZeros", "(J)I"), new InsnNode(I2L))));
+        putRule(I64_POPCNT, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(makeList(staticNode("java/lang/Long", "bitCount", "(J)I"), new InsnNode(I2L))));
+        putRule(I64_ADD, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(new InsnNode(LADD)));
+        putRule(I64_SUB, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(new InsnNode(LSUB)));
+        putRule(I64_MUL, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(new InsnNode(LMUL)));
+        putRule(I64_DIV_S, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(new InsnNode(LDIV)));
+        putRule(I64_DIV_U, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(staticNode("java/lang/Long", "divideUnsigned", "(JJ)J")));
+        putRule(I64_REM_S, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(new InsnNode(LREM)));
+        putRule(I64_REM_U, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(staticNode("java/lang/Long", "remainderUnsigned", "(JJ)J")));
+        putRule(I64_AND, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(new InsnNode(LAND)));
+        putRule(I64_OR, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(new InsnNode(LOR)));
+        putRule(I64_XOR, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(new InsnNode(LXOR)));
+        putRule(I64_SHL, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(new InsnNode(LSHL)));
+        putRule(I64_SHR_S, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(new InsnNode(LSHR)));
+        putRule(I64_SHR_U, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(new InsnNode(LUSHR)));
+        putRule(I64_ROTL, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(new InsnNode(L2I), staticNode("java/lang/Long", "rotateLeft", "(JI)J")));
+        putRule(I64_ROTR, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(new InsnNode(L2I), staticNode("java/lang/Long", "rotateRight", "(JI)J")));
+        // endregion
+        // region f32
+        putRule(F32_ABS, (ctx, insn) -> ctx.expectType(Type.FLOAT_TYPE).pushType(Type.FLOAT_TYPE)
+                .addInsns(staticNode("java/lang/Math", "abs", "(F)F")));
+        putRule(F32_NEG, (ctx, insn) -> ctx.expectType(Type.FLOAT_TYPE).pushType(Type.FLOAT_TYPE)
+                .addInsns(new InsnNode(FNEG)));
+        putRule(F32_CEIL, (ctx, insn) -> ctx.expectType(Type.FLOAT_TYPE).pushType(Type.FLOAT_TYPE)
+                .addInsns(
+                        new InsnNode(F2D),
+                        staticNode("java/lang/Math", "ceil", "(D)D"),
+                        new InsnNode(D2F)));
+        putRule(F32_FLOOR, (ctx, insn) -> ctx.expectType(Type.FLOAT_TYPE).pushType(Type.FLOAT_TYPE)
+                .addInsns(
+                        new InsnNode(F2D),
+                        staticNode("java/lang/Math", "floor", "(D)D"),
+                        new InsnNode(D2F)));
+        putRule(F32_TRUNC, (ctx, insn) -> {
+            LabelNode els = new LabelNode();
+            LabelNode end = new LabelNode();
+            ctx.expectType(Type.FLOAT_TYPE).pushType(Type.FLOAT_TYPE)
+                    .addInsns(
+                            new InsnNode(F2D),
+                            new InsnNode(DUP2),
+                            new InsnNode(DCMPG),
+                            new JumpInsnNode(IFLT, els),
+                            staticNode("java/lang/Math", "floor", "(D)D"),
+                            new JumpInsnNode(GOTO, end),
+                            els,
+                            staticNode("java/lang/Math", "ceil", "(D)D"),
+                            end,
+                            new InsnNode(D2F));
+        });
+        putRule(F32_NEAREST, (ctx, insn) -> {
+            // TODO I can't think of a clean way to do this
+            throw new UnsupportedOperationException();
+        });
+        putRule(F32_SQRT, (ctx, insn) -> ctx.expectType(Type.FLOAT_TYPE).pushType(Type.FLOAT_TYPE)
+                .addInsns(
+                        new InsnNode(F2D),
+                        staticNode("java/lang/Math", "sqrt", "(D)D"),
+                        new InsnNode(D2F)));
+        putRule(F32_ADD, (ctx, insn) -> ctx.expectType(Type.FLOAT_TYPE).expectType(Type.FLOAT_TYPE).pushType(Type.FLOAT_TYPE)
+                .addInsns(new InsnNode(FADD)));
+        putRule(F32_SUB, (ctx, insn) -> ctx.expectType(Type.FLOAT_TYPE).expectType(Type.FLOAT_TYPE).pushType(Type.FLOAT_TYPE)
+                .addInsns(new InsnNode(FSUB)));
+        putRule(F32_MUL, (ctx, insn) -> ctx.expectType(Type.FLOAT_TYPE).expectType(Type.FLOAT_TYPE).pushType(Type.FLOAT_TYPE)
+                .addInsns(new InsnNode(FMUL)));
+        putRule(F32_DIV, (ctx, insn) -> ctx.expectType(Type.FLOAT_TYPE).expectType(Type.FLOAT_TYPE).pushType(Type.FLOAT_TYPE)
+                .addInsns(new InsnNode(FDIV)));
+        putRule(F32_MIN, (ctx, insn) -> ctx.expectType(Type.FLOAT_TYPE).expectType(Type.FLOAT_TYPE).pushType(Type.FLOAT_TYPE)
+                .addInsns(staticNode("java/lang/Math", "min", "(FF)F")));
+        putRule(F32_MAX, (ctx, insn) -> ctx.expectType(Type.FLOAT_TYPE).expectType(Type.FLOAT_TYPE).pushType(Type.FLOAT_TYPE)
+                .addInsns(staticNode("java/lang/Math", "max", "(FF)F")));
+        putRule(F32_COPYSIGN, (ctx, insn) -> ctx.expectType(Type.FLOAT_TYPE).expectType(Type.FLOAT_TYPE).pushType(Type.FLOAT_TYPE)
+                .addInsns(staticNode("java/lang/Math", "copySign", "(FF)F")));
+        // endregion
+        // region f64
+        putRule(F64_ABS, (ctx, insn) -> ctx.expectType(Type.DOUBLE_TYPE).pushType(Type.DOUBLE_TYPE)
+                .addInsns(staticNode("java/lang/Math", "abs", "(D)D")));
+        putRule(F64_NEG, (ctx, insn) -> ctx.expectType(Type.DOUBLE_TYPE).pushType(Type.DOUBLE_TYPE)
+                .addInsns(new InsnNode(DNEG)));
+        putRule(F64_CEIL, (ctx, insn) -> ctx.expectType(Type.DOUBLE_TYPE).pushType(Type.DOUBLE_TYPE)
+                .addInsns(staticNode("java/lang/Math", "ceil", "(D)D")));
+        putRule(F64_FLOOR, (ctx, insn) -> ctx.expectType(Type.DOUBLE_TYPE).pushType(Type.DOUBLE_TYPE)
+                .addInsns(staticNode("java/lang/Math", "floor", "(D)D")));
+        putRule(F64_TRUNC, (ctx, insn) -> {
+            LabelNode els = new LabelNode();
+            LabelNode end = new LabelNode();
+            ctx.expectType(Type.DOUBLE_TYPE).pushType(Type.DOUBLE_TYPE)
+                    .addInsns(
+                            new InsnNode(DUP2),
+                            new InsnNode(DCMPG),
+                            new JumpInsnNode(IFLT, els),
+                            staticNode("java/lang/Math", "floor", "(D)D"),
+                            new JumpInsnNode(GOTO, end),
+                            els,
+                            staticNode("java/lang/Math", "ceil", "(D)D"),
+                            end);
+        });
+        putRule(F64_NEAREST, (ctx, insn) -> {
+            // TODO I can't think of a clean way to do this
+            throw new UnsupportedOperationException();
+        });
+        putRule(F64_SQRT, (ctx, insn) -> ctx.expectType(Type.DOUBLE_TYPE).pushType(Type.DOUBLE_TYPE)
+                .addInsns(staticNode("java/lang/Math", "sqrt", "(D)D")));
+        putRule(F64_ADD, (ctx, insn) -> ctx.expectType(Type.DOUBLE_TYPE).expectType(Type.DOUBLE_TYPE).pushType(Type.DOUBLE_TYPE)
+                .addInsns(new InsnNode(DADD)));
+        putRule(F64_SUB, (ctx, insn) -> ctx.expectType(Type.DOUBLE_TYPE).expectType(Type.DOUBLE_TYPE).pushType(Type.DOUBLE_TYPE)
+                .addInsns(new InsnNode(DSUB)));
+        putRule(F64_MUL, (ctx, insn) -> ctx.expectType(Type.DOUBLE_TYPE).expectType(Type.DOUBLE_TYPE).pushType(Type.DOUBLE_TYPE)
+                .addInsns(new InsnNode(DMUL)));
+        putRule(F64_DIV, (ctx, insn) -> ctx.expectType(Type.DOUBLE_TYPE).expectType(Type.DOUBLE_TYPE).pushType(Type.DOUBLE_TYPE)
+                .addInsns(new InsnNode(DDIV)));
+        putRule(F64_MIN, (ctx, insn) -> ctx.expectType(Type.DOUBLE_TYPE).expectType(Type.DOUBLE_TYPE).pushType(Type.DOUBLE_TYPE)
+                .addInsns(staticNode("java/lang/Math", "min", "(DD)D")));
+        putRule(F64_MAX, (ctx, insn) -> ctx.expectType(Type.DOUBLE_TYPE).expectType(Type.DOUBLE_TYPE).pushType(Type.DOUBLE_TYPE)
+                .addInsns(staticNode("java/lang/Math", "max", "(DD)D")));
+        putRule(F64_COPYSIGN, (ctx, insn) -> ctx.expectType(Type.DOUBLE_TYPE).expectType(Type.DOUBLE_TYPE).pushType(Type.DOUBLE_TYPE)
+                .addInsns(staticNode("java/lang/Math", "copySign", "(DD)D")));
+        // endregion
+        // endregion
+        // endregion
     }
 
-    private void getMemory() {
-        mv.loadThis();
-        mv.visitFieldInsn(GETFIELD, internalName, "mem0", Type.getDescriptor(ByteBuffer.class));
+    @NotNull
+    private static InsnList offsetFor(MemInsnNode insn) {
+        return insn.offset == 0 ? makeList() : makeList(constant(insn.offset), new InsnNode(IADD));
     }
 
-    @Override
-    public void visitIndexedMemInsn(int opcode, int index) {
-        throw new UnsupportedOperationException();
+    @NotNull
+    private static InsnList getMem(Context ctx) {
+        return makeList(
+                new VarInsnNode(ALOAD, 0),
+                new FieldInsnNode(GETFIELD, ctx.internalName(), "mem0", Type.getDescriptor(ByteBuffer.class)));
     }
 
-    @Override
-    public void visitBlockInsn(byte opcode, int blockType) {
-        Block block;
-        switch (opcode) {
-            case IF:
-                Block.If ifb = new Block.If(blockType);
-                block = ifb;
-                stack.pop();
-                mv.ifZCmp(GeneratorAdapter.EQ, ifb.elseLabel);
-                break;
-            case BLOCK:
-                block = new Block.BBlock(blockType);
-                break;
-            case LOOP:
-                block = new Block.Loop(blockType, mv);
-                break;
-            default:
-                throw new AssertionError();
-        }
-        blocks.push(block);
+    @SuppressWarnings("unchecked")
+    private static <T extends AbstractInsnNode> Rule<T> getRule(T insn) {
+        return (Rule<T>) RULES[Byte.toUnsignedInt(insn.opcode)];
     }
 
-    @Override
-    public void visitElseInsn() {
-        Block.If ifBlock = (Block.If) blocks.peek();
-        if (ifBlock == null) throw new AssertionError();
-        mv.goTo(ifBlock.endLabel());
-        mv.mark(ifBlock.elseLabel);
+    private static <T extends AbstractInsnNode> void putRule(byte opcode, Rule<T> rule) {
+        RULES[Byte.toUnsignedInt(opcode)] = rule;
     }
 
-    @Override
-    public void visitEndInsn() {
-        if (!blocks.isEmpty()) {
-            blocks.pop().end(mv);
-        }
-    }
-
-    @Override
-    public void visitBreakInsn(byte opcode, int label) {
-        switch (opcode) {
-            case BR:
-                mv.goTo(getLabel(label));
-                break;
-            case BR_IF:
-                mv.ifZCmp(GeneratorAdapter.NE, getLabel(label));
-                break;
-        }
-    }
-
-    @Override
-    public void visitTableBreakInsn(int[] labels, int defaultLabel) {
-        Label[] switchLabels = new Label[labels.length];
-        for (int i = 0; i < labels.length; i++) {
-            switchLabels[i] = getLabel(labels[i]);
-        }
-        mv.visitTableSwitchInsn(0, labels.length, getLabel(defaultLabel), switchLabels);
-    }
-
-    @Override
-    public void visitCallInsn(int function) {
-        functions[function].invoke.accept(mv);
-    }
-
-    @Override
-    public void visitCallIndirectInsn(int table, int type) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void visitEnd() {
+    private interface Rule<T> {
+        void apply(Context ctx, T insn);
     }
 }

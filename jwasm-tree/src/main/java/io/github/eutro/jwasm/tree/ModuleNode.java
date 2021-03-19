@@ -13,18 +13,18 @@ public class ModuleNode extends ModuleVisitor {
     public int version = Opcodes.VERSION;
     @SuppressWarnings("unchecked")
     public final List<CustomNode>[] customs = (List<CustomNode>[]) new List<?>[SECTION_DATA_COUNT + 1];
-    public TypesNode types;
-    public ImportsNode imports;
-    public FunctionsNode funcs;
-    public TablesNode tables;
-    public MemoriesNode mems;
-    public GlobalsNode globals;
-    public ExportsNode exports;
-    public StartNode start;
-    public ElementSegmentsNode elems;
-    public Integer dataCount;
-    public CodesNode codes;
-    public DataSegmentsNode datas;
+    public @Nullable TypesNode types;
+    public @Nullable ImportsNode imports;
+    public @Nullable FunctionsNode funcs;
+    public @Nullable TablesNode tables;
+    public @Nullable MemoriesNode mems;
+    public @Nullable GlobalsNode globals;
+    public @Nullable ExportsNode exports;
+    public @Nullable StartNode start;
+    public @Nullable ElementSegmentsNode elems;
+    public @Nullable Integer dataCount;
+    public @Nullable CodesNode codes;
+    public @Nullable DataSegmentsNode datas;
 
     private byte section = SECTION_CUSTOM;
 

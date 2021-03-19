@@ -2,6 +2,10 @@ package io.github.eutro.jwasm2java;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.InsnList;
+
+import java.util.LinkedList;
 
 public abstract class Block {
     public final int type;
@@ -15,14 +19,17 @@ public abstract class Block {
     public abstract Label label();
 
     public static class If extends Block {
+        public final LinkedList<Type> types;
         public Label elseLabel = new Label();
         public Label endLabel = null;
 
-        public If(int type) {
+        public If(int type, LinkedList<Type> types) {
             super(type);
+            this.types = types;
         }
 
         public Label endLabel() {
+            if (endLabel != null) throw new IllegalStateException();
             return endLabel = new Label();
         }
 
@@ -58,10 +65,9 @@ public abstract class Block {
     public static class Loop extends Block {
         private final Label label;
 
-        public Loop(int type, MethodVisitor mv) {
+        public Loop(int type, Label label) {
             super(type);
-            label = new Label();
-            mv.visitLabel(label);
+            this.label = label;
         }
 
         @Override

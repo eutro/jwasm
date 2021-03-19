@@ -64,7 +64,7 @@ public final class Opcodes {
     // region Limit Constants
     public static final byte LIMIT_NOMAX = 0x00;
     public static final byte LIMIT_WMAX = 0x01;
-    public static final int PAGE_SIZE = 65534;
+    public static final int PAGE_SIZE = 65536;
     // endregion
 
     // region Global Type Constants
@@ -285,10 +285,10 @@ public final class Opcodes {
     public static final byte F64_MIN = (byte) 0xA4;
     public static final byte F64_MAX = (byte) 0xA5;
     public static final byte F64_COPYSIGN = (byte) 0xA6;
-// endregion
+    // endregion
     // endregion
     // region Conversions
-public static final byte I32_WRAP_I64 = (byte) 0xA7;
+    public static final byte I32_WRAP_I64 = (byte) 0xA7;
     public static final byte I32_TRUNC_F32_S = (byte) 0xA8;
     public static final byte I32_TRUNC_F32_U = (byte) 0xA9;
     public static final byte I32_TRUNC_F64_S = (byte) 0xAA;

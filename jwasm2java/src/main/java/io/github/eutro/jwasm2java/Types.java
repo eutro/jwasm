@@ -1,10 +1,11 @@
 package io.github.eutro.jwasm2java;
 
-import org.objectweb.asm.MethodVisitor;
+import io.github.eutro.jwasm.tree.TypeNode;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.InsnNode;
 
 import static io.github.eutro.jwasm.Opcodes.*;
-import static org.objectweb.asm.Opcodes.*;
 
 public class Types {
     public static int offset(int opcode, byte type) {
@@ -29,6 +30,18 @@ public class Types {
         }
     }
 
+    public static Type methodDesc(TypeNode tn) {
+        return methodDesc(tn.params, tn.returns);
+    }
+
+    public static Type methodDesc(byte[] params, byte[] returns) {
+        Type[] args = new Type[params.length];
+        for (int i = 0; i < params.length; i++) {
+            args[i] = toJava(params[i]);
+        }
+        return Type.getMethodType(returnType(returns), args);
+    }
+
     public static Type returnType(byte[] returns) {
         switch (returns.length) {
             case 0:
@@ -44,27 +57,6 @@ public class Types {
                     }
                 }
                 return Type.getType("[" + lastType);
-        }
-    }
-
-    public static int size(byte type) {
-        return type == F64 || type == I64 ? 2 : 1;
-    }
-
-    public static void swap(MethodVisitor mv, byte type) {
-        if (size(type) == 1) {
-            mv.visitInsn(SWAP);
-        } else {
-            mv.visitInsn(DUP2_X2);
-            mv.visitInsn(POP2);
-        }
-    }
-
-    public static void dup(MethodVisitor mv, byte type) {
-        if (size(type) == 1) {
-            mv.visitInsn(DUP);
-        } else {
-            mv.visitInsn(DUP2);
         }
     }
 }
