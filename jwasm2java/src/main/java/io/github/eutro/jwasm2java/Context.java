@@ -90,8 +90,9 @@ class Context extends GeneratorAdapter {
         return this;
     }
 
-    public Context expectType(Type t) {
-        if (!popType().equals(t)) throw new IllegalStateException();
+    public Context expectType(Type expected) {
+        Type got = popType();
+        if (!got.equals(expected)) throw new IllegalStateException(String.format("Expected %s, got %s", expected, got));
         return this;
     }
 
@@ -100,7 +101,7 @@ class Context extends GeneratorAdapter {
     }
 
     public Context pushType(Type t) {
-        stack.push(t);
+        if (!Type.VOID_TYPE.equals(t)) stack.push(t);
         return this;
     }
 

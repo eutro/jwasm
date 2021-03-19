@@ -81,7 +81,7 @@ public class ModuleAdapter extends ModuleVisitor {
                 if (global.type.mut == MUT_CONST) fn.access |= ACC_FINAL;
                 globals.add(fn);
                 cn.fields.add(fn);
-                externs.globals.add(new Extern.ModuleFieldExtern(fn, internalName));
+                externs.globals.add(new TypedExtern.ModuleTypedExtern(fn, internalName, global.type.type));
             }
         }
         if (node.tables != null) {
@@ -93,7 +93,7 @@ public class ModuleAdapter extends ModuleVisitor {
                         null);
                 tables.add(fn);
                 cn.fields.add(fn);
-                externs.tables.add(new TableExtern.ModuleTableExtern(fn, internalName, table.type));
+                externs.tables.add(new TypedExtern.ModuleTypedExtern(fn, internalName, table.type));
             }
         }
         if (node.exports != null) {

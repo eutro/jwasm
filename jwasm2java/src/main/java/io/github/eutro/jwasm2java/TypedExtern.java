@@ -2,13 +2,13 @@ package io.github.eutro.jwasm2java;
 
 import org.objectweb.asm.tree.FieldNode;
 
-public interface TableExtern extends Extern {
+public interface TypedExtern extends Extern {
     byte type();
 
-    class ModuleTableExtern extends Extern.ModuleFieldExtern implements TableExtern {
+    class ModuleTypedExtern extends Extern.ModuleFieldExtern implements TypedExtern {
         private final byte type;
 
-        public ModuleTableExtern(FieldNode fn, String internalName, byte type) {
+        public ModuleTypedExtern(FieldNode fn, String internalName, byte type) {
             super(fn, internalName);
             this.type = type;
         }

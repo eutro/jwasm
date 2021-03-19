@@ -69,6 +69,16 @@ public class ExprAdapter {
             }
         });
         ExprAdapter.<BreakInsnNode>putRule(BR, (ctx, insn) -> ctx.goTo(ctx.getLabel(insn.label)));
+        ExprAdapter.<TableBreakInsnNode>putRule(BR_TABLE, (ctx, insn) -> {
+            Label[] labels = new Label[insn.labels.length];
+            for (int i = 0; i < insn.labels.length; i++) {
+                labels[i] = ctx.getLabel(insn.labels[i]);
+            }
+            ctx.visitTableSwitchInsn(0,
+                    insn.labels.length,
+                    ctx.getLabel(insn.defaultLabel),
+                    labels);
+        });
         ExprAdapter.<BreakInsnNode>putRule(BR_IF, (ctx, insn) -> ctx.expectType(Type.INT_TYPE)
                 .visitJumpInsn(IFNE, ctx.getLabel(insn.label)));
         putRule(Opcodes.RETURN, (ctx, insn) -> {
@@ -149,19 +159,27 @@ public class ExprAdapter {
             }
             ctx.visitVarInsn(type.getOpcode(ISTORE), ctx.localIndex(insn.index));
         });
-        ExprAdapter.<VariableInsnNode>putRule(GLOBAL_GET, (ctx, insn) -> ctx.externs.globals.get(insn.index).emitGet(ctx));
-        ExprAdapter.<VariableInsnNode>putRule(GLOBAL_SET, (ctx, insn) -> ctx.externs.globals.get(insn.index).emitSet(ctx));
+        ExprAdapter.<VariableInsnNode>putRule(GLOBAL_GET, (ctx, insn) -> {
+            TypedExtern global = ctx.externs.globals.get(insn.index);
+            ctx.pushType(Types.toJava(global.type()));
+            global.emitGet(ctx);
+        });
+        ExprAdapter.<VariableInsnNode>putRule(GLOBAL_SET, (ctx, insn) -> {
+            TypedExtern global = ctx.externs.globals.get(insn.index);
+            ctx.expectType(Types.toJava(global.type()));
+            global.emitSet(ctx);
+        });
         // endregion
         // region Table
         ExprAdapter.<TableInsnNode>putRule(TABLE_GET, (ctx, insn) -> {
             ctx.expectType(Type.INT_TYPE);
-            TableExtern table = ctx.externs.tables.get(insn.table);
+            TypedExtern table = ctx.externs.tables.get(insn.table);
             table.emitGet(ctx);
             ctx.swap();
             ctx.arrayLoad(Types.toJava(table.type()));
         });
         ExprAdapter.<TableInsnNode>putRule(TABLE_SET, (ctx, insn) -> {
-            TableExtern table = ctx.externs.tables.get(insn.table);
+            TypedExtern table = ctx.externs.tables.get(insn.table);
             Type valType = Types.toJava(table.type());
             ctx.expectType(valType).expectType(Type.INT_TYPE);
             table.emitGet(ctx);
@@ -171,7 +189,7 @@ public class ExprAdapter {
         });
         PREFIX_RULES[TABLE_SIZE] = (Rule<PrefixTableInsnNode>) (ctx, insn) -> {
             ctx.pushType(Type.INT_TYPE);
-            TableExtern table = ctx.externs.tables.get(insn.table);
+            TypedExtern table = ctx.externs.tables.get(insn.table);
             table.emitGet(ctx);
             ctx.arrayLength();
         };
@@ -200,6 +218,54 @@ public class ExprAdapter {
                 .addInsns(offsetFor(insn))
                 .addInsns(getMem(ctx))
                 .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getDouble", "(I)D")));
+        ExprAdapter.<MemInsnNode>putRule(I32_LOAD8_S, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(offsetFor(insn))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "get", "(I)B")));
+        ExprAdapter.<MemInsnNode>putRule(I32_LOAD8_U, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(offsetFor(insn))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "get", "(I)B"),
+                        staticNode("java/lang/Byte", "toUnsignedInt", "(B)I")));
+        ExprAdapter.<MemInsnNode>putRule(I32_LOAD16_S, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(offsetFor(insn))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getShort", "(I)S")));
+        ExprAdapter.<MemInsnNode>putRule(I32_LOAD16_U, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(offsetFor(insn))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getShort", "(I)S"),
+                        staticNode("java/lang/Short", "toUnsignedInt", "(S)I")));
+        ExprAdapter.<MemInsnNode>putRule(I64_LOAD8_S, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(offsetFor(insn))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "get", "(I)B"),
+                        new InsnNode(I2L)));
+        ExprAdapter.<MemInsnNode>putRule(I64_LOAD8_U, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(offsetFor(insn))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "get", "(I)B"),
+                        staticNode("java/lang/Byte", "toUnsignedLong", "(B)L")));
+        ExprAdapter.<MemInsnNode>putRule(I64_LOAD16_S, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(offsetFor(insn))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getShort", "(I)S"),
+                        new InsnNode(I2L)));
+        ExprAdapter.<MemInsnNode>putRule(I64_LOAD16_U, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(offsetFor(insn))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getShort", "(I)S"),
+                        staticNode("java/lang/Short", "toUnsignedLong", "(S)L")));
+        ExprAdapter.<MemInsnNode>putRule(I64_LOAD32_S, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(offsetFor(insn))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getInt", "(I)I"),
+                        new InsnNode(I2L)));
+        ExprAdapter.<MemInsnNode>putRule(I64_LOAD32_U, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).pushType(Type.LONG_TYPE)
+                .addInsns(offsetFor(insn))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getInt", "(I)I"),
+                        staticNode("java/lang/Short", "toUnsignedLong", "(S)L")));
         // endregion
         // region Store
         ExprAdapter.<MemInsnNode>putRule(I32_STORE, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE)
@@ -232,11 +298,64 @@ public class ExprAdapter {
                 .addInsns(new InsnNode(SWAP), new InsnNode(DUP2_X1), new InsnNode(POP2),
                         virtualNode("java/nio/ByteBuffer", "putDouble", "(ID)Ljava/nio/ByteBuffer;"),
                         new InsnNode(POP)));
+        ExprAdapter.<MemInsnNode>putRule(I32_STORE8, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE)
+                .addInsns(new InsnNode(I2B), new InsnNode(SWAP))
+                .addInsns(offsetFor(insn))
+                .addInsns(new InsnNode(SWAP))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(DUP_X2), new InsnNode(POP),
+                        virtualNode("java/nio/ByteBuffer", "put", "(IB)Ljava/nio/ByteBuffer;"),
+                        new InsnNode(POP)));
+        ExprAdapter.<MemInsnNode>putRule(I32_STORE16, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE)
+                .addInsns(new InsnNode(I2S), new InsnNode(SWAP))
+                .addInsns(offsetFor(insn))
+                .addInsns(new InsnNode(SWAP))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(DUP_X2), new InsnNode(POP),
+                        virtualNode("java/nio/ByteBuffer", "putShort", "(IS)Ljava/nio/ByteBuffer;"),
+                        new InsnNode(POP)));
+        ExprAdapter.<MemInsnNode>putRule(I64_STORE8, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.INT_TYPE)
+                .addInsns(new InsnNode(L2I), new InsnNode(I2B), new InsnNode(SWAP))
+                .addInsns(offsetFor(insn))
+                .addInsns(new InsnNode(SWAP))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(DUP_X2), new InsnNode(POP),
+                        virtualNode("java/nio/ByteBuffer", "put", "(IB)Ljava/nio/ByteBuffer;"),
+                        new InsnNode(POP)));
+        ExprAdapter.<MemInsnNode>putRule(I64_STORE16, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.INT_TYPE)
+                .addInsns(new InsnNode(L2I), new InsnNode(I2S), new InsnNode(SWAP))
+                .addInsns(offsetFor(insn))
+                .addInsns(new InsnNode(SWAP))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(DUP_X2), new InsnNode(POP),
+                        virtualNode("java/nio/ByteBuffer", "putShort", "(IS)Ljava/nio/ByteBuffer;"),
+                        new InsnNode(POP)));
+        ExprAdapter.<MemInsnNode>putRule(I64_STORE32, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.INT_TYPE)
+                .addInsns(new InsnNode(L2I), new InsnNode(SWAP))
+                .addInsns(offsetFor(insn))
+                .addInsns(new InsnNode(SWAP))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(DUP_X2), new InsnNode(POP),
+                        virtualNode("java/nio/ByteBuffer", "putInt", "(II)Ljava/nio/ByteBuffer;"),
+                        new InsnNode(POP)));
         // endregion
+        putRule(MEMORY_SIZE, (ctx, insn) -> {
+            ctx.pushType(Type.INT_TYPE);
+            ctx.externs.mems.get(0).emitGet(ctx);
+            ctx.addInsns(virtualNode("java/nio/ByteBuffer", "capacity", "()I"));
+            ctx.push(PAGE_SIZE);
+            ctx.visitInsn(IDIV);
+        });
+        putRule(MEMORY_GROW, (ctx, insn) -> {
+            // TODO maybe implement memory growth?
+            ctx.expectType(Type.INT_TYPE).remType();
+            ctx.pop2();
+            ctx.push(-1);
+        });
         // endregion
         // region Numeric
-        Type[] ptypes = { Type.INT_TYPE, Type.LONG_TYPE, Type.FLOAT_TYPE, Type.DOUBLE_TYPE };
         // region Const
+        Type[] ptypes = { Type.INT_TYPE, Type.LONG_TYPE, Type.FLOAT_TYPE, Type.DOUBLE_TYPE };
         byte[] consts = { I32_CONST, I64_CONST, F32_CONST, F64_CONST };
         for (int i = 0; i < consts.length; i++) {
             Type type = ptypes[i];
