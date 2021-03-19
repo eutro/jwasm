@@ -62,13 +62,13 @@ public class ExprNode extends ExprVisitor implements Iterable<AbstractInsnNode> 
     }
 
     @Override
-    public void visitTableInsn(byte opcode, int index) {
-        insns().addLast(new TableInsnNode(opcode, index));
+    public void visitTableInsn(byte opcode, int table) {
+        insns().addLast(new TableInsnNode(opcode, table));
     }
 
     @Override
-    public void visitPrefixTableInsn(int opcode, int index) {
-        insns().addLast(new PrefixTableInsnNode(opcode, index));
+    public void visitPrefixTableInsn(int opcode, int table) {
+        insns().addLast(new PrefixTableInsnNode(opcode, table));
     }
 
     @Override

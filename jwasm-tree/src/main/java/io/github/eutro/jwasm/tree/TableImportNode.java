@@ -2,6 +2,7 @@ package io.github.eutro.jwasm.tree;
 
 import io.github.eutro.jwasm.ImportsVisitor;
 import io.github.eutro.jwasm.Limits;
+import io.github.eutro.jwasm.Opcodes;
 
 public class TableImportNode extends AbstractImportNode {
     public Limits limits;
@@ -11,6 +12,11 @@ public class TableImportNode extends AbstractImportNode {
         super(module, name);
         this.limits = limits;
         this.type = type;
+    }
+
+    @Override
+    public byte importType() {
+        return Opcodes.IMPORTS_TABLE;
     }
 
     @Override

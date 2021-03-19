@@ -7,10 +7,11 @@ import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
+import org.objectweb.asm.commons.Method;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.*;
 
-import java.nio.ByteBuffer;
+import java.lang.invoke.MethodHandle;
 import java.util.LinkedList;
 
 import static io.github.eutro.jwasm.Opcodes.*;
@@ -18,26 +19,7 @@ import static io.github.eutro.jwasm2java.Util.*;
 import static org.objectweb.asm.Opcodes.*;
 
 public class ExprAdapter {
-    private final MethodNode mn;
-    private final String internalName;
-    private final int[] localIndeces;
-    private final Type[] localTypes;
-    private final ExprNode expr;
-
-    public ExprAdapter(ExprNode expr,
-                       MethodNode mn,
-                       String internalName,
-                       int[] localIndeces,
-                       Type[] localTypes) {
-        this.expr = expr;
-        this.mn = mn;
-        this.internalName = internalName;
-        this.localIndeces = localIndeces;
-        this.localTypes = localTypes;
-    }
-
-    public void translateInto() {
-        Context context = new Context();
+    public static void translateInto(ExprNode expr, Context context) {
         for (AbstractInsnNode insn : expr) {
             Rule<AbstractInsnNode> rule = getRule(insn);
             if (rule == null) {
@@ -47,96 +29,22 @@ public class ExprAdapter {
         }
     }
 
-    private class Context extends GeneratorAdapter {
-        LinkedList<Type> stack = new LinkedList<>();
-        LinkedList<Block> blocks = new LinkedList<>();
-
-        public Context() {
-            super(ASM9, mn, mn.access, mn.name, mn.desc);
-        }
-
-        public Type localType(int local) {
-            return localTypes[local];
-        }
-
-        public int localIndex(int local) {
-            return localIndeces[local];
-        }
-
-        public String internalName() {
-            return internalName;
-        }
-
-        public void pushBlock(Block b) {
-            blocks.push(b);
-        }
-
-        public Block peekBlock() {
-            return blocks.peek();
-        }
-
-        public Block popBlock() {
-            return blocks.pop();
-        }
-
-        public Label getLabel(int label) {
-            return blocks.get(label).label();
-        }
-
-        public Type popType() {
-            return stack.pop();
-        }
-
-        public Context remType() {
-            popType();
-            return this;
-        }
-
-        public Context expectType(Type t) {
-            if (!popType().equals(t)) throw new IllegalStateException();
-            return this;
-        }
-
-        public Type peekType() {
-            return stack.peek();
-        }
-
-        public Context pushType(Type t) {
-            stack.push(t);
-            return this;
-        }
-
-        public Context addInsns(org.objectweb.asm.tree.AbstractInsnNode... insns) {
-            for (org.objectweb.asm.tree.AbstractInsnNode insn : insns) {
-                insn.accept(this);
-            }
-            return this;
-        }
-
-        public Context addInsns(InsnList insns) {
-            insns.accept(this);
-            return this;
-        }
-
-        public void ifThenElse(int opcode, InsnList ifn, InsnList ifj) {
-            Label elsl = new Label();
-            Label endl = new Label();
-            visitJumpInsn(opcode, elsl);
-            ifn.accept(this);
-            goTo(endl);
-            mark(elsl);
-            ifj.accept(this);
-            mark(endl);
-        }
-
-        public void jumpStack(int opcode) {
-            ifThenElse(opcode, makeList(new InsnNode(ICONST_0)), makeList(new InsnNode(ICONST_1)));
-        }
-    }
-
     private static final Rule<?>[] RULES = new Rule[Byte.MAX_VALUE - Byte.MIN_VALUE];
 
     static {
+        Rule<?>[] PREFIX_RULES = new Rule[TABLE_FILL + 1];
+        ExprAdapter.putRule(INSN_PREFIX, new Rule<PrefixInsnNode>() {
+            @Override
+            public void apply(Context ctx, PrefixInsnNode insn) {
+                apply(PREFIX_RULES[insn.intOpcode], ctx, insn);
+            }
+
+            @SuppressWarnings("unchecked")
+            private <T> void apply(Rule<T> rule, Context ctx, PrefixInsnNode insn) {
+                rule.apply(ctx, (T) insn);
+            }
+        });
+
         // region Control
         putRule(UNREACHABLE, (ctx, insn) -> ctx.throwException(Type.getType(AssertionError.class), "Unreachable"));
         putRule(Opcodes.NOP, (ctx, insn) -> { /* NOP */ });
@@ -149,20 +57,53 @@ public class ExprAdapter {
             ctx.visitJumpInsn(IFEQ, block.elseLabel);
             ctx.pushBlock(block);
         });
-        ExprAdapter.putRule(ELSE, (ctx, insn) -> {
+        putRule(ELSE, (ctx, insn) -> {
             Block.If ifBlock = (Block.If) ctx.peekBlock();
             ctx.goTo(ifBlock.endLabel());
             ctx.stack = ifBlock.types;
             ctx.mark(ifBlock.elseLabel);
         });
-        ExprAdapter.putRule(END, (ctx, insn) -> {
+        putRule(END, (ctx, insn) -> {
             if (ctx.peekBlock() != null) {
                 ctx.popBlock().end(ctx);
             }
         });
-        ExprAdapter.<BreakInsnNode>putRule(BR, (ctx, insn) -> ctx.goTo(ctx.blocks.get(insn.label).label()));
+        ExprAdapter.<BreakInsnNode>putRule(BR, (ctx, insn) -> ctx.goTo(ctx.getLabel(insn.label)));
         ExprAdapter.<BreakInsnNode>putRule(BR_IF, (ctx, insn) -> ctx.expectType(Type.INT_TYPE)
                 .visitJumpInsn(IFNE, ctx.getLabel(insn.label)));
+        putRule(Opcodes.RETURN, (ctx, insn) -> {
+            for (byte retType : ctx.funcType.returns) {
+                ctx.expectType(Types.toJava(retType));
+            }
+            ctx.compress(ctx.funcType.returns).returnValue();
+        });
+        ExprAdapter.<CallInsnNode>putRule(CALL, (ctx, insn) -> {
+            FuncExtern func = ctx.externs.funcs.get(insn.function);
+            Type fType = Types.methodDesc(func.type());
+            for (Type argType : fType.getArgumentTypes()) {
+                ctx.expectType(argType);
+            }
+            ctx.pushType(fType.getReturnType());
+            func.emitInvoke(ctx);
+        });
+        ExprAdapter.<CallIndirectInsnNode>putRule(CALL_INDIRECT, (ctx, insn) -> {
+            Type fType = ctx.funcType(insn.type);
+            for (Type argType : fType.getArgumentTypes()) {
+                ctx.expectType(argType);
+            }
+            ctx.pushType(fType.getReturnType());
+            ctx.externs.tables.get(insn.table).emitGet(ctx);
+            ctx.swap();
+            Type mhType = Type.getType(MethodHandle.class);
+            ctx.arrayLoad(mhType);
+            ctx.invokeVirtual(mhType, new Method("invokeExact", fType.toString()));
+        });
+        // endregion
+        // region Reference
+        putRule(REF_NULL, (ctx, insn) -> ctx.pushType(Type.getType(Object.class)).push((String) null));
+        putRule(REF_IS_NULL, (ctx, insn) -> ctx.remType().pushType(Type.INT_TYPE).jumpStack(IFNULL));
+        ExprAdapter.<FuncInsnNode>putRule(REF_FUNC, (ctx, insn) -> ctx.pushType(Type.getType(MethodHandle.class))
+                .externs.funcs.get(insn.function).emitGet(ctx));
         // endregion
         // region Parametric
         putRule(DROP, (ctx, insn) -> {
@@ -196,24 +137,50 @@ public class ExprAdapter {
                 .pushType(ctx.localType(insn.index))
                 .visitVarInsn(ctx.localType(insn.index).getOpcode(ILOAD), ctx.localIndex(insn.index)));
         ExprAdapter.<VariableInsnNode>putRule(LOCAL_SET, (ctx, insn) -> ctx
-                .remType()
+                .expectType(ctx.localType(insn.index))
                 .visitVarInsn(ctx.localType(insn.index).getOpcode(ISTORE), ctx.localIndex(insn.index)));
         ExprAdapter.<VariableInsnNode>putRule(LOCAL_TEE, (ctx, insn) -> {
-            if (ctx.peekType().getSize() == 2) {
+            Type type = ctx.localType(insn.index);
+            ctx.expectType(type).pushType(type);
+            if (type.getSize() == 2) {
                 ctx.dup2();
             } else {
                 ctx.dup();
             }
-            ctx.visitVarInsn(ctx.localType(insn.index).getOpcode(ISTORE), ctx.localIndex(insn.index));
+            ctx.visitVarInsn(type.getOpcode(ISTORE), ctx.localIndex(insn.index));
         });
-        ExprAdapter.<VariableInsnNode>putRule(GLOBAL_GET, (ctx, insn) -> {
-            // TODO
-            throw new UnsupportedOperationException();
+        ExprAdapter.<VariableInsnNode>putRule(GLOBAL_GET, (ctx, insn) -> ctx.externs.globals.get(insn.index).emitGet(ctx));
+        ExprAdapter.<VariableInsnNode>putRule(GLOBAL_SET, (ctx, insn) -> ctx.externs.globals.get(insn.index).emitSet(ctx));
+        // endregion
+        // region Table
+        ExprAdapter.<TableInsnNode>putRule(TABLE_GET, (ctx, insn) -> {
+            ctx.expectType(Type.INT_TYPE);
+            TableExtern table = ctx.externs.tables.get(insn.table);
+            table.emitGet(ctx);
+            ctx.swap();
+            ctx.arrayLoad(Types.toJava(table.type()));
         });
-        ExprAdapter.<VariableInsnNode>putRule(GLOBAL_SET, (ctx, insn) -> {
-            // TODO
-            throw new UnsupportedOperationException();
+        ExprAdapter.<TableInsnNode>putRule(TABLE_SET, (ctx, insn) -> {
+            TableExtern table = ctx.externs.tables.get(insn.table);
+            Type valType = Types.toJava(table.type());
+            ctx.expectType(valType).expectType(Type.INT_TYPE);
+            table.emitGet(ctx);
+            ctx.dupX2();
+            ctx.pop();
+            ctx.arrayStore(valType);
         });
+        PREFIX_RULES[TABLE_SIZE] = (Rule<PrefixTableInsnNode>) (ctx, insn) -> {
+            ctx.pushType(Type.INT_TYPE);
+            TableExtern table = ctx.externs.tables.get(insn.table);
+            table.emitGet(ctx);
+            ctx.arrayLength();
+        };
+        PREFIX_RULES[TABLE_GROW] = (Rule<PrefixTableInsnNode>) (ctx, insn) -> {
+            // TODO maybe implement table growth?
+            ctx.expectType(Type.INT_TYPE).remType();
+            ctx.pop2();
+            ctx.push(-1);
+        };
         // endregion
         // region Memory
         // region Load
@@ -279,7 +246,7 @@ public class ExprAdapter {
         // region Comparisons
         // region i32
         MethodInsnNode compareUnsignedI = staticNode("java/lang/Integer", "compareUnsigned", "(II)I");
-        putRule(I32_EQZ, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).jumpStack(IFEQ));
+        putRule(I32_EQZ, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).pushType(Type.INT_TYPE).jumpStack(IFEQ));
         putRule(I32_EQ, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
                 .jumpStack(IF_ICMPEQ));
         putRule(I32_NE, (ctx, insn) -> ctx.expectType(Type.INT_TYPE).expectType(Type.INT_TYPE).pushType(Type.INT_TYPE)
@@ -303,7 +270,8 @@ public class ExprAdapter {
         // endregion
         // region i64
         MethodInsnNode compareUnsignedL = staticNode("java/lang/Long", "compareUnsigned", "(JJ)I");
-        putRule(I64_EQZ, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).addInsns(new InsnNode(L2I)).jumpStack(IFEQ));
+        putRule(I64_EQZ, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).pushType(Type.INT_TYPE)
+                .addInsns(new InsnNode(L2I)).jumpStack(IFEQ));
         putRule(I64_EQ, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.INT_TYPE)
                 .addInsns(new InsnNode(LCMP)).jumpStack(IFEQ));
         putRule(I64_NE, (ctx, insn) -> ctx.expectType(Type.LONG_TYPE).expectType(Type.LONG_TYPE).pushType(Type.INT_TYPE)
@@ -541,9 +509,7 @@ public class ExprAdapter {
 
     @NotNull
     private static InsnList getMem(Context ctx) {
-        return makeList(
-                new VarInsnNode(ALOAD, 0),
-                new FieldInsnNode(GETFIELD, ctx.internalName(), "mem0", Type.getDescriptor(ByteBuffer.class)));
+        return fromAdapter(ctx.externs.mems.get(0)::emitGet);
     }
 
     @SuppressWarnings("unchecked")

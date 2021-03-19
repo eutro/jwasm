@@ -34,12 +34,12 @@ public class ImportsVisitor extends BaseVisitor<ImportsVisitor> {
      *
      * @param module The module to import from.
      * @param name   The name to import.
-     * @param index  The
+     * @param type   The
      *               <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-typeidx">index</a>
      *               of the type of the imported function.
      */
-    public void visitFuncImport(@NotNull String module, @NotNull String name, int index) {
-        if (dl != null) dl.visitFuncImport(module, name, index);
+    public void visitFuncImport(@NotNull String module, @NotNull String name, int type) {
+        if (dl != null) dl.visitFuncImport(module, name, type);
     }
 
     /**

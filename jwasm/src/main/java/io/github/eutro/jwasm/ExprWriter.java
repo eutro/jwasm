@@ -107,16 +107,16 @@ public class ExprWriter extends ExprVisitor implements ByteArrayConvertible {
     }
 
     @Override
-    public void visitTableInsn(byte opcode, int index) {
+    public void visitTableInsn(byte opcode, int table) {
         out.put(opcode);
-        out.putVarUInt(index);
+        out.putVarUInt(table);
     }
 
     @Override
-    public void visitPrefixTableInsn(int opcode, int index) {
+    public void visitPrefixTableInsn(int opcode, int table) {
         out.put(Opcodes.INSN_PREFIX);
         out.putVarUInt(opcode);
-        out.putVarUInt(index);
+        out.putVarUInt(table);
     }
 
     @Override

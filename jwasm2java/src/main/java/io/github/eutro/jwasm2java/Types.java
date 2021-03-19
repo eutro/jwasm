@@ -5,6 +5,8 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.InsnNode;
 
+import java.lang.invoke.MethodHandle;
+
 import static io.github.eutro.jwasm.Opcodes.*;
 
 public class Types {
@@ -23,6 +25,7 @@ public class Types {
             case F64:
                 return Type.DOUBLE_TYPE;
             case FUNCREF:
+                return Type.getType(MethodHandle.class);
             case EXTERNREF:
                 return Type.getType(Object.class);
             default:

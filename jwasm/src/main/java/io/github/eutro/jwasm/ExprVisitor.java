@@ -127,12 +127,12 @@ public class ExprVisitor extends BaseVisitor<ExprVisitor> {
      * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>.
      *
      * @param opcode The opcode of the instruction.
-     * @param index  The
+     * @param table  The
      *               <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-tableidx">index</a>
      *               of the table.
      */
-    public void visitTableInsn(byte opcode, int index) {
-        if (dl != null) dl.visitTableInsn(opcode, index);
+    public void visitTableInsn(byte opcode, int table) {
+        if (dl != null) dl.visitTableInsn(opcode, table);
     }
 
     /**
@@ -141,12 +141,12 @@ public class ExprVisitor extends BaseVisitor<ExprVisitor> {
      * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>.
      *
      * @param opcode The opcode of the instruction.
-     * @param index  The
+     * @param table  The
      *               <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-tableidx">index</a>
      *               of the table.
      */
-    public void visitPrefixTableInsn(int opcode, int index) {
-        if (dl != null) dl.visitPrefixTableInsn(opcode, index);
+    public void visitPrefixTableInsn(int opcode, int table) {
+        if (dl != null) dl.visitPrefixTableInsn(opcode, table);
     }
 
     /**

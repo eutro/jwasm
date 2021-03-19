@@ -11,5 +11,7 @@ public abstract class AbstractImportNode {
         this.name = name;
     }
 
+    public abstract byte importType();
+
     abstract void accept(ImportsVisitor iv);
 }

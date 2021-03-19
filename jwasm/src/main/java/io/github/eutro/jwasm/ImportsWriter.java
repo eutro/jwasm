@@ -51,12 +51,12 @@ public class ImportsWriter extends ImportsVisitor implements VectorWriter {
     }
 
     @Override
-    public void visitFuncImport(@NotNull String module, @NotNull String name, int index) {
+    public void visitFuncImport(@NotNull String module, @NotNull String name, int type) {
         ++count;
         out.putName(module);
         out.putName(name);
         out.put(Opcodes.IMPORTS_FUNC);
-        out.putVarUInt(index);
+        out.putVarUInt(type);
     }
 
     @Override
