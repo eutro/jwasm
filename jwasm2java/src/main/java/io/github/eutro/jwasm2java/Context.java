@@ -2,9 +2,9 @@ package io.github.eutro.jwasm2java;
 
 import io.github.eutro.jwasm.tree.TypeNode;
 import org.objectweb.asm.Label;
-import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
+import org.objectweb.asm.tree.FrameNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
 
@@ -15,18 +15,16 @@ import static io.github.eutro.jwasm2java.Util.makeList;
 import static org.objectweb.asm.Opcodes.*;
 
 class Context extends GeneratorAdapter {
-    public LinkedList<Type> stack = new LinkedList<>();
     public Externs externs;
-    private final Type[] localTypes;
     public final TypeNode funcType;
 
+    private final Type[] localTypes;
     private final LinkedList<Block> blocks = new LinkedList<>();
-    private final String internalName;
     private final int[] localIndeces;
+    private final JumpTrackingVisitor aa;
     private final List<TypeNode> funcTypes;
 
-    public Context(String internalName,
-                   MethodVisitor mv,
+    public Context(JumpTrackingVisitor mv,
                    int access,
                    String name,
                    String desc,
@@ -36,7 +34,7 @@ class Context extends GeneratorAdapter {
                    int[] localIndeces,
                    Type[] localTypes) {
         super(ASM9, mv, access, name, desc);
-        this.internalName = internalName;
+        aa = mv;
         this.funcTypes = funcTypes;
         this.funcType = funcType;
         this.localIndeces = localIndeces;
@@ -61,10 +59,6 @@ class Context extends GeneratorAdapter {
         return localIndeces[local];
     }
 
-    public String internalName() {
-        return internalName;
-    }
-
     public void pushBlock(Block b) {
         blocks.push(b);
     }
@@ -81,28 +75,8 @@ class Context extends GeneratorAdapter {
         return blocks.get(label).label();
     }
 
-    public Type popType() {
-        return stack.pop();
-    }
-
-    public Context remType() {
-        popType();
-        return this;
-    }
-
-    public Context expectType(Type expected) {
-        Type got = popType();
-        if (!got.equals(expected)) throw new IllegalStateException(String.format("Expected %s, got %s", expected, got));
-        return this;
-    }
-
-    public Type peekType() {
-        return stack.peek();
-    }
-
-    public Context pushType(Type t) {
-        if (!Type.VOID_TYPE.equals(t)) stack.push(t);
-        return this;
+    public FrameNode getFrame() {
+        return aa.getFrame();
     }
 
     public Context addInsns(org.objectweb.asm.tree.AbstractInsnNode... insns) {

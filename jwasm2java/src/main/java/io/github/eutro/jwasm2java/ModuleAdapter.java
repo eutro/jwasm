@@ -4,8 +4,10 @@ import io.github.eutro.jwasm.ModuleVisitor;
 import io.github.eutro.jwasm.tree.ModuleNode;
 import io.github.eutro.jwasm.tree.*;
 import org.jetbrains.annotations.NotNull;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.AnalyzerAdapter;
 import org.objectweb.asm.commons.InstructionAdapter;
 import org.objectweb.asm.tree.*;
 
@@ -138,44 +140,48 @@ public class ModuleAdapter extends ModuleVisitor {
         // endregion
 
         // region Constructor
-        MethodNode mn = new MethodNode();
-        mn.access = ACC_PUBLIC;
-        mn.name = "<init>";
-        mn.desc = "()V";
-        mn.visitVarInsn(ALOAD, 0);
-        mn.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
-        if (node.mems != null) {
-            int i = 0;
-            for (MemoryNode mem : node.mems) {
-                mn.visitVarInsn(ALOAD, 0);
-                mn.visitLdcInsn(mem.limits.min * PAGE_SIZE);
-                mn.visitMethodInsn(INVOKESTATIC,
-                        "java/nio/ByteBuffer",
-                        "allocate",
-                        "(I)Ljava/nio/ByteBuffer;",
-                        false);
-                mn.visitFieldInsn(GETSTATIC,
-                        "java/nio/ByteOrder",
-                        "LITTLE_ENDIAN",
-                        "Ljava/nio/ByteOrder;");
-                mn.visitMethodInsn(INVOKEVIRTUAL,
-                        "java/nio/ByteBuffer",
-                        "order",
-                        "(Ljava/nio/ByteOrder;)Ljava/nio/ByteBuffer;",
-                        false);
-                mn.visitFieldInsn(PUTFIELD, internalName, mems.get(i).name, Type.getDescriptor(ByteBuffer.class));
-                ++i;
+        {
+            MethodNode mn = new MethodNode();
+            mn.access = ACC_PUBLIC;
+            mn.name = "<init>";
+            mn.desc = "()V";
+            AnalyzerAdapter aa = new AnalyzerAdapter(internalName, mn.access, mn.name, mn.desc, mn);
+            aa.visitVarInsn(ALOAD, 0);
+            aa.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
+            if (node.mems != null) {
+                int i = 0;
+                for (MemoryNode mem : node.mems) {
+                    aa.visitVarInsn(ALOAD, 0);
+                    aa.visitLdcInsn(mem.limits.min * PAGE_SIZE);
+                    aa.visitMethodInsn(INVOKESTATIC,
+                            "java/nio/ByteBuffer",
+                            "allocate",
+                            "(I)Ljava/nio/ByteBuffer;",
+                            false);
+                    aa.visitFieldInsn(GETSTATIC,
+                            "java/nio/ByteOrder",
+                            "LITTLE_ENDIAN",
+                            "Ljava/nio/ByteOrder;");
+                    aa.visitMethodInsn(INVOKEVIRTUAL,
+                            "java/nio/ByteBuffer",
+                            "order",
+                            "(Ljava/nio/ByteOrder;)Ljava/nio/ByteBuffer;",
+                            false);
+                    aa.visitFieldInsn(PUTFIELD, internalName, mems.get(i).name, Type.getDescriptor(ByteBuffer.class));
+                    ++i;
+                }
             }
-        }
 
-        if (node.start != null) {
-            mn.visitVarInsn(ALOAD, 0);
-            MethodNode start = funcs.get(node.start.func);
-            if (!"()V".equals(start.desc)) throw new IllegalArgumentException();
-            mn.visitMethodInsn(INVOKEVIRTUAL, internalName, start.name, start.desc, false);
+            if (node.start != null) {
+                aa.visitVarInsn(ALOAD, 0);
+                MethodNode start = funcs.get(node.start.func);
+                if (!"()V".equals(start.desc)) throw new IllegalArgumentException();
+                aa.visitMethodInsn(INVOKEVIRTUAL, internalName, start.name, start.desc, false);
+            }
+            aa.visitInsn(Opcodes.RETURN);
+            aa.visitMaxs(0, 0);
+            cn.methods.add(mn);
         }
-        mn.visitInsn(Opcodes.RETURN);
-        cn.methods.add(mn);
         // endregion
 
         // region Method Bodies
@@ -183,43 +189,35 @@ public class ModuleAdapter extends ModuleVisitor {
             int ci = 0;
             for (CodeNode code : node.codes) {
                 MethodNode method = cn.methods.get(ci);
-                InstructionAdapter ia = new InstructionAdapter(method);
-                method.localVariables = new ArrayList<>();
-                LabelNode start = new LabelNode();
-                LabelNode end = new LabelNode();
+                JumpTrackingVisitor aa = new JumpTrackingVisitor(internalName, method.access, method.name, method.desc, method);
+                InstructionAdapter ia = new InstructionAdapter(aa);
+                Label start = new Label();
+                Label end = new Label();
 
                 TypeNode funcType = getType(node.funcs.funcs.get(ci).type);
 
                 int[] indeces = new int[funcType.params.length + code.locals.length];
                 Type[] types = new Type[indeces.length];
                 int localIndex = 1;
-                method.parameters = new ArrayList<>();
                 for (int ai = 0; ai < funcType.params.length; ai++) {
                     Type localType = types[ai] = Types.toJava(funcType.params[ai]);
                     indeces[ai] = localIndex;
-                    method.parameters.add(new ParameterNode("arg" + ai, 0));
+                    aa.visitParameter("arg" + ai, 0);
                     localIndex += localType.getSize();
                 }
 
-                method.instructions.add(start);
+                aa.visitLabel(start);
                 for (int li = 0; li < code.locals.length; li++) {
                     byte local = code.locals[li];
                     Type localType = types[funcType.params.length + li] = Types.toJava(local);
                     indeces[funcType.params.length + li] = localIndex;
-                    method.localVariables.add(new LocalVariableNode(
-                            "loc" + li,
-                            localType.getDescriptor(),
-                            null,
-                            start,
-                            end,
-                            localIndex
-                    ));
+                    aa.visitLocalVariable("loc" + li, localType.getDescriptor(), null, start, end, localIndex);
                     defaultValue(ia, local);
-                    method.visitVarInsn(localType.getOpcode(ISTORE), localIndex);
+                    aa.visitVarInsn(localType.getOpcode(ISTORE), localIndex);
                     localIndex += localType.getSize();
                 }
-                Context ctx = new Context(internalName,
-                        method,
+                Context ctx = new Context(
+                        aa,
                         method.access,
                         method.name,
                         method.desc,
@@ -229,9 +227,10 @@ public class ModuleAdapter extends ModuleVisitor {
                         indeces,
                         types);
                 ExprAdapter.translateInto(code.expr, ctx);
-                method.instructions.add(end);
+                aa.visitLabel(end);
                 ctx.compress(funcType.returns);
                 ctx.returnValue();
+                aa.visitMaxs(0, 0);
                 ++ci;
             }
         }

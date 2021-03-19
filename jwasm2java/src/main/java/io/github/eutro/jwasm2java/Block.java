@@ -2,10 +2,7 @@ package io.github.eutro.jwasm2java;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Type;
-import org.objectweb.asm.tree.InsnList;
-
-import java.util.LinkedList;
+import org.objectweb.asm.tree.FrameNode;
 
 public abstract class Block {
     public final int type;
@@ -19,13 +16,13 @@ public abstract class Block {
     public abstract Label label();
 
     public static class If extends Block {
-        public final LinkedList<Type> types;
+        public final FrameNode frame;
         public Label elseLabel = new Label();
         public Label endLabel = null;
 
-        public If(int type, LinkedList<Type> types) {
+        public If(int type, FrameNode frame) {
             super(type);
-            this.types = types;
+            this.frame = frame;
         }
 
         public Label endLabel() {

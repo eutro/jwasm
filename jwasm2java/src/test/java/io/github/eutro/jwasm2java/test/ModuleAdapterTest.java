@@ -2,7 +2,6 @@ package io.github.eutro.jwasm2java.test;
 
 import io.github.eutro.jwasm.ModuleReader;
 import io.github.eutro.jwasm.test.ModuleTestBase;
-import io.github.eutro.jwasm.tree.ModuleNode;
 import io.github.eutro.jwasm2java.ModuleAdapter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -33,7 +32,7 @@ public class ModuleAdapterTest extends ModuleTestBase {
         }
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         String className = name.substring(0, 1).toUpperCase(Locale.ROOT) + name.substring(1) + "Bg";
-        ma.toJava("jwasm/" + className).accept(cw);
+        ma.toJava("jwasm/" + className).accept(new CheckClassAdapter(cw));
         byte[] bytes = cw.toByteArray();
         Files.write(WASMOUT.resolve(className + ".class"), bytes);
         Object[] out = new Object[1];
