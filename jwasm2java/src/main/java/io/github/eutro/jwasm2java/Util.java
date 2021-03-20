@@ -1,11 +1,13 @@
 package io.github.eutro.jwasm2java;
 
 import org.jetbrains.annotations.NotNull;
+import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.InstructionAdapter;
 import org.objectweb.asm.tree.*;
 
 import java.util.function.Consumer;
 
+import static io.github.eutro.jwasm.Opcodes.*;
 import static org.objectweb.asm.Opcodes.*;
 
 public class Util {
@@ -58,5 +60,27 @@ public class Util {
         MethodNode mn = new MethodNode();
         iac.accept(new InstructionAdapter(mn));
         return mn.instructions;
+    }
+
+    public static AbstractInsnNode defaultValue(Type type) {
+        switch (type.getSort()) {
+            case Type.BOOLEAN:
+            case Type.BYTE:
+            case Type.SHORT:
+            case Type.CHAR:
+            case Type.INT:
+                return new InsnNode(ICONST_0);
+            case Type.FLOAT:
+                return new InsnNode(FCONST_0);
+            case Type.LONG:
+                return new InsnNode(LCONST_0);
+            case Type.DOUBLE:
+                return new InsnNode(DCONST_0);
+            case Type.OBJECT:
+            case Type.ARRAY:
+                return new InsnNode(ACONST_NULL);
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 }

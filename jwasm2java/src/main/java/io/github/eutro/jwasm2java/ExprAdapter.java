@@ -75,6 +75,7 @@ public class ExprAdapter {
             }
         });
         ExprAdapter.<BreakInsnNode>putRule(BR, (ctx, insn) -> ctx.goTo(ctx.getLabel(insn.label)));
+        ExprAdapter.<BreakInsnNode>putRule(BR_IF, (ctx, insn) -> ctx.visitJumpInsn(IFNE, ctx.getLabel(insn.label)));
         ExprAdapter.<TableBreakInsnNode>putRule(BR_TABLE, (ctx, insn) -> {
             Label[] labels = new Label[insn.labels.length];
             for (int i = 0; i < insn.labels.length; i++) {
@@ -85,7 +86,6 @@ public class ExprAdapter {
                     ctx.getLabel(insn.defaultLabel),
                     labels);
         });
-        ExprAdapter.<BreakInsnNode>putRule(BR_IF, (ctx, insn) -> ctx.visitJumpInsn(IFNE, ctx.getLabel(insn.label)));
         putRule(Opcodes.RETURN, (ctx, insn) -> {
             for (byte retType : ctx.funcType.returns) {
                 Types.toJava(retType);
@@ -435,6 +435,78 @@ public class ExprAdapter {
             ctx.pop();
             ctx.push(-1);
         });
+        PREFIX_RULES[MEMORY_INIT] = (Rule<IndexedMemInsnNode>) (ctx, insn) -> {
+            Extern mem = ctx.externs.mems.get(0);
+            FieldNode data = ctx.passiveDatas[insn.index];
+            if (data == null) throw new IllegalStateException("No such passive data");
+            // System.arraycopy(src, srcPos, dest, destPos, length);
+            int n = ctx.newLocal(Type.INT_TYPE);
+            ctx.storeLocal(n);
+            int s = ctx.newLocal(Type.INT_TYPE);
+            ctx.storeLocal(s);
+            int d = ctx.newLocal(Type.INT_TYPE);
+            ctx.storeLocal(d);
+
+            ctx.loadThis();
+            ctx.visitFieldInsn(GETFIELD, ctx.getName(), data.name, data.desc);
+            ctx.loadLocal(s);
+            mem.emitGet(ctx);
+            ctx.loadLocal(d);
+            ctx.loadLocal(n);
+            ctx.visitMethodInsn(INVOKESTATIC, "java/lang/System", "arraycopy",
+                    "(Ljava/lang/Object;ILjava/lang/Object;II)V",
+                    false);
+        };
+        PREFIX_RULES[DATA_DROP] = (Rule<IndexedMemInsnNode>) (ctx, insn) -> {
+            FieldNode data = ctx.passiveDatas[insn.index];
+            if (data == null) throw new IllegalStateException("No such passive data");
+            ctx.loadThis();
+            ctx.push((String) null);
+            ctx.visitFieldInsn(PUTFIELD, ctx.getName(), data.name, data.desc);
+        };
+        PREFIX_RULES[MEMORY_COPY] = (ctx, insn) -> {
+            int n = ctx.newLocal(Type.INT_TYPE);
+            ctx.storeLocal(n);
+            int s = ctx.newLocal(Type.INT_TYPE);
+            ctx.storeLocal(s);
+            Extern mem = ctx.externs.mems.get(0);
+            mem.emitGet(ctx);
+            ctx.swap();
+            ctx.visitMethodInsn(INVOKEVIRTUAL, "java/nio/ByteBuffer", "position",
+                    "(I)Ljava/nio/ByteBuffer;",
+                    false);
+            ctx.dup();
+            ctx.loadLocal(s);
+            ctx.loadLocal(n);
+            ctx.visitMethodInsn(INVOKEVIRTUAL, "java/nio/ByteBuffer", "slice",
+                    "(II)Ljava/nio/ByteBuffer;",
+                    false);
+        };
+        PREFIX_RULES[MEMORY_FILL] = (ctx, insn) -> {
+            int n = ctx.newLocal(Type.INT_TYPE);
+            ctx.storeLocal(n);
+            int v = ctx.newLocal(Type.INT_TYPE);
+            ctx.storeLocal(v);
+
+            Extern mem = ctx.externs.mems.get(0);
+            mem.emitGet(ctx);
+            ctx.swap();
+            ctx.visitMethodInsn(INVOKEVIRTUAL, "java/nio/ByteBuffer", "position",
+                    "(I)Ljava/nio/ByteBuffer;",
+                    false);
+
+            Label end = new Label();
+            Label loop = ctx.mark();
+            ctx.loadLocal(v);
+            ctx.visitMethodInsn(INVOKEVIRTUAL, "java/nio/ByteBuffer", "put",
+                    "(I)Ljava/nio/ByteBuffer;",
+                    false);
+            ctx.iinc(n, -1);
+            ctx.visitJumpInsn(IFEQ, end);
+            ctx.goTo(loop);
+            ctx.mark(end);
+            ctx.pop();
+        };
         // endregion
         // region Numeric
         // region Const
@@ -534,13 +606,13 @@ public class ExprAdapter {
         putRule(F32_ABS, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Math", "abs", "(F)F")));
         putRule(F32_NEG, (ctx, insn) -> ctx.addInsns(new InsnNode(FNEG)));
         putRule(F32_CEIL, (ctx, insn) -> ctx.addInsns(
-                        new InsnNode(F2D),
-                        staticNode("java/lang/Math", "ceil", "(D)D"),
-                        new InsnNode(D2F)));
+                new InsnNode(F2D),
+                staticNode("java/lang/Math", "ceil", "(D)D"),
+                new InsnNode(D2F)));
         putRule(F32_FLOOR, (ctx, insn) -> ctx.addInsns(
-                        new InsnNode(F2D),
-                        staticNode("java/lang/Math", "floor", "(D)D"),
-                        new InsnNode(D2F)));
+                new InsnNode(F2D),
+                staticNode("java/lang/Math", "floor", "(D)D"),
+                new InsnNode(D2F)));
         putRule(F32_TRUNC, (ctx, insn) -> {
             LabelNode els = new LabelNode();
             LabelNode end = new LabelNode();
@@ -561,9 +633,9 @@ public class ExprAdapter {
             throw new UnsupportedOperationException();
         });
         putRule(F32_SQRT, (ctx, insn) -> ctx.addInsns(
-                        new InsnNode(F2D),
-                        staticNode("java/lang/Math", "sqrt", "(D)D"),
-                        new InsnNode(D2F)));
+                new InsnNode(F2D),
+                staticNode("java/lang/Math", "sqrt", "(D)D"),
+                new InsnNode(D2F)));
         putRule(F32_ADD, (ctx, insn) -> ctx.addInsns(new InsnNode(FADD)));
         putRule(F32_SUB, (ctx, insn) -> ctx.addInsns(new InsnNode(FSUB)));
         putRule(F32_MUL, (ctx, insn) -> ctx.addInsns(new InsnNode(FMUL)));

@@ -2,18 +2,16 @@ package io.github.eutro.jwasm2java;
 
 import io.github.eutro.jwasm.tree.TypeNode;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.commons.InstructionAdapter;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.InsnNode;
 
 import java.lang.invoke.MethodHandle;
 
 import static io.github.eutro.jwasm.Opcodes.*;
+import static org.objectweb.asm.Opcodes.*;
 
 public class Types {
-    public static int offset(int opcode, byte type) {
-        return toJava(type).getOpcode(opcode);
-    }
-
     public static Type toJava(byte type) {
         switch (type) {
             case I32:

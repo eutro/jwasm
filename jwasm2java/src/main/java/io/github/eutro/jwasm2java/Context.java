@@ -19,6 +19,7 @@ class Context extends GeneratorAdapter {
     public Externs externs;
     public final TypeNode funcType;
     public final FieldNode[] passiveElems;
+    public final FieldNode[] passiveDatas;
 
     private final Type[] localTypes;
     private final LinkedList<Block> blocks = new LinkedList<>();
@@ -35,7 +36,8 @@ class Context extends GeneratorAdapter {
                    Externs externs,
                    int[] localIndeces,
                    Type[] localTypes,
-                   FieldNode[] passiveElems) {
+                   FieldNode[] passiveElems,
+                   FieldNode[] passiveDatas) {
         super(ASM9, mv, access, name, desc);
         aa = mv;
         this.funcTypes = funcTypes;
@@ -44,6 +46,7 @@ class Context extends GeneratorAdapter {
         this.externs = externs;
         this.localTypes = localTypes;
         this.passiveElems = passiveElems;
+        this.passiveDatas = passiveDatas;
     }
 
     public Type funcType(int index) {
