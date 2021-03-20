@@ -6,11 +6,13 @@ tasks.jar {
     enabled = false
 }
 
-subprojects {
-    apply<JavaLibraryPlugin>()
-
+allprojects {
     group = "io.github.eutro.jwasm"
     version = "${properties["ver_major"]}.${properties["ver_minor"]}.${properties["ver_patch"]}"
+}
+
+subprojects {
+    apply<JavaLibraryPlugin>()
 
     java {
         sourceCompatibility = JavaVersion.VERSION_1_8
