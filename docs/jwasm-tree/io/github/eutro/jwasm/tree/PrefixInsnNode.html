@@ -74,6 +74,10 @@ loadScripts(document, 'script');</script>
 </div>
 </div>
 <section class="description">
+<dl class="notes">
+<dt>Direct Known Subclasses:</dt>
+<dd><code><a href="IndexedMemInsnNode.html" title="class in io.github.eutro.jwasm.tree">IndexedMemInsnNode</a></code>, <code><a href="PrefixBinaryTableInsnNode.html" title="class in io.github.eutro.jwasm.tree">PrefixBinaryTableInsnNode</a></code>, <code><a href="PrefixTableInsnNode.html" title="class in io.github.eutro.jwasm.tree">PrefixTableInsnNode</a></code></dd>
+</dl>
 <hr>
 <pre>public class <span class="type-name-label">PrefixInsnNode</span>
 extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tree">AbstractInsnNode</a></pre>
@@ -97,12 +101,15 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 <tbody>
 <tr class="alt-color">
 <td class="col-first"><code>int</code></td>
-<th class="col-second" scope="row"><code><span class="member-name-link"><a href="#opcode">opcode</a></span></code></th>
+<th class="col-second" scope="row"><code><span class="member-name-link"><a href="#intOpcode">intOpcode</a></span></code></th>
 <td class="col-last">&nbsp;</td>
 </tr>
 </tbody>
 </table>
 </div>
+<div class="inherited-list">
+<h3 id="fields.inherited.from.class.io.github.eutro.jwasm.tree.AbstractInsnNode">Fields inherited from class&nbsp;io.github.eutro.jwasm.tree.<a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tree">AbstractInsnNode</a></h3>
+<code><a href="AbstractInsnNode.html#opcode">opcode</a></code></div>
 </section>
 </li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
@@ -120,7 +127,7 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 </thead>
 <tbody>
 <tr class="alt-color">
-<th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(int)">PrefixInsnNode</a></span>&#8203;(int&nbsp;opcode)</code></th>
+<th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(int)">PrefixInsnNode</a></span>&#8203;(int&nbsp;intOpcode)</code></th>
 <td class="col-last">&nbsp;</td>
 </tr>
 </tbody>
@@ -147,9 +154,9 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 <h2>Field Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="opcode">
-<h3>opcode</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="member-name">opcode</span></div>
+<section class="detail" id="intOpcode">
+<h3>intOpcode</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="member-name">intOpcode</span></div>
 </section>
 </li>
 </ul>
@@ -163,7 +170,7 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 <li>
 <section class="detail" id="&lt;init&gt;(int)">
 <h3>PrefixInsnNode</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="member-name">PrefixInsnNode</span>&#8203;(<span class="parameters">int&nbsp;opcode)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="member-name">PrefixInsnNode</span>&#8203;(<span class="parameters">int&nbsp;intOpcode)</span></div>
 </section>
 </li>
 </ul>

@@ -295,7 +295,7 @@ int&nbsp;secondIndex)</code></th>
 <tr class="alt-color" id="i14">
 <td class="col-first"><code>void</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#visitPrefixTableInsn(int,int)">visitPrefixTableInsn</a></span>&#8203;(int&nbsp;opcode,
-int&nbsp;index)</code></th>
+int&nbsp;table)</code></th>
 <td class="col-last">
 <div class="block">Visit a prefixed
  <a href="https://webassembly.github.io/spec/core/binary/instructions.html#table-instructions">table</a>
@@ -325,7 +325,7 @@ int&nbsp;defaultLabel)</code></th>
 <tr class="row-color" id="i17">
 <td class="col-first"><code>void</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#visitTableInsn(byte,int)">visitTableInsn</a></span>&#8203;(byte&nbsp;opcode,
-int&nbsp;index)</code></th>
+int&nbsp;table)</code></th>
 <td class="col-last">
 <div class="block">Visit a prefixless
  <a href="https://webassembly.github.io/spec/core/binary/instructions.html#table-instructions">table</a>
@@ -499,14 +499,14 @@ int&nbsp;index)</span></div>
 <section class="detail" id="visitTableInsn(byte,int)">
 <h3>visitTableInsn</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="member-name">visitTableInsn</span>&#8203;(<span class="parameters">byte&nbsp;opcode,
-int&nbsp;index)</span></div>
+int&nbsp;table)</span></div>
 <div class="block">Visit a prefixless
  <a href="https://webassembly.github.io/spec/core/binary/instructions.html#table-instructions">table</a>
  <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>opcode</code> - The opcode of the instruction.</dd>
-<dd><code>index</code> - The
+<dd><code>table</code> - The
                <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-tableidx">index</a>
                of the table.</dd>
 </dl>
@@ -516,14 +516,14 @@ int&nbsp;index)</span></div>
 <section class="detail" id="visitPrefixTableInsn(int,int)">
 <h3>visitPrefixTableInsn</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="member-name">visitPrefixTableInsn</span>&#8203;(<span class="parameters">int&nbsp;opcode,
-int&nbsp;index)</span></div>
+int&nbsp;table)</span></div>
 <div class="block">Visit a prefixed
  <a href="https://webassembly.github.io/spec/core/binary/instructions.html#table-instructions">table</a>
  <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>opcode</code> - The opcode of the instruction.</dd>
-<dd><code>index</code> - The
+<dd><code>table</code> - The
                <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-tableidx">index</a>
                of the table.</dd>
 </dl>

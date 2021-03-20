@@ -15,7 +15,7 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.min.js"></script>
 </head>
 <body class="class-declaration-page">
-<script type="text/javascript">var data = {"i0":10,"i1":10};
+<script type="text/javascript">var data = {"i0":10,"i1":10,"i2":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "alt-color";
 var rowColor = "row-color";
@@ -82,9 +82,14 @@ loadScripts(document, 'script');</script>
 </div>
 </div>
 <section class="description">
+<dl class="notes">
+<dt>All Implemented Interfaces:</dt>
+<dd><code>java.lang.Iterable&lt;<a href="TableNode.html" title="class in io.github.eutro.jwasm.tree">TableNode</a>&gt;</code></dd>
+</dl>
 <hr>
 <pre>public class <span class="type-name-label">TablesNode</span>
-extends io.github.eutro.jwasm.TablesVisitor</pre>
+extends io.github.eutro.jwasm.TablesVisitor
+implements java.lang.Iterable&lt;<a href="TableNode.html" title="class in io.github.eutro.jwasm.tree">TableNode</a>&gt;</pre>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -104,7 +109,7 @@ extends io.github.eutro.jwasm.TablesVisitor</pre>
 </thead>
 <tbody>
 <tr class="alt-color">
-<td class="col-first"><code>java.util.List&lt;<a href="TableNode.html" title="class in io.github.eutro.jwasm.tree">TableNode</a>&gt;</code></td>
+<td class="col-first"><code>@Nullable java.util.List&lt;<a href="TableNode.html" title="class in io.github.eutro.jwasm.tree">TableNode</a>&gt;</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#tables">tables</a></span></code></th>
 <td class="col-last">&nbsp;</td>
 </tr>
@@ -161,6 +166,11 @@ extends io.github.eutro.jwasm.TablesVisitor</pre>
 <td class="col-last">&nbsp;</td>
 </tr>
 <tr class="row-color" id="i1">
+<td class="col-first"><code>@NotNull java.util.Iterator&lt;<a href="TableNode.html" title="class in io.github.eutro.jwasm.tree">TableNode</a>&gt;</code></td>
+<th class="col-second" scope="row"><code><span class="member-name-link"><a href="#iterator()">iterator</a></span>()</code></th>
+<td class="col-last">&nbsp;</td>
+</tr>
+<tr class="alt-color" id="i2">
 <td class="col-first"><code>void</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#visitTable(int,java.lang.Integer,byte)">visitTable</a></span>&#8203;(int&nbsp;min,
 java.lang.Integer&nbsp;max,
@@ -177,6 +187,9 @@ byte&nbsp;type)</code></th>
 <div class="inherited-list">
 <h3 id="methods.inherited.from.class.java.lang.Object">Methods inherited from class&nbsp;java.lang.Object</h3>
 <code>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</code></div>
+<div class="inherited-list">
+<h3 id="methods.inherited.from.class.java.lang.Iterable">Methods inherited from interface&nbsp;java.lang.Iterable</h3>
+<code>forEach, spliterator</code></div>
 </section>
 </li>
 </ul>
@@ -191,7 +204,8 @@ byte&nbsp;type)</code></th>
 <li>
 <section class="detail" id="tables">
 <h3>tables</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">java.util.List&lt;<a href="TableNode.html" title="class in io.github.eutro.jwasm.tree">TableNode</a>&gt;</span>&nbsp;<span class="member-name">tables</span></div>
+<div class="member-signature"><span class="annotations">@Nullable
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable java.util.List&lt;<a href="TableNode.html" title="class in io.github.eutro.jwasm.tree">TableNode</a>&gt;</span>&nbsp;<span class="member-name">tables</span></div>
 </section>
 </li>
 </ul>
@@ -231,6 +245,17 @@ byte&nbsp;type)</span></div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code>visitTable</code>&nbsp;in class&nbsp;<code>io.github.eutro.jwasm.TablesVisitor</code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="iterator()">
+<h3>iterator</h3>
+<div class="member-signature"><span class="annotations">@NotNull
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">@NotNull java.util.Iterator&lt;<a href="TableNode.html" title="class in io.github.eutro.jwasm.tree">TableNode</a>&gt;</span>&nbsp;<span class="member-name">iterator</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code>iterator</code>&nbsp;in interface&nbsp;<code>java.lang.Iterable&lt;<a href="TableNode.html" title="class in io.github.eutro.jwasm.tree">TableNode</a>&gt;</code></dd>
 </dl>
 </section>
 </li>

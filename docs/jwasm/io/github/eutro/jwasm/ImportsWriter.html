@@ -193,7 +193,7 @@ implements <a href="VectorWriter.html" title="interface in io.github.eutro.jwasm
 <td class="col-first"><code>void</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#visitFuncImport(java.lang.String,java.lang.String,int)">visitFuncImport</a></span>&#8203;(@NotNull java.lang.String&nbsp;module,
 @NotNull java.lang.String&nbsp;name,
-int&nbsp;index)</code></th>
+int&nbsp;type)</code></th>
 <td class="col-last">
 <div class="block">Visit a <code>func</code> import.</div>
 </td>
@@ -324,7 +324,7 @@ byte&nbsp;type)</code></th>
 @NotNull java.lang.String&nbsp;module,
 @NotNull
 @NotNull java.lang.String&nbsp;name,
-int&nbsp;index)</span></div>
+int&nbsp;type)</span></div>
 <div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="ImportsVisitor.html#visitFuncImport(java.lang.String,java.lang.String,int)">ImportsVisitor</a></code></span></div>
 <div class="block">Visit a <code>func</code> import.</div>
 <dl class="notes">
@@ -333,7 +333,7 @@ int&nbsp;index)</span></div>
 <dt>Parameters:</dt>
 <dd><code>module</code> - The module to import from.</dd>
 <dd><code>name</code> - The name to import.</dd>
-<dd><code>index</code> - The
+<dd><code>type</code> - The
                <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-typeidx">index</a>
                of the type of the imported function.</dd>
 </dl>
