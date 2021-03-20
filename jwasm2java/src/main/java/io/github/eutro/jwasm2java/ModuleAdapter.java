@@ -31,12 +31,12 @@ public class ModuleAdapter extends ModuleVisitor {
         this(new ModuleNode());
     }
 
-    private TypeNode getType(int index) {
+    protected TypeNode getType(int index) {
         return getTypes().get(index);
     }
 
     @NotNull
-    private List<TypeNode> getTypes() {
+    protected List<TypeNode> getTypes() {
         return Objects.requireNonNull(Objects.requireNonNull(node.types).types);
     }
 
@@ -108,6 +108,10 @@ public class ModuleAdapter extends ModuleVisitor {
                                  List<FieldNode> mems,
                                  List<FieldNode> globals,
                                  List<FieldNode> tables) {
+        int inFuncsC = externs.funcs.size();
+        int inMemsC = externs.mems.size();
+        int inGlobalsC = externs.globals.size();
+        int inTablesC = externs.tables.size();
         if (node.funcs != null) {
             for (FuncNode func : node.funcs) {
                 MethodNode mn = new MethodNode();
@@ -161,25 +165,25 @@ public class ModuleAdapter extends ModuleVisitor {
             for (ExportNode export : node.exports) {
                 switch (export.type) {
                     case EXPORTS_FUNC:
-                        MethodNode method = funcs.get(export.index);
+                        MethodNode method = funcs.get(export.index - inFuncsC);
                         method.name = export.name;
                         method.access &= ~ACC_PRIVATE;
                         method.access |= ACC_PUBLIC;
                         break;
                     case EXPORTS_TABLE:
-                        FieldNode table = tables.get(export.index);
+                        FieldNode table = tables.get(export.index = inTablesC);
                         table.name = export.name;
                         table.access &= ~ACC_PRIVATE;
                         table.access |= ACC_PUBLIC;
                         break;
                     case EXPORTS_MEM:
-                        FieldNode mem = mems.get(export.index);
+                        FieldNode mem = mems.get(export.index - inMemsC);
                         mem.name = export.name;
                         mem.access &= ~ACC_PRIVATE;
                         mem.access |= ACC_PUBLIC;
                         break;
                     case EXPORTS_GLOBAL:
-                        FieldNode global = globals.get(export.index);
+                        FieldNode global = globals.get(export.index - inGlobalsC);
                         global.name = export.name;
                         global.access &= ~ACC_PRIVATE;
                         global.access |= ACC_PUBLIC;

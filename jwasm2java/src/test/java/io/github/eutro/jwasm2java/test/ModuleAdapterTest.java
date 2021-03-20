@@ -2,6 +2,7 @@ package io.github.eutro.jwasm2java.test;
 
 import io.github.eutro.jwasm.ModuleReader;
 import io.github.eutro.jwasm.test.ModuleTestBase;
+import io.github.eutro.jwasm2java.InteropModuleAdapter;
 import io.github.eutro.jwasm2java.ModuleAdapter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -13,13 +14,13 @@ import java.io.InputStream;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ModuleAdapterTest extends ModuleTestBase {
 
@@ -30,8 +31,7 @@ public class ModuleAdapterTest extends ModuleTestBase {
         Files.createDirectories(WASMOUT);
     }
 
-    Object adapt(String name) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        ModuleAdapter ma = new ModuleAdapter();
+    Object adapt(String name, ModuleAdapter ma) throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         try (InputStream is = openResource(name + "_bg.wasm")) {
             ModuleReader.fromInputStream(is).accept(ma);
         }
@@ -52,25 +52,46 @@ public class ModuleAdapterTest extends ModuleTestBase {
 
     @Test
     void simple_bg() throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        adapt("simple");
+        adapt("simple", new ModuleAdapter());
     }
 
     @Test
     void unsimple() throws Throwable {
-        Object adapted = adapt("unsimple");
+        Object unsimple = adapt("unsimple", new ModuleAdapter());
         MethodHandle div = MethodHandles.insertArguments(MethodHandles.lookup()
-                .unreflect(adapted.getClass().getMethod("div", int.class, int.class)),
+                .unreflect(unsimple.getClass().getMethod("div", int.class, int.class)),
                 0,
-                adapted);
+                unsimple);
         MethodHandle divU = MethodHandles.insertArguments(MethodHandles.lookup()
-                        .unreflect(adapted.getClass().getMethod("div_u", long.class, long.class)),
+                        .unreflect(unsimple.getClass().getMethod("div_u", long.class, long.class)),
                 0,
-                adapted);
+                unsimple);
         assertEquals(50, (int) div.invokeExact(100, 2));
         assertEquals(Long.MAX_VALUE, (long) divU.invokeExact(-1L, 2L));
         assertThrows(AssertionError.class, () -> {
             @SuppressWarnings("unused")
             int ignored = (int) div.invokeExact(1, 0);
         });
+    }
+
+    @Test
+    void interop() throws Throwable {
+        Object interop = adapt("interop", new InteropModuleAdapter());
+        Class<?> clazz = interop.getClass();
+        assertEquals(1D / Math.sin(100D),
+                clazz.getMethod("csc", double.class).invoke(interop, 100D));
+        assertEquals(1D / Math.cos(100D),
+                clazz.getMethod("sec", double.class).invoke(interop, 100D));
+        assertEquals(1D / Math.tan(100D),
+                clazz.getMethod("cot", double.class).invoke(interop, 100D));
+        assertEquals(1D / Math.tan(100D),
+                clazz.getMethod("cot", double.class).invoke(interop, 100D));
+
+        Method func = clazz.getMethod("func", int.class);
+        Method invoke = clazz.getMethod("invoke", int.class, double.class);
+        for (int i = 0; i < 6; i++) {
+            int f = (int) func.invoke(interop, i);
+            invoke.invoke(interop, f, 1);
+        }
     }
 }

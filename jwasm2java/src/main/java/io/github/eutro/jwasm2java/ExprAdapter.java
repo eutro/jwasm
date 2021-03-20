@@ -99,14 +99,16 @@ public class ExprAdapter {
             func.emitInvoke(ctx);
         })
                 .match(CALL_INDIRECT).terminal((Rule<CallIndirectInsnNode>) (ctx, insn) -> {
+            int index = ctx.newLocal(Type.INT_TYPE);
+            ctx.storeLocal(index);
             Type fType = ctx.funcType(insn.type);
             Type[] argumentTypes = fType.getArgumentTypes();
             int[] locals = new int[argumentTypes.length];
-            for (int i1 = argumentTypes.length - 1; i1 >= 0; i1--) {
-                ctx.storeLocal(locals[i1] = ctx.newLocal(argumentTypes[i1]));
+            for (int i = argumentTypes.length - 1; i >= 0; i--) {
+                ctx.storeLocal(locals[i] = ctx.newLocal(argumentTypes[i]));
             }
             ctx.externs.tables.get(insn.table).emitGet(ctx);
-            ctx.swap();
+            ctx.loadLocal(index);
             Type mhType = Type.getType(MethodHandle.class);
             ctx.arrayLoad(mhType);
             for (int local : locals) {
