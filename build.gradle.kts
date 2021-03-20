@@ -42,20 +42,13 @@ project(":jwasm-test") {
     }
 }
 
-val javadocModules = listOf(":jwasm", ":jwasm-tree")
+val javadocModules = listOf(":jwasm", ":jwasm-tree", ":jwasm2java")
 
-tasks.register<Copy>("assembleDocs") {
-    val javadocTasks = javadocModules.map { project(it).tasks.javadoc.get() }.toTypedArray()
-    dependsOn(*javadocTasks)
-    doFirst {
-        delete("docs")
-    }
-    javadocTasks.forEach { jdoc ->
-        from(jdoc) {
-            into(jdoc.project.name)
-        }
-    }
-    into("docs")
+tasks.javadoc {
+    setDestinationDir(file("docs"))
+    val javadocTasks = javadocModules.map { project(it).tasks.javadoc.get() }
+    source = files(*javadocTasks.flatMap { it.source }.toTypedArray()).asFileTree
+    classpath = files(*javadocTasks.flatMap { it.classpath }.toTypedArray())
 }
 
-defaultTasks("build", "assembleDocs")
+defaultTasks("build", "javadoc")
