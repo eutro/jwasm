@@ -44,7 +44,7 @@ project(":jwasm-test") {
     }
 }
 
-val javadocModules = listOf(":jwasm", ":jwasm-tree", ":jwasm2java")
+val javadocModules = listOf(":jwasm", ":jwasm-tree")
 
 tasks.javadoc {
     setDestinationDir(file("docs"))

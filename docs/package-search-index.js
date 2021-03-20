@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"io.github.eutro.jwasm"},{"l":"io.github.eutro.jwasm.tree"},{"l":"io.github.eutro.jwasm2java"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"io.github.eutro.jwasm"},{"l":"io.github.eutro.jwasm.tree"}];updateSearchResults();
