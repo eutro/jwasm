@@ -4,6 +4,7 @@ import io.github.eutro.jwasm.Opcodes;
 import io.github.eutro.jwasm.tree.AbstractInsnNode;
 import io.github.eutro.jwasm.tree.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
@@ -12,96 +13,97 @@ import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.*;
 
 import java.lang.invoke.MethodHandle;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 import static io.github.eutro.jwasm.Opcodes.*;
 import static io.github.eutro.jwasm2java.Util.*;
 import static org.objectweb.asm.Opcodes.*;
 
 public class ExprAdapter {
-    public static void translateInto(ExprNode expr, Context context) {
-        for (AbstractInsnNode insn : expr) {
-            Rule<AbstractInsnNode> rule = getRule(insn);
+    public static void translateInto(ExprNode expr, Context ctx) {
+        if (expr.instructions == null) return;
+        ListIterator<AbstractInsnNode> li = expr.instructions.listIterator();
+        while (li.hasNext()) {
+            List<AbstractInsnNode> matched = new LinkedList<>();
+            Rule<AbstractInsnNode> rule = SIMPLE.fullMatch(li, matched);
             if (rule == null) {
-                throw new UnsupportedOperationException(String.format("Opcode 0x%02x not supported", insn.opcode));
+                throw new UnsupportedOperationException(String.format("Opcode 0x%02x not supported", li.next().opcode));
             }
-            rule.apply(context, insn);
+            rule.applyTo(ctx, matched);
         }
     }
 
-    private static final Rule<?>[] RULES = new Rule[Byte.MAX_VALUE - Byte.MIN_VALUE];
+    @SuppressWarnings("unchecked")
+    private static final DFA<State, Rule<AbstractInsnNode>, AbstractInsnNode> SIMPLE =
+            (DFA<State, Rule<AbstractInsnNode>, AbstractInsnNode>) (Object) simple().build();
 
-    static {
-        Rule<?>[] PREFIX_RULES = new Rule[TABLE_FILL + 1];
-        ExprAdapter.putRule(INSN_PREFIX, new Rule<PrefixInsnNode>() {
-            @Override
-            public void apply(Context ctx, PrefixInsnNode insn) {
-                apply(PREFIX_RULES[insn.intOpcode], ctx, insn);
-            }
-
-            @SuppressWarnings("unchecked")
-            private <T> void apply(Rule<T> rule, Context ctx, PrefixInsnNode insn) {
-                rule.apply(ctx, (T) insn);
-            }
-        });
-
+    private static DFA.Builder<State, Rule<?>, Object, AbstractInsnNode> simple() {
+        DFA.Builder<State, Rule<?>, Object, AbstractInsnNode> b = DFA.builder(
+                State::new,
+                State::setNext,
+                (State s, Rule<?> t) -> s.terminal = t,
+                State::advance,
+                s -> s.terminal);
         // region Control
-        putRule(UNREACHABLE, (ctx, insn) -> {
+        b
+                .match(UNREACHABLE).terminal((ctx, insn) -> {
             Type aeType = Type.getType(AssertionError.class);
             ctx.newInstance(aeType);
             ctx.dup();
             ctx.push("Unreachable");
             ctx.invokeConstructor(aeType, new Method("<init>", "(Ljava/lang/Object;)V"));
             ctx.throwException();
-        });
-        putRule(Opcodes.NOP, (ctx, insn) -> { /* NOP */ });
-        ExprAdapter.<BlockInsnNode>putRule(BLOCK, (ctx, insn) -> ctx.pushBlock(new Block.BBlock(insn.blockType)));
-        ExprAdapter.<BlockInsnNode>putRule(LOOP, (ctx, insn) ->
-                ctx.pushBlock(new Block.Loop(insn.blockType, ctx.mark())));
-        ExprAdapter.<BlockInsnNode>putRule(IF, (ctx, insn) -> {
+        })
+                .match(Opcodes.NOP).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> { /* NOP */ })
+                .match(BLOCK).terminal((Rule<BlockInsnNode>) (ctx, insn) -> ctx.pushBlock(new Block.BBlock(insn.blockType)))
+                .match(LOOP).terminal((Rule<BlockInsnNode>) (ctx, insn) ->
+                ctx.pushBlock(new Block.Loop(insn.blockType, ctx.mark())))
+                .match(IF).terminal((Rule<BlockInsnNode>) (ctx, insn) -> {
             Block.If block = new Block.If(insn.blockType, ctx.getFrame());
             ctx.visitJumpInsn(IFEQ, block.elseLabel);
             ctx.pushBlock(block);
-        });
-        putRule(ELSE, (ctx, insn) -> {
+        })
+                .match(ELSE).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> {
             Block.If ifBlock = (Block.If) ctx.peekBlock();
             ctx.goTo(ifBlock.endLabel());
             ifBlock.frame.accept(ctx);
             ctx.mark(ifBlock.elseLabel);
-        });
-        putRule(END, (ctx, insn) -> {
+        })
+                .match(END).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> {
             if (ctx.peekBlock() != null) {
                 ctx.popBlock().end(ctx);
             }
-        });
-        ExprAdapter.<BreakInsnNode>putRule(BR, (ctx, insn) -> ctx.goTo(ctx.getLabel(insn.label)));
-        ExprAdapter.<BreakInsnNode>putRule(BR_IF, (ctx, insn) -> ctx.visitJumpInsn(IFNE, ctx.getLabel(insn.label)));
-        ExprAdapter.<TableBreakInsnNode>putRule(BR_TABLE, (ctx, insn) -> {
+        })
+                .match(BR).terminal((Rule<BreakInsnNode>) (ctx, insn) -> ctx.goTo(ctx.getLabel(insn.label)))
+                .match(BR_IF).terminal((Rule<BreakInsnNode>) (ctx, insn) -> ctx.visitJumpInsn(IFNE, ctx.getLabel(insn.label)))
+                .match(BR_TABLE).terminal((Rule<TableBreakInsnNode>) (ctx, insn) -> {
             Label[] labels = new Label[insn.labels.length];
-            for (int i = 0; i < insn.labels.length; i++) {
-                labels[i] = ctx.getLabel(insn.labels[i]);
+            for (int i2 = 0; i2 < insn.labels.length; i2++) {
+                labels[i2] = ctx.getLabel(insn.labels[i2]);
             }
             ctx.visitTableSwitchInsn(0,
                     insn.labels.length - 1,
                     ctx.getLabel(insn.defaultLabel),
                     labels);
-        });
-        putRule(Opcodes.RETURN, (ctx, insn) -> {
+        })
+                .match(Opcodes.RETURN).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> {
             for (byte retType : ctx.funcType.returns) {
                 Types.toJava(retType);
             }
             ctx.compress(ctx.funcType.returns).returnValue();
-        });
-        ExprAdapter.<CallInsnNode>putRule(CALL, (ctx, insn) -> {
+        })
+                .match(CALL).terminal((Rule<CallInsnNode>) (ctx, insn) -> {
             FuncExtern func = ctx.externs.funcs.get(insn.function);
             func.emitInvoke(ctx);
-        });
-        ExprAdapter.<CallIndirectInsnNode>putRule(CALL_INDIRECT, (ctx, insn) -> {
+        })
+                .match(CALL_INDIRECT).terminal((Rule<CallIndirectInsnNode>) (ctx, insn) -> {
             Type fType = ctx.funcType(insn.type);
             Type[] argumentTypes = fType.getArgumentTypes();
             int[] locals = new int[argumentTypes.length];
-            for (int i = argumentTypes.length - 1; i >= 0; i--) {
-                ctx.storeLocal(locals[i] = ctx.newLocal(argumentTypes[i]));
+            for (int i1 = argumentTypes.length - 1; i1 >= 0; i1--) {
+                ctx.storeLocal(locals[i1] = ctx.newLocal(argumentTypes[i1]));
             }
             ctx.externs.tables.get(insn.table).emitGet(ctx);
             ctx.swap();
@@ -114,26 +116,19 @@ public class ExprAdapter {
         });
         // endregion
         // region Reference
-        putRule(REF_NULL, (ctx, insn) -> {
+        b
+                .match(REF_NULL).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> {
             Type.getType(Object.class);
             ctx.push((String) null);
-        });
-        putRule(REF_IS_NULL, (ctx, insn) -> ctx.jumpStack(IFNULL));
-        ExprAdapter.<FuncInsnNode>putRule(REF_FUNC, (ctx, insn) -> {
+        })
+                .match(REF_IS_NULL).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.jumpStack(IFNULL))
+                .match(REF_FUNC).terminal((Rule<FuncInsnNode>) (ctx, insn) -> {
             Type.getType(MethodHandle.class);
             ctx.externs.funcs.get(insn.function).emitGet(ctx);
         });
         // endregion
         // region Parametric
-        putRule(DROP, (ctx, insn) -> {
-            List<Object> stack = ctx.getFrame().stack;
-            if (stack.get(stack.size() - 1).equals(TOP)) {
-                ctx.pop2();
-            } else {
-                ctx.pop();
-            }
-        });
-        Rule<AbstractInsnNode> select = (ctx, insn) -> {
+        Rule<Object> select = (ctx, insn) -> {
             // WASM: if the top stack value is not 0, keep the bottom value, otherwise the top value.
             // JVM: if the top stack value is not zero, pop the top value, otherwise swap before popping
             Label end = new Label();
@@ -153,19 +148,29 @@ public class ExprAdapter {
                 ctx.pop();
             }
         };
-        putRule(SELECT, select);
-        putRule(SELECTT, select);
+        b
+                .match(DROP).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> {
+            List<Object> stack1 = ctx.getFrame().stack;
+            if (stack1.get(stack1.size() - 1).equals(TOP)) {
+                ctx.pop2();
+            } else {
+                ctx.pop();
+            }
+        })
+                .match(SELECT).terminal(select)
+                .match(SELECTT).terminal(select);
         // endregion
         // region Variable
-        ExprAdapter.<VariableInsnNode>putRule(LOCAL_GET, (ctx, insn) -> {
+        b
+                .match(LOCAL_GET).terminal((Rule<VariableInsnNode>) (ctx, insn) -> {
             ctx.localType(insn.index);
             ctx.visitVarInsn(ctx.localType(insn.index).getOpcode(ILOAD), ctx.localIndex(insn.index));
-        });
-        ExprAdapter.<VariableInsnNode>putRule(LOCAL_SET, (ctx, insn) -> {
+        })
+                .match(LOCAL_SET).terminal((Rule<VariableInsnNode>) (ctx, insn) -> {
             ctx.localType(insn.index);
             ctx.visitVarInsn(ctx.localType(insn.index).getOpcode(ISTORE), ctx.localIndex(insn.index));
-        });
-        ExprAdapter.<VariableInsnNode>putRule(LOCAL_TEE, (ctx, insn) -> {
+        })
+                .match(LOCAL_TEE).terminal((Rule<VariableInsnNode>) (ctx, insn) -> {
             Type type = ctx.localType(insn.index);
             if (type.getSize() == 2) {
                 ctx.dup2();
@@ -173,33 +178,34 @@ public class ExprAdapter {
                 ctx.dup();
             }
             ctx.visitVarInsn(type.getOpcode(ISTORE), ctx.localIndex(insn.index));
-        });
-        ExprAdapter.<VariableInsnNode>putRule(GLOBAL_GET, (ctx, insn) -> {
-            TypedExtern global = ctx.externs.globals.get(insn.index);
-            Types.toJava(global.type());
-            global.emitGet(ctx);
-        });
-        ExprAdapter.<VariableInsnNode>putRule(GLOBAL_SET, (ctx, insn) -> {
+        })
+                .match(GLOBAL_GET).terminal((Rule<VariableInsnNode>) (ctx, insn) -> {
+            TypedExtern global1 = ctx.externs.globals.get(insn.index);
+            Types.toJava(global1.type());
+            global1.emitGet(ctx);
+        })
+                .match(GLOBAL_SET).terminal((Rule<VariableInsnNode>) (ctx, insn) -> {
             TypedExtern global = ctx.externs.globals.get(insn.index);
             Types.toJava(global.type());
             global.emitSet(ctx);
         });
         // endregion
         // region Table
-        ExprAdapter.<TableInsnNode>putRule(TABLE_GET, (ctx, insn) -> {
-            TypedExtern table = ctx.externs.tables.get(insn.table);
-            table.emitGet(ctx);
+        b
+                .match(TABLE_GET).terminal((Rule<TableInsnNode>) (ctx, insn) -> {
+            TypedExtern table2 = ctx.externs.tables.get(insn.table);
+            table2.emitGet(ctx);
             ctx.swap();
-            ctx.arrayLoad(Types.toJava(table.type()));
-        });
-        ExprAdapter.<TableInsnNode>putRule(TABLE_SET, (ctx, insn) -> {
-            TypedExtern table = ctx.externs.tables.get(insn.table);
-            table.emitGet(ctx);
+            ctx.arrayLoad(Types.toJava(table2.type()));
+        })
+                .match(TABLE_SET).terminal((Rule<TableInsnNode>) (ctx, insn) -> {
+            TypedExtern table1 = ctx.externs.tables.get(insn.table);
+            table1.emitGet(ctx);
             ctx.dupX2();
             ctx.pop();
-            ctx.arrayStore(Types.toJava(table.type()));
-        });
-        PREFIX_RULES[TABLE_INIT] = (Rule<PrefixBinaryTableInsnNode>) (ctx, insn) -> {
+            ctx.arrayStore(Types.toJava(table1.type()));
+        })
+                .match(TABLE_INIT).<Rule<PrefixBinaryTableInsnNode>>terminal((ctx, insn) -> {
             TypedExtern table = ctx.externs.tables.get(insn.firstIndex);
             FieldNode elem = ctx.passiveElems[insn.secondIndex];
             if (elem == null) throw new IllegalStateException("No such passive elem");
@@ -220,15 +226,15 @@ public class ExprAdapter {
             ctx.visitMethodInsn(INVOKESTATIC, "java/lang/System", "arraycopy",
                     "(Ljava/lang/Object;ILjava/lang/Object;II)V",
                     false);
-        };
-        PREFIX_RULES[ELEM_DROP] = (Rule<PrefixTableInsnNode>) (ctx, insn) -> {
+        })
+                .match(ELEM_DROP).terminal((Rule<PrefixTableInsnNode>) (ctx, insn) -> {
             FieldNode elem = ctx.passiveElems[insn.table];
             if (elem == null) throw new IllegalStateException("No such passive elem");
             ctx.loadThis();
             ctx.push((String) null);
             ctx.visitFieldInsn(PUTFIELD, ctx.getName(), elem.name, elem.desc);
-        };
-        PREFIX_RULES[TABLE_COPY] = (Rule<PrefixBinaryTableInsnNode>) (ctx, insn) -> {
+        })
+                .match(TABLE_COPY).terminal((Rule<PrefixBinaryTableInsnNode>) (ctx, insn) -> {
             TypedExtern srcTable = ctx.externs.tables.get(insn.secondIndex);
             TypedExtern dstTable = ctx.externs.tables.get(insn.firstIndex);
             // System.arraycopy(src, srcPos, dest, destPos, length);
@@ -248,18 +254,18 @@ public class ExprAdapter {
             ctx.visitMethodInsn(INVOKESTATIC, "java/lang/System", "arrayCopy",
                     "(Ljava/lang/Object;ILjava/lang/Object;II)V",
                     false);
-        };
-        PREFIX_RULES[TABLE_GROW] = (Rule<PrefixTableInsnNode>) (ctx, insn) -> {
+        })
+                .match(TABLE_GROW).terminal((Rule<PrefixTableInsnNode>) (ctx, insn) -> {
             // TODO maybe implement table growth?
             ctx.pop2();
             ctx.push(-1);
-        };
-        PREFIX_RULES[TABLE_SIZE] = (Rule<PrefixTableInsnNode>) (ctx, insn) -> {
+        })
+                .match(TABLE_SIZE).terminal((Rule<PrefixTableInsnNode>) (ctx, insn) -> {
             TypedExtern table = ctx.externs.tables.get(insn.table);
             table.emitGet(ctx);
             ctx.arrayLength();
-        };
-        PREFIX_RULES[TABLE_FILL] = (Rule<PrefixTableInsnNode>) (ctx, insn) -> {
+        })
+                .match(TABLE_FILL).terminal((Rule<PrefixTableInsnNode>) (ctx, insn) -> {
             TypedExtern table = ctx.externs.tables.get(insn.table);
             Type tableType = Types.toJava(table.type());
             int i = ctx.newLocal(Type.INT_TYPE);
@@ -283,139 +289,141 @@ public class ExprAdapter {
             ctx.goTo(loop);
             ctx.mark(end);
             ctx.pop();
-        };
+        });
         // endregion
         // region Memory
         // region Load
-        ExprAdapter.<MemInsnNode>putRule(I32_LOAD, (ctx, insn) -> ctx
+        b
+                .match(I32_LOAD).terminal((Rule<MemInsnNode>) (ctx, insn) -> ctx
                 .addInsns(offsetFor(insn))
                 .addInsns(getMem(ctx))
-                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getInt", "(I)I")));
-        ExprAdapter.<MemInsnNode>putRule(I64_LOAD, (ctx, insn) -> ctx
+                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getInt", "(I)I")))
+                .match(I64_LOAD).terminal((Rule<MemInsnNode>) (ctx, insn) -> ctx
                 .addInsns(offsetFor(insn))
                 .addInsns(getMem(ctx))
-                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getLong", "(I)J")));
-        ExprAdapter.<MemInsnNode>putRule(F32_LOAD, (ctx, insn) -> ctx
+                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getLong", "(I)J")))
+                .match(F32_LOAD).terminal((Rule<MemInsnNode>) (ctx, insn) -> ctx
                 .addInsns(offsetFor(insn))
                 .addInsns(getMem(ctx))
-                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getFloat", "(I)F")));
-        ExprAdapter.<MemInsnNode>putRule(F64_LOAD, (ctx, insn) -> ctx
+                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getFloat", "(I)F")))
+                .match(F64_LOAD).terminal((Rule<MemInsnNode>) (ctx, insn) -> ctx
                 .addInsns(offsetFor(insn))
                 .addInsns(getMem(ctx))
-                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getDouble", "(I)D")));
-        ExprAdapter.<MemInsnNode>putRule(I32_LOAD8_S, (ctx, insn) -> ctx
+                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getDouble", "(I)D")))
+                .match(I32_LOAD8_S).terminal((Rule<MemInsnNode>) (ctx, insn) -> ctx
                 .addInsns(offsetFor(insn))
                 .addInsns(getMem(ctx))
-                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "get", "(I)B")));
-        ExprAdapter.<MemInsnNode>putRule(I32_LOAD8_U, (ctx, insn) -> ctx
-                .addInsns(offsetFor(insn))
-                .addInsns(getMem(ctx))
-                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "get", "(I)B"),
-                        staticNode("java/lang/Byte", "toUnsignedInt", "(B)I")));
-        ExprAdapter.<MemInsnNode>putRule(I32_LOAD16_S, (ctx, insn) -> ctx
-                .addInsns(offsetFor(insn))
-                .addInsns(getMem(ctx))
-                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getShort", "(I)S")));
-        ExprAdapter.<MemInsnNode>putRule(I32_LOAD16_U, (ctx, insn) -> ctx
-                .addInsns(offsetFor(insn))
-                .addInsns(getMem(ctx))
-                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getShort", "(I)S"),
-                        staticNode("java/lang/Short", "toUnsignedInt", "(S)I")));
-        ExprAdapter.<MemInsnNode>putRule(I64_LOAD8_S, (ctx, insn) -> ctx
+                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "get", "(I)B")))
+                .match(I32_LOAD8_U).terminal((Rule<MemInsnNode>) (ctx, insn) -> ctx
                 .addInsns(offsetFor(insn))
                 .addInsns(getMem(ctx))
                 .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "get", "(I)B"),
-                        new InsnNode(I2L)));
-        ExprAdapter.<MemInsnNode>putRule(I64_LOAD8_U, (ctx, insn) -> ctx
+                        staticNode("java/lang/Byte", "toUnsignedInt", "(B)I")))
+                .match(I32_LOAD16_S).terminal((Rule<MemInsnNode>) (ctx, insn) -> ctx
+                .addInsns(offsetFor(insn))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getShort", "(I)S")))
+                .match(I32_LOAD16_U).terminal((Rule<MemInsnNode>) (ctx, insn) -> ctx
+                .addInsns(offsetFor(insn))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getShort", "(I)S"),
+                        staticNode("java/lang/Short", "toUnsignedInt", "(S)I")))
+                .match(I64_LOAD8_S).terminal((Rule<MemInsnNode>) (ctx, insn) -> ctx
                 .addInsns(offsetFor(insn))
                 .addInsns(getMem(ctx))
                 .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "get", "(I)B"),
-                        staticNode("java/lang/Byte", "toUnsignedLong", "(B)J")));
-        ExprAdapter.<MemInsnNode>putRule(I64_LOAD16_S, (ctx, insn) -> ctx
+                        new InsnNode(I2L)))
+                .match(I64_LOAD8_U).terminal((Rule<MemInsnNode>) (ctx, insn) -> ctx
+                .addInsns(offsetFor(insn))
+                .addInsns(getMem(ctx))
+                .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "get", "(I)B"),
+                        staticNode("java/lang/Byte", "toUnsignedLong", "(B)J")))
+                .match(I64_LOAD16_S).terminal((Rule<MemInsnNode>) (ctx, insn) -> ctx
                 .addInsns(offsetFor(insn))
                 .addInsns(getMem(ctx))
                 .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getShort", "(I)S"),
-                        new InsnNode(I2L)));
-        ExprAdapter.<MemInsnNode>putRule(I64_LOAD16_U, (ctx, insn) -> ctx
+                        new InsnNode(I2L)))
+                .match(I64_LOAD16_U).terminal((Rule<MemInsnNode>) (ctx, insn) -> ctx
                 .addInsns(offsetFor(insn))
                 .addInsns(getMem(ctx))
                 .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getShort", "(I)S"),
-                        staticNode("java/lang/Short", "toUnsignedLong", "(S)J")));
-        ExprAdapter.<MemInsnNode>putRule(I64_LOAD32_S, (ctx, insn) -> ctx
+                        staticNode("java/lang/Short", "toUnsignedLong", "(S)J")))
+                .match(I64_LOAD32_S).terminal((Rule<MemInsnNode>) (ctx, insn) -> ctx
                 .addInsns(offsetFor(insn))
                 .addInsns(getMem(ctx))
                 .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getInt", "(I)I"),
-                        new InsnNode(I2L)));
-        ExprAdapter.<MemInsnNode>putRule(I64_LOAD32_U, (ctx, insn) -> ctx
+                        new InsnNode(I2L)))
+                .match(I64_LOAD32_U).terminal((Rule<MemInsnNode>) (ctx, insn) -> ctx
                 .addInsns(offsetFor(insn))
                 .addInsns(getMem(ctx))
                 .addInsns(new InsnNode(SWAP), virtualNode("java/nio/ByteBuffer", "getInt", "(I)I"),
                         staticNode("java/lang/Short", "toUnsignedLong", "(S)J")));
         // endregion
         // region Store
-        ExprAdapter.<MemInsnNode>putRule(I32_STORE, (ctx, insn) -> ctx
+        b
+                .match(I32_STORE).terminal((Rule<MemInsnNode>) (ctx, insn) -> ctx
                 .addInsns(new InsnNode(SWAP))
                 .addInsns(offsetFor(insn))
                 .addInsns(new InsnNode(SWAP))
                 .addInsns(getMem(ctx))
                 .addInsns(new InsnNode(DUP_X2), new InsnNode(POP),
                         virtualNode("java/nio/ByteBuffer", "putInt", "(II)Ljava/nio/ByteBuffer;"),
-                        new InsnNode(POP)));
-        ExprAdapter.<MemInsnNode>putRule(I64_STORE, (ctx, insn) -> ctx
+                        new InsnNode(POP)))
+                .match(I64_STORE).terminal((Rule<MemInsnNode>) (ctx, insn) -> ctx
                 .addInsns(new InsnNode(DUP2_X1), new InsnNode(POP2))
                 .addInsns(offsetFor(insn))
                 .addInsns(getMem(ctx))
                 .addInsns(new InsnNode(SWAP), new InsnNode(DUP2_X2), new InsnNode(POP2),
                         virtualNode("java/nio/ByteBuffer", "putLong", "(IJ)Ljava/nio/ByteBuffer;"),
-                        new InsnNode(POP)));
-        ExprAdapter.<MemInsnNode>putRule(F32_STORE, (ctx, insn) -> ctx
+                        new InsnNode(POP)))
+                .match(F32_STORE).terminal((Rule<MemInsnNode>) (ctx, insn) -> ctx
                 .addInsns(new InsnNode(SWAP))
                 .addInsns(offsetFor(insn))
                 .addInsns(new InsnNode(SWAP))
                 .addInsns(getMem(ctx))
                 .addInsns(new InsnNode(DUP_X2), new InsnNode(POP),
                         virtualNode("java/nio/ByteBuffer", "putInt", "(IF)Ljava/nio/ByteBuffer;"),
-                        new InsnNode(POP)));
-        ExprAdapter.<MemInsnNode>putRule(F64_STORE, (ctx, insn) -> ctx
+                        new InsnNode(POP)))
+                .match(F64_STORE).terminal((Rule<MemInsnNode>) (ctx, insn) -> ctx
                 .addInsns(new InsnNode(DUP2_X1), new InsnNode(POP2))
                 .addInsns(offsetFor(insn))
                 .addInsns(getMem(ctx))
                 .addInsns(new InsnNode(SWAP), new InsnNode(DUP2_X2), new InsnNode(POP2),
                         virtualNode("java/nio/ByteBuffer", "putDouble", "(ID)Ljava/nio/ByteBuffer;"),
-                        new InsnNode(POP)));
-        ExprAdapter.<MemInsnNode>putRule(I32_STORE8, (ctx, insn) -> ctx
+                        new InsnNode(POP)))
+                .match(I32_STORE8).terminal((Rule<MemInsnNode>) (ctx, insn) -> ctx
                 .addInsns(new InsnNode(I2B), new InsnNode(SWAP))
                 .addInsns(offsetFor(insn))
                 .addInsns(new InsnNode(SWAP))
                 .addInsns(getMem(ctx))
                 .addInsns(new InsnNode(DUP_X2), new InsnNode(POP),
                         virtualNode("java/nio/ByteBuffer", "put", "(IB)Ljava/nio/ByteBuffer;"),
-                        new InsnNode(POP)));
-        ExprAdapter.<MemInsnNode>putRule(I32_STORE16, (ctx, insn) -> ctx
+                        new InsnNode(POP)))
+                .match(I32_STORE16).terminal((Rule<MemInsnNode>) (ctx, insn) -> ctx
                 .addInsns(new InsnNode(I2S), new InsnNode(SWAP))
                 .addInsns(offsetFor(insn))
                 .addInsns(new InsnNode(SWAP))
                 .addInsns(getMem(ctx))
                 .addInsns(new InsnNode(DUP_X2), new InsnNode(POP),
                         virtualNode("java/nio/ByteBuffer", "putShort", "(IS)Ljava/nio/ByteBuffer;"),
-                        new InsnNode(POP)));
-        ExprAdapter.<MemInsnNode>putRule(I64_STORE8, (ctx, insn) -> ctx
+                        new InsnNode(POP)))
+                .match(I64_STORE8).terminal((Rule<MemInsnNode>) (ctx, insn) -> ctx
                 .addInsns(new InsnNode(L2I), new InsnNode(I2B), new InsnNode(SWAP))
                 .addInsns(offsetFor(insn))
                 .addInsns(new InsnNode(SWAP))
                 .addInsns(getMem(ctx))
                 .addInsns(new InsnNode(DUP_X2), new InsnNode(POP),
                         virtualNode("java/nio/ByteBuffer", "put", "(IB)Ljava/nio/ByteBuffer;"),
-                        new InsnNode(POP)));
-        ExprAdapter.<MemInsnNode>putRule(I64_STORE16, (ctx, insn) -> ctx
+                        new InsnNode(POP)))
+                .match(I64_STORE16).terminal((Rule<MemInsnNode>) (ctx, insn) -> ctx
                 .addInsns(new InsnNode(L2I), new InsnNode(I2S), new InsnNode(SWAP))
                 .addInsns(offsetFor(insn))
                 .addInsns(new InsnNode(SWAP))
                 .addInsns(getMem(ctx))
                 .addInsns(new InsnNode(DUP_X2), new InsnNode(POP),
                         virtualNode("java/nio/ByteBuffer", "putShort", "(IS)Ljava/nio/ByteBuffer;"),
-                        new InsnNode(POP)));
-        ExprAdapter.<MemInsnNode>putRule(I64_STORE32, (ctx, insn) -> ctx
+                        new InsnNode(POP)))
+                .match(I64_STORE32).terminal((Rule<MemInsnNode>) (ctx, insn) -> ctx
                 .addInsns(new InsnNode(L2I), new InsnNode(SWAP))
                 .addInsns(offsetFor(insn))
                 .addInsns(new InsnNode(SWAP))
@@ -424,18 +432,20 @@ public class ExprAdapter {
                         virtualNode("java/nio/ByteBuffer", "putInt", "(II)Ljava/nio/ByteBuffer;"),
                         new InsnNode(POP)));
         // endregion
-        putRule(MEMORY_SIZE, (ctx, insn) -> {
+        b
+                .match(MEMORY_SIZE).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> {
             ctx.externs.mems.get(0).emitGet(ctx);
             ctx.addInsns(virtualNode("java/nio/ByteBuffer", "capacity", "()I"));
             ctx.push(PAGE_SIZE);
             ctx.visitInsn(IDIV);
-        });
-        putRule(MEMORY_GROW, (ctx, insn) -> {
+        })
+                // TODO maybe implement memory growth?
+                .match(MEMORY_GROW).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> {
             // TODO maybe implement memory growth?
             ctx.pop();
             ctx.push(-1);
-        });
-        PREFIX_RULES[MEMORY_INIT] = (Rule<IndexedMemInsnNode>) (ctx, insn) -> {
+        })
+                .match(MEMORY_INIT).terminal((Rule<IndexedMemInsnNode>) (ctx, insn) -> {
             Extern mem = ctx.externs.mems.get(0);
             FieldNode data = ctx.passiveDatas[insn.index];
             if (data == null) throw new IllegalStateException("No such passive data");
@@ -456,15 +466,15 @@ public class ExprAdapter {
             ctx.visitMethodInsn(INVOKESTATIC, "java/lang/System", "arraycopy",
                     "(Ljava/lang/Object;ILjava/lang/Object;II)V",
                     false);
-        };
-        PREFIX_RULES[DATA_DROP] = (Rule<IndexedMemInsnNode>) (ctx, insn) -> {
+        })
+                .match(DATA_DROP).terminal((Rule<IndexedMemInsnNode>) (ctx, insn) -> {
             FieldNode data = ctx.passiveDatas[insn.index];
             if (data == null) throw new IllegalStateException("No such passive data");
             ctx.loadThis();
             ctx.push((String) null);
             ctx.visitFieldInsn(PUTFIELD, ctx.getName(), data.name, data.desc);
-        };
-        PREFIX_RULES[MEMORY_COPY] = (ctx, insn) -> {
+        })
+                .match(MEMORY_COPY).terminal((ctx, insn) -> {
             int n = ctx.newLocal(Type.INT_TYPE);
             ctx.storeLocal(n);
             int s = ctx.newLocal(Type.INT_TYPE);
@@ -481,8 +491,8 @@ public class ExprAdapter {
             ctx.visitMethodInsn(INVOKEVIRTUAL, "java/nio/ByteBuffer", "slice",
                     "(II)Ljava/nio/ByteBuffer;",
                     false);
-        };
-        PREFIX_RULES[MEMORY_FILL] = (ctx, insn) -> {
+        })
+                .match(MEMORY_FILL).terminal((ctx, insn) -> {
             int n = ctx.newLocal(Type.INT_TYPE);
             ctx.storeLocal(n);
             int v = ctx.newLocal(Type.INT_TYPE);
@@ -506,150 +516,193 @@ public class ExprAdapter {
             ctx.goTo(loop);
             ctx.mark(end);
             ctx.pop();
-        };
+        });
         // endregion
         // region Numeric
         // region Const
-        byte[] consts = { I32_CONST, I64_CONST, F32_CONST, F64_CONST };
-        for (byte aConst : consts) {
-            ExprAdapter.<ConstInsnNode>putRule(aConst, (ctx, insn) -> ctx.addInsns(constant(insn.value)));
-        }
+        b
+                .match(I32_CONST).<Rule<ConstInsnNode>>terminal((ctx, insn) -> ctx.push((int) insn.value))
+                .match(I64_CONST).<Rule<ConstInsnNode>>terminal((ctx, insn) -> ctx.push((long) insn.value))
+                .match(F32_CONST).<Rule<ConstInsnNode>>terminal((ctx, insn) -> ctx.push((float) insn.value))
+                .match(F64_CONST).<Rule<ConstInsnNode>>terminal((ctx, insn) -> ctx.push((double) insn.value));
         // endregion
         // region Comparisons
         // region i32
         MethodInsnNode compareUnsignedI = staticNode("java/lang/Integer", "compareUnsigned", "(II)I");
-        putRule(I32_EQZ, (ctx, insn) -> ctx.jumpStack(IFEQ));
-        putRule(I32_EQ, (ctx, insn) -> ctx.jumpStack(IF_ICMPEQ));
-        putRule(I32_NE, (ctx, insn) -> ctx.jumpStack(IF_ICMPNE));
-        putRule(I32_LT_S, (ctx, insn) -> ctx.jumpStack(IF_ICMPLT));
-        putRule(I32_LT_U, (ctx, insn) -> ctx.addInsns(compareUnsignedI.clone(null)).jumpStack(IFLT));
-        putRule(I32_GT_S, (ctx, insn) -> ctx.jumpStack(IF_ICMPGT));
-        putRule(I32_GT_U, (ctx, insn) -> ctx.addInsns(compareUnsignedI.clone(null)).jumpStack(IFGT));
-        putRule(I32_LE_S, (ctx, insn) -> ctx.jumpStack(IF_ICMPLE));
-        putRule(I32_LE_U, (ctx, insn) -> ctx.addInsns(compareUnsignedI.clone(null)).jumpStack(IFLE));
-        putRule(I32_GE_S, (ctx, insn) -> ctx.jumpStack(IF_ICMPGE));
-        putRule(I32_GE_U, (ctx, insn) -> ctx.addInsns(compareUnsignedI.clone(null)).jumpStack(IFGE));
+        b
+                .match(I32_EQZ).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.jumpStack(IFEQ))
+                .match(I32_EQ).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.jumpStack(IF_ICMPEQ))
+                .match(I32_NE).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.jumpStack(IF_ICMPNE))
+                .match(I32_LT_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.jumpStack(IF_ICMPLT))
+                .match(I32_LT_U).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(compareUnsignedI.clone(null)).jumpStack(IFLT))
+                .match(I32_GT_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.jumpStack(IF_ICMPGT))
+                .match(I32_GT_U).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(compareUnsignedI.clone(null)).jumpStack(IFGT))
+                .match(I32_LE_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .jumpStack(IF_ICMPLE))
+                .match(I32_LE_U).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(compareUnsignedI.clone(null)).jumpStack(IFLE))
+                .match(I32_GE_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.jumpStack(IF_ICMPGE))
+                .match(I32_GE_U).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(compareUnsignedI.clone(null)).jumpStack(IFGE));
         // endregion
         // region i64
         MethodInsnNode compareUnsignedL = staticNode("java/lang/Long", "compareUnsigned", "(JJ)I");
-        putRule(I64_EQZ, (ctx, insn) -> ctx.addInsns(new InsnNode(L2I)).jumpStack(IFEQ));
-        putRule(I64_EQ, (ctx, insn) -> ctx.addInsns(new InsnNode(LCMP)).jumpStack(IFEQ));
-        putRule(I64_NE, (ctx, insn) -> ctx.addInsns(new InsnNode(LCMP)).jumpStack(IFNE));
-        putRule(I64_LT_S, (ctx, insn) -> ctx.addInsns(new InsnNode(LCMP)).jumpStack(IFLT));
-        putRule(I64_LT_U, (ctx, insn) -> ctx.addInsns(compareUnsignedL.clone(null)).jumpStack(IFLT));
-        putRule(I64_GT_S, (ctx, insn) -> ctx.addInsns(new InsnNode(LCMP)).jumpStack(IFGT));
-        putRule(I64_GT_U, (ctx, insn) -> ctx.addInsns(compareUnsignedL.clone(null)).jumpStack(IFGT));
-        putRule(I64_LE_S, (ctx, insn) -> ctx.addInsns(new InsnNode(LCMP)).jumpStack(IFLE));
-        putRule(I64_LE_U, (ctx, insn) -> ctx.addInsns(compareUnsignedL.clone(null)).jumpStack(IFLE));
-        putRule(I64_GE_S, (ctx, insn) -> ctx.addInsns(new InsnNode(LCMP)).jumpStack(IFGE));
-        putRule(I64_GE_U, (ctx, insn) -> ctx.addInsns(compareUnsignedL.clone(null)).jumpStack(IFGE));
+        b
+                .match(I64_EQZ).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(L2I)).jumpStack(IFEQ))
+                .match(I64_EQ).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(LCMP)).jumpStack(IFEQ))
+                .match(I64_NE).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(LCMP)).jumpStack(IFNE))
+                .match(I64_LT_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(LCMP)).jumpStack(IFLT))
+                .match(I64_LT_U).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(compareUnsignedL.clone(null)).jumpStack(IFLT))
+                .match(I64_GT_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(new InsnNode(LCMP)).jumpStack(IFGT))
+                .match(I64_GT_U).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(compareUnsignedL.clone(null)).jumpStack(IFGT))
+                .match(I64_LE_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(new InsnNode(LCMP)).jumpStack(IFLE))
+                .match(I64_LE_U).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(compareUnsignedL.clone(null)).jumpStack(IFLE))
+                .match(I64_GE_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(new InsnNode(LCMP)).jumpStack(IFGE))
+                .match(I64_GE_U).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(compareUnsignedL.clone(null)).jumpStack(IFGE));
         // endregion
         // region f32
-        putRule(F32_EQ, (ctx, insn) -> ctx.addInsns(new InsnNode(FCMPG)).jumpStack(IFEQ));
-        putRule(F32_NE, (ctx, insn) -> ctx.addInsns(new InsnNode(FCMPG)).jumpStack(IFNE));
-        putRule(F32_LT, (ctx, insn) -> ctx.addInsns(new InsnNode(FCMPG)).jumpStack(IFLT));
-        putRule(F32_GT, (ctx, insn) -> ctx.addInsns(new InsnNode(FCMPL)).jumpStack(IFGT));
-        putRule(F32_LE, (ctx, insn) -> ctx.addInsns(new InsnNode(FCMPG)).jumpStack(IFLE));
-        putRule(F32_GE, (ctx, insn) -> ctx.addInsns(new InsnNode(FCMPL)).jumpStack(IFGE));
+        b
+                .match(F32_EQ).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(FCMPG)).jumpStack(IFEQ))
+                .match(F32_NE).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(FCMPG)).jumpStack(IFNE))
+                .match(F32_LT).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(FCMPG)).jumpStack(IFLT))
+                .match(F32_GT).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(FCMPL)).jumpStack(IFGT))
+                .match(F32_LE).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(FCMPG)).jumpStack(IFLE))
+                .match(F32_GE).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(FCMPL)).jumpStack(IFGE));
         // endregion
         // region f64
-        putRule(F64_EQ, (ctx, insn) -> ctx.addInsns(new InsnNode(DCMPG)).jumpStack(IFEQ));
-        putRule(F64_NE, (ctx, insn) -> ctx.addInsns(new InsnNode(DCMPG)).jumpStack(IFNE));
-        putRule(F64_LT, (ctx, insn) -> ctx.addInsns(new InsnNode(DCMPG)).jumpStack(IFLT));
-        putRule(F64_GT, (ctx, insn) -> ctx.addInsns(new InsnNode(DCMPL)).jumpStack(IFGT));
-        putRule(F64_LE, (ctx, insn) -> ctx.addInsns(new InsnNode(DCMPG)).jumpStack(IFLE));
-        putRule(F64_GE, (ctx, insn) -> ctx.addInsns(new InsnNode(DCMPL)).jumpStack(IFGE));
+        b
+                .match(F64_EQ).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(DCMPG)).jumpStack(IFEQ))
+                .match(F64_NE).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(DCMPG)).jumpStack(IFNE))
+                .match(F64_LT).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(DCMPG)).jumpStack(IFLT))
+                .match(F64_GT).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(DCMPL)).jumpStack(IFGT))
+                .match(F64_LE).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(DCMPG)).jumpStack(IFLE))
+                .match(F64_GE).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(DCMPL)).jumpStack(IFGE));
+        // endregion
         // endregion
         // endregion
         // region Mathematical
         // region i32
-        putRule(I32_CLZ, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Integer", "numberOfLeadingZeros", "(I)I")));
-        putRule(I32_CTZ, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Integer", "numberOfTrailingZeros", "(I)I")));
-        putRule(I32_POPCNT, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Integer", "numberOfTrailingZeros", "(I)I")));
-        putRule(I32_ADD, (ctx, insn) -> ctx.addInsns(new InsnNode(IADD)));
-        putRule(I32_SUB, (ctx, insn) -> ctx.addInsns(new InsnNode(ISUB)));
-        putRule(I32_MUL, (ctx, insn) -> ctx.addInsns(new InsnNode(IMUL)));
-        putRule(I32_DIV_S, (ctx, insn) -> ctx.addInsns(new InsnNode(IDIV)));
-        putRule(I32_DIV_U, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Integer", "divideUnsigned", "(II)I")));
-        putRule(I32_REM_S, (ctx, insn) -> ctx.addInsns(new InsnNode(IREM)));
-        putRule(I32_REM_U, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Integer", "remainderUnsigned", "(II)I")));
-        putRule(I32_AND, (ctx, insn) -> ctx.addInsns(new InsnNode(IAND)));
-        putRule(I32_OR, (ctx, insn) -> ctx.addInsns(new InsnNode(IOR)));
-        putRule(I32_XOR, (ctx, insn) -> ctx.addInsns(new InsnNode(IXOR)));
-        putRule(I32_SHL, (ctx, insn) -> ctx.addInsns(new InsnNode(ISHL)));
-        putRule(I32_SHR_S, (ctx, insn) -> ctx.addInsns(new InsnNode(ISHR)));
-        putRule(I32_SHR_U, (ctx, insn) -> ctx.addInsns(new InsnNode(IUSHR)));
-        putRule(I32_ROTL, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Integer", "rotateLeft", "(II)I")));
-        putRule(I32_ROTR, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Integer", "rotateRight", "(II)I")));
+        b
+                .match(I32_CLZ).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Integer", "numberOfLeadingZeros", "(I)I")))
+                .match(I32_CTZ).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Integer", "numberOfTrailingZeros", "(I)I")))
+                .match(I32_POPCNT).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Integer", "numberOfTrailingZeros", "(I)I")))
+                .match(I32_ADD).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(IADD)))
+                .match(I32_SUB).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(ISUB)))
+                .match(I32_MUL).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(IMUL)))
+                .match(I32_DIV_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(IDIV)))
+                .match(I32_DIV_U).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Integer", "divideUnsigned", "(II)I")))
+                .match(I32_REM_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(IREM)))
+                .match(I32_REM_U).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Integer", "remainderUnsigned", "(II)I")))
+                .match(I32_AND).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(IAND)))
+                .match(I32_OR).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(IOR)))
+                .match(I32_XOR).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(IXOR)))
+                .match(I32_SHL).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(ISHL)))
+                .match(I32_SHR_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(ISHR)))
+                .match(I32_SHR_U).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(IUSHR)))
+                .match(I32_ROTL).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Integer", "rotateLeft", "(II)I")))
+                .match(I32_ROTR).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Integer", "rotateRight", "(II)I")));
         // endregion
         // region i64
-        putRule(I64_CLZ, (ctx, insn) -> ctx.addInsns(makeList(staticNode("java/lang/Long", "numberOfLeadingZeros", "(J)I"), new InsnNode(I2L))));
-        putRule(I64_CTZ, (ctx, insn) -> ctx.addInsns(makeList(staticNode("java/lang/Long", "numberOfTrailingZeros", "(J)I"), new InsnNode(I2L))));
-        putRule(I64_POPCNT, (ctx, insn) -> ctx.addInsns(makeList(staticNode("java/lang/Long", "bitCount", "(J)I"), new InsnNode(I2L))));
-        putRule(I64_ADD, (ctx, insn) -> ctx.addInsns(new InsnNode(LADD)));
-        putRule(I64_SUB, (ctx, insn) -> ctx.addInsns(new InsnNode(LSUB)));
-        putRule(I64_MUL, (ctx, insn) -> ctx.addInsns(new InsnNode(LMUL)));
-        putRule(I64_DIV_S, (ctx, insn) -> ctx.addInsns(new InsnNode(LDIV)));
-        putRule(I64_DIV_U, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Long", "divideUnsigned", "(JJ)J")));
-        putRule(I64_REM_S, (ctx, insn) -> ctx.addInsns(new InsnNode(LREM)));
-        putRule(I64_REM_U, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Long", "remainderUnsigned", "(JJ)J")));
-        putRule(I64_AND, (ctx, insn) -> ctx.addInsns(new InsnNode(LAND)));
-        putRule(I64_OR, (ctx, insn) -> ctx.addInsns(new InsnNode(LOR)));
-        putRule(I64_XOR, (ctx, insn) -> ctx.addInsns(new InsnNode(LXOR)));
-        putRule(I64_SHL, (ctx, insn) -> ctx.addInsns(new InsnNode(LSHL)));
-        putRule(I64_SHR_S, (ctx, insn) -> ctx.addInsns(new InsnNode(LSHR)));
-        putRule(I64_SHR_U, (ctx, insn) -> ctx.addInsns(new InsnNode(LUSHR)));
-        putRule(I64_ROTL, (ctx, insn) -> ctx.addInsns(new InsnNode(L2I), staticNode("java/lang/Long", "rotateLeft", "(JI)J")));
-        putRule(I64_ROTR, (ctx, insn) -> ctx.addInsns(new InsnNode(L2I), staticNode("java/lang/Long", "rotateRight", "(JI)J")));
+        b
+                .match(I64_CLZ).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(makeList(staticNode("java/lang/Long", "numberOfLeadingZeros", "(J)I"), new InsnNode(I2L))))
+                .match(I64_CTZ).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(makeList(staticNode("java/lang/Long", "numberOfTrailingZeros", "(J)I"), new InsnNode(I2L))))
+                .match(I64_POPCNT).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(makeList(staticNode("java/lang/Long", "bitCount", "(J)I"), new InsnNode(I2L))))
+                .match(I64_ADD).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(LADD)))
+                .match(I64_SUB).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(LSUB)))
+                .match(I64_MUL).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(LMUL)))
+                .match(I64_DIV_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(LDIV)))
+                .match(I64_DIV_U).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Long", "divideUnsigned", "(JJ)J")))
+                .match(I64_REM_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(LREM)))
+                .match(I64_REM_U).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Long", "remainderUnsigned", "(JJ)J")))
+                .match(I64_AND).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(LAND)))
+                .match(I64_OR).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(LOR)))
+                .match(I64_XOR).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(LXOR)))
+                .match(I64_SHL).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(LSHL)))
+                .match(I64_SHR_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(LSHR)))
+                .match(I64_SHR_U).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(LUSHR)))
+                .match(I64_ROTL).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(new InsnNode(L2I), staticNode("java/lang/Long", "rotateLeft", "(JI)J")))
+                .match(I64_ROTR).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(new InsnNode(L2I), staticNode("java/lang/Long", "rotateRight", "(JI)J")));
         // endregion
         // region f32
-        putRule(F32_ABS, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Math", "abs", "(F)F")));
-        putRule(F32_NEG, (ctx, insn) -> ctx.addInsns(new InsnNode(FNEG)));
-        putRule(F32_CEIL, (ctx, insn) -> ctx.addInsns(
+        b
+                .match(F32_ABS).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Math", "abs", "(F)F")))
+                .match(F32_NEG).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(FNEG)))
+                .match(F32_CEIL).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(
                 new InsnNode(F2D),
                 staticNode("java/lang/Math", "ceil", "(D)D"),
-                new InsnNode(D2F)));
-        putRule(F32_FLOOR, (ctx, insn) -> ctx.addInsns(
+                new InsnNode(D2F)))
+                .match(F32_FLOOR).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(
                 new InsnNode(F2D),
                 staticNode("java/lang/Math", "floor", "(D)D"),
-                new InsnNode(D2F)));
-        putRule(F32_TRUNC, (ctx, insn) -> {
-            LabelNode els = new LabelNode();
-            LabelNode end = new LabelNode();
+                new InsnNode(D2F)))
+                .match(F32_TRUNC).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> {
+            LabelNode els1 = new LabelNode();
+            LabelNode end1 = new LabelNode();
             ctx.addInsns(
                     new InsnNode(F2D),
                     new InsnNode(DUP2),
                     new InsnNode(DCMPG),
-                    new JumpInsnNode(IFLT, els),
+                    new JumpInsnNode(IFLT, els1),
                     staticNode("java/lang/Math", "floor", "(D)D"),
-                    new JumpInsnNode(GOTO, end),
-                    els,
+                    new JumpInsnNode(GOTO, end1),
+                    els1,
                     staticNode("java/lang/Math", "ceil", "(D)D"),
-                    end,
+                    end1,
                     new InsnNode(D2F));
-        });
-        putRule(F32_NEAREST, (ctx, insn) -> {
+        })
+                .match(F32_NEAREST).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> {
             // TODO I can't think of a clean way to do this
             throw new UnsupportedOperationException();
-        });
-        putRule(F32_SQRT, (ctx, insn) -> ctx.addInsns(
+        })
+                .match(F32_SQRT).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(
                 new InsnNode(F2D),
                 staticNode("java/lang/Math", "sqrt", "(D)D"),
-                new InsnNode(D2F)));
-        putRule(F32_ADD, (ctx, insn) -> ctx.addInsns(new InsnNode(FADD)));
-        putRule(F32_SUB, (ctx, insn) -> ctx.addInsns(new InsnNode(FSUB)));
-        putRule(F32_MUL, (ctx, insn) -> ctx.addInsns(new InsnNode(FMUL)));
-        putRule(F32_DIV, (ctx, insn) -> ctx.addInsns(new InsnNode(FDIV)));
-        putRule(F32_MIN, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Math", "min", "(FF)F")));
-        putRule(F32_MAX, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Math", "max", "(FF)F")));
-        putRule(F32_COPYSIGN, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Math", "copySign", "(FF)F")));
+                new InsnNode(D2F)))
+                .match(F32_ADD).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(FADD)))
+                .match(F32_SUB).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(FSUB)))
+                .match(F32_MUL).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(FMUL)))
+                .match(F32_DIV).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(FDIV)))
+                .match(F32_MIN).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Math", "min", "(FF)F")))
+                .match(F32_MAX).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Math", "max", "(FF)F")))
+                .match(F32_COPYSIGN).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Math", "copySign", "(FF)F")));
         // endregion
         // region f64
-        putRule(F64_ABS, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Math", "abs", "(D)D")));
-        putRule(F64_NEG, (ctx, insn) -> ctx.addInsns(new InsnNode(DNEG)));
-        putRule(F64_CEIL, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Math", "ceil", "(D)D")));
-        putRule(F64_FLOOR, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Math", "floor", "(D)D")));
-        putRule(F64_TRUNC, (ctx, insn) -> {
+        b
+                .match(F64_ABS).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Math", "abs", "(D)D")))
+                .match(F64_NEG).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(DNEG)))
+                .match(F64_CEIL).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Math", "ceil", "(D)D")))
+                .match(F64_FLOOR).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Math", "floor", "(D)D")))
+                .match(F64_TRUNC).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> {
             LabelNode els = new LabelNode();
             LabelNode end = new LabelNode();
             ctx
@@ -662,67 +715,107 @@ public class ExprAdapter {
                             els,
                             staticNode("java/lang/Math", "ceil", "(D)D"),
                             end);
-        });
-        putRule(F64_NEAREST, (ctx, insn) -> {
+        })
+                // TODO I can't think of a clean way to do this
+                .match(F64_NEAREST).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> {
             // TODO I can't think of a clean way to do this
             throw new UnsupportedOperationException();
-        });
-        putRule(F64_SQRT, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Math", "sqrt", "(D)D")));
-        putRule(F64_ADD, (ctx, insn) -> ctx.addInsns(new InsnNode(DADD)));
-        putRule(F64_SUB, (ctx, insn) -> ctx.addInsns(new InsnNode(DSUB)));
-        putRule(F64_MUL, (ctx, insn) -> ctx.addInsns(new InsnNode(DMUL)));
-        putRule(F64_DIV, (ctx, insn) -> ctx.addInsns(new InsnNode(DDIV)));
-        putRule(F64_MIN, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Math", "min", "(DD)D")));
-        putRule(F64_MAX, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Math", "max", "(DD)D")));
-        putRule(F64_COPYSIGN, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Math", "copySign", "(DD)D")));
+        })
+                .match(F64_SQRT).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Math", "sqrt", "(D)D")))
+                .match(F64_ADD).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(DADD)))
+                .match(F64_SUB).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(DSUB)))
+                .match(F64_MUL).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(DMUL)))
+                .match(F64_DIV).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.addInsns(new InsnNode(DDIV)))
+                .match(F64_MIN).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Math", "min", "(DD)D")))
+                .match(F64_MAX).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Math", "max", "(DD)D")))
+                .match(F64_COPYSIGN).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Math", "copySign", "(DD)D")));
         // endregion
         // endregion
         // region Conversions
-        putRule(I32_WRAP_I64, (ctx, insn) -> ctx.visitInsn(L2I));
-        // FIXME these truncations are actually saturating, while they should cause a trap instead
-        putRule(I32_TRUNC_F32_S, (ctx, insn) -> ctx.visitInsn(F2I));
-        putRule(I32_TRUNC_F32_U, (ctx, insn) -> ctx.visitInsn(F2I));
-        putRule(I32_TRUNC_F64_S, (ctx, insn) -> ctx.visitInsn(D2I));
-        putRule(I32_TRUNC_F64_U, (ctx, insn) -> ctx.visitInsn(D2I));
-        putRule(I64_EXTEND_I32_S, (ctx, insn) -> ctx.visitInsn(I2L));
-        putRule(I64_EXTEND_I32_U, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Integer", "toUnsignedLong", "(I)J")));
-        putRule(I64_TRUNC_F32_S, (ctx, insn) -> ctx.visitInsn(F2L));
-        putRule(I64_TRUNC_F32_U, (ctx, insn) -> ctx.visitInsn(F2L));
-        putRule(I64_TRUNC_F64_S, (ctx, insn) -> ctx.visitInsn(D2L));
-        putRule(I64_TRUNC_F64_U, (ctx, insn) -> ctx.visitInsn(D2L));
-        putRule(F32_CONVERT_I32_S, (ctx, insn) -> ctx.visitInsn(I2F));
-        putRule(F32_CONVERT_I32_U, (ctx, insn) -> ctx.visitInsn(I2F));
-        putRule(F32_CONVERT_I64_S, (ctx, insn) -> ctx.visitInsn(L2F));
-        putRule(F32_CONVERT_I64_U, (ctx, insn) -> ctx.visitInsn(L2F));
-        putRule(F32_DEMOTE_F64, (ctx, insn) -> ctx.visitInsn(D2F));
-        putRule(F64_CONVERT_I32_S, (ctx, insn) -> ctx.visitInsn(I2D));
-        putRule(F64_CONVERT_I32_U, (ctx, insn) -> ctx.visitInsn(I2D));
-        putRule(F64_CONVERT_I64_S, (ctx, insn) -> ctx.visitInsn(L2D));
-        putRule(F64_CONVERT_I64_U, (ctx, insn) -> ctx.visitInsn(L2D));
-        putRule(F64_PROMOTE_F32, (ctx, insn) -> ctx.visitInsn(F2D));
-        putRule(I32_REINTERPRET_F32, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Float", "floatToRawIntBits", "(F)I")));
-        putRule(I64_REINTERPRET_F64, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Double", "doubleToRawLongBits", "(D)J")));
-        putRule(F32_REINTERPRET_I32, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Float", "intBitsToFloat", "(I)F")));
-        putRule(F64_REINTERPRET_I64, (ctx, insn) -> ctx.addInsns(staticNode("java/lang/Double", "longBitsToDouble", "(J)D")));
+        b
+                .match(I32_WRAP_I64).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.visitInsn(L2I))
+                // FIXME these truncations are actually saturating, while they should cause a trap instead
+                .match(I32_TRUNC_F32_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.visitInsn(F2I))
+                .match(I32_TRUNC_F32_U).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.visitInsn(F2I))
+                .match(I32_TRUNC_F64_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.visitInsn(D2I))
+                .match(I32_TRUNC_F64_U).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.visitInsn(D2I))
+                .match(I64_EXTEND_I32_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.visitInsn(I2L))
+                .match(I64_EXTEND_I32_U).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Integer", "toUnsignedLong", "(I)J")))
+                .match(I64_TRUNC_F32_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.visitInsn(F2L))
+                .match(I64_TRUNC_F32_U).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.visitInsn(F2L))
+                .match(I64_TRUNC_F64_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.visitInsn(D2L))
+                .match(I64_TRUNC_F64_U).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.visitInsn(D2L))
+                .match(F32_CONVERT_I32_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.visitInsn(I2F))
+                .match(F32_CONVERT_I32_U).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.visitInsn(I2F))
+                .match(F32_CONVERT_I64_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.visitInsn(L2F))
+                .match(F32_CONVERT_I64_U).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.visitInsn(L2F))
+                .match(F32_DEMOTE_F64).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.visitInsn(D2F))
+                .match(F64_CONVERT_I32_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.visitInsn(I2D))
+                .match(F64_CONVERT_I32_U).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.visitInsn(I2D))
+                .match(F64_CONVERT_I64_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.visitInsn(L2D))
+                .match(F64_CONVERT_I64_U).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.visitInsn(L2D))
+                .match(F64_PROMOTE_F32).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.visitInsn(F2D))
+                .match(I32_REINTERPRET_F32).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Float", "floatToRawIntBits", "(F)I")))
+                .match(I64_REINTERPRET_F64).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Double", "doubleToRawLongBits", "(D)J")))
+                .match(F32_REINTERPRET_I32).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Float", "intBitsToFloat", "(I)F")))
+                .match(F64_REINTERPRET_I64).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(staticNode("java/lang/Double", "longBitsToDouble", "(J)D")));
         // endregion
         // region Extension
-        putRule(I32_EXTEND8_S, (ctx, insn) -> ctx.visitInsn(I2B));
-        putRule(I32_EXTEND16_S, (ctx, insn) -> ctx.visitInsn(I2S));
-        putRule(I64_EXTEND8_S, (ctx, insn) -> ctx.addInsns(new InsnNode(L2I), new InsnNode(I2B), new InsnNode(I2L)));
-        putRule(I64_EXTEND16_S, (ctx, insn) -> ctx.addInsns(new InsnNode(L2I), new InsnNode(I2S), new InsnNode(I2L)));
-        putRule(I64_EXTEND32_S, (ctx, insn) -> ctx.addInsns(new InsnNode(L2I), new InsnNode(I2L)));
+        b
+                .match(I32_EXTEND8_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.visitInsn(I2B))
+                .match(I32_EXTEND16_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.visitInsn(I2S))
+                .match(I64_EXTEND8_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(new InsnNode(L2I), new InsnNode(I2B), new InsnNode(I2L)))
+                .match(I64_EXTEND16_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(new InsnNode(L2I), new InsnNode(I2S), new InsnNode(I2L)))
+                .match(I64_EXTEND32_S).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx
+                .addInsns(new InsnNode(L2I), new InsnNode(I2L)));
         // endregion
         // region Saturating Truncation
-        PREFIX_RULES[I32_TRUNC_SAT_F32_S] = (ctx, insn) -> ctx.visitInsn(F2I);
-        PREFIX_RULES[I32_TRUNC_SAT_F32_U] = (ctx, insn) -> ctx.visitInsn(F2I);
-        PREFIX_RULES[I32_TRUNC_SAT_F64_S] = (ctx, insn) -> ctx.visitInsn(D2I);
-        PREFIX_RULES[I32_TRUNC_SAT_F64_U] = (ctx, insn) -> ctx.visitInsn(D2I);
-        PREFIX_RULES[I64_TRUNC_SAT_F32_S] = (ctx, insn) -> ctx.visitInsn(F2L);
-        PREFIX_RULES[I64_TRUNC_SAT_F32_U] = (ctx, insn) -> ctx.visitInsn(F2L);
-        PREFIX_RULES[I64_TRUNC_SAT_F64_S] = (ctx, insn) -> ctx.visitInsn(D2L);
-        PREFIX_RULES[I64_TRUNC_SAT_F64_U] = (ctx, insn) -> ctx.visitInsn(D2L);
+        b
+                .match(I32_TRUNC_SAT_F32_S).terminal((ctx, insn) -> ctx.visitInsn(F2I))
+                .match(I32_TRUNC_SAT_F32_U).terminal((ctx, insn) -> ctx.visitInsn(F2I))
+                .match(I32_TRUNC_SAT_F64_S).terminal((ctx, insn) -> ctx.visitInsn(D2I))
+                .match(I32_TRUNC_SAT_F64_U).terminal((ctx, insn) -> ctx.visitInsn(D2I))
+                .match(I64_TRUNC_SAT_F32_S).terminal((ctx, insn) -> ctx.visitInsn(F2L))
+                .match(I64_TRUNC_SAT_F32_U).terminal((ctx, insn) -> ctx.visitInsn(F2L))
+                .match(I64_TRUNC_SAT_F64_S).terminal((ctx, insn) -> ctx.visitInsn(D2L))
+                .match(I64_TRUNC_SAT_F64_U).terminal((ctx, insn) -> ctx.visitInsn(D2L));
         // endregion
-        // endregion
+        return b;
+    }
+
+    private static class State {
+        State[] basic = null;
+        State[] prefix = null;
+        Rule<?> terminal;
+
+        public State advance(AbstractInsnNode insn) {
+            if (insn.opcode == INSN_PREFIX) {
+                return prefix != null ? prefix[((PrefixInsnNode) insn).intOpcode] : null;
+            } else {
+                return basic != null ? basic[Byte.toUnsignedInt(insn.opcode)] : null;
+            }
+        }
+
+        public void setNext(Object inSym, @Nullable State next) {
+            if (inSym instanceof Byte) {
+                if (basic == null) basic = new State[Byte.MAX_VALUE - Byte.MIN_VALUE];
+                basic[Byte.toUnsignedInt((Byte) inSym)] = next;
+            } else {
+                if (prefix == null) prefix = new State[TABLE_FILL + 1];
+                prefix[(Integer) inSym] = next;
+            }
+        }
     }
 
     @NotNull
@@ -735,16 +828,11 @@ public class ExprAdapter {
         return fromAdapter(ctx.externs.mems.get(0)::emitGet);
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T extends AbstractInsnNode> Rule<T> getRule(T insn) {
-        return (Rule<T>) RULES[Byte.toUnsignedInt(insn.opcode)];
-    }
-
-    private static <T extends AbstractInsnNode> void putRule(byte opcode, Rule<T> rule) {
-        RULES[Byte.toUnsignedInt(opcode)] = rule;
-    }
-
     private interface Rule<T> {
         void apply(Context ctx, T insn);
+
+        default void applyTo(Context ctx, List<T> matched) {
+            apply(ctx, matched.get(matched.size() - 1));
+        }
     }
 }
