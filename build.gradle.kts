@@ -1,5 +1,6 @@
 plugins {
     `java-library`
+    `maven-publish`
 }
 
 tasks.jar {
@@ -13,6 +14,7 @@ allprojects {
 
 subprojects {
     apply<JavaLibraryPlugin>()
+    apply<MavenPublishPlugin>()
 
     java {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -35,6 +37,14 @@ subprojects {
 
     tasks.test {
         useJUnitPlatform()
+    }
+
+    publishing {
+        publications {
+            register<MavenPublication>("maven") {
+                from(components.named("java").get())
+            }
+        }
     }
 }
 
