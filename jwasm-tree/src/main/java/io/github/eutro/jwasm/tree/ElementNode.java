@@ -2,11 +2,14 @@ package io.github.eutro.jwasm.tree;
 
 import io.github.eutro.jwasm.ElementVisitor;
 import io.github.eutro.jwasm.ExprVisitor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
-public class ElementNode extends ElementVisitor {
+public class ElementNode extends ElementVisitor implements Iterable<ExprNode> {
     public boolean passive;
     public int table;
     public ExprNode offset;
@@ -35,17 +38,18 @@ public class ElementNode extends ElementVisitor {
 
     @Override
     public void visitNonActiveMode(boolean passive) {
-        super.visitNonActiveMode(passive);
+        this.passive = passive;
     }
 
     @Override
     public ExprVisitor visitActiveMode(int table) {
-        return super.visitActiveMode(table);
+        this.table = table;
+        return offset = new ExprNode();
     }
 
     @Override
     public void visitType(byte type) {
-        super.visitType(type);
+        this.type = type;
     }
 
     @Override
@@ -59,5 +63,20 @@ public class ElementNode extends ElementVisitor {
         ExprNode en = new ExprNode();
         init.add(en);
         return en;
+    }
+
+    @NotNull
+    @Override
+    public Iterator<ExprNode> iterator() {
+        return init == null ? Arrays.stream(indeces).mapToObj(f -> {
+            ExprNode en = new ExprNode();
+            en.visitFuncInsn(f);
+            en.visitEndInsn();
+            return en;
+        }).iterator() : init.iterator();
+    }
+
+    public int size() {
+        return init == null ? indeces.length : init.size();
     }
 }

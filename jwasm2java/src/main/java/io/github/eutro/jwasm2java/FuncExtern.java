@@ -10,7 +10,6 @@ import static org.objectweb.asm.Opcodes.*;
 
 public interface FuncExtern extends Extern {
     void emitInvoke(Context mv);
-    TypeNode type();
 
     class ModuleFuncExtern implements FuncExtern {
         private final ClassNode cn;
@@ -29,7 +28,8 @@ public interface FuncExtern extends Extern {
             mv.visitLdcInsn(new Handle(H_INVOKEVIRTUAL, cn.name, mn.name, mn.desc, false));
             mv.visitInsn(ICONST_0);
             mv.visitInsn(ICONST_1);
-            mv.visitTypeInsn(NEWARRAY, "java/lang/Object");
+            mv.visitTypeInsn(ANEWARRAY, "java/lang/Object");
+            mv.visitInsn(DUP);
             mv.visitInsn(ICONST_0);
             mv.visitVarInsn(ALOAD, 0);
             mv.visitInsn(AASTORE);
@@ -51,9 +51,5 @@ public interface FuncExtern extends Extern {
             mv.visitMethodInsn(INVOKEVIRTUAL, cn.name, mn.name, mn.desc, false);
         }
 
-        @Override
-        public TypeNode type() {
-            return type;
-        }
     }
 }

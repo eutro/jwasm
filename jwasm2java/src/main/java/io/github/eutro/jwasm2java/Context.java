@@ -4,6 +4,7 @@ import io.github.eutro.jwasm.tree.TypeNode;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.commons.GeneratorAdapter;
+import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.FrameNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
@@ -17,6 +18,7 @@ import static org.objectweb.asm.Opcodes.*;
 class Context extends GeneratorAdapter {
     public Externs externs;
     public final TypeNode funcType;
+    public final FieldNode[] passiveElems;
 
     private final Type[] localTypes;
     private final LinkedList<Block> blocks = new LinkedList<>();
@@ -32,7 +34,8 @@ class Context extends GeneratorAdapter {
                    TypeNode funcType,
                    Externs externs,
                    int[] localIndeces,
-                   Type[] localTypes) {
+                   Type[] localTypes,
+                   FieldNode[] passiveElems) {
         super(ASM9, mv, access, name, desc);
         aa = mv;
         this.funcTypes = funcTypes;
@@ -40,6 +43,7 @@ class Context extends GeneratorAdapter {
         this.localIndeces = localIndeces;
         this.externs = externs;
         this.localTypes = localTypes;
+        this.passiveElems = passiveElems;
     }
 
     public Type funcType(int index) {

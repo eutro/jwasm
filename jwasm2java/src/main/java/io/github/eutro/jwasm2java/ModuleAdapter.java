@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.objectweb.asm.commons.AnalyzerAdapter;
 import org.objectweb.asm.commons.InstructionAdapter;
 import org.objectweb.asm.tree.*;
 
@@ -32,7 +31,12 @@ public class ModuleAdapter extends ModuleVisitor {
     }
 
     private TypeNode getType(int index) {
-        return Objects.requireNonNull(Objects.requireNonNull(node.types).types).get(index);
+        return getTypes().get(index);
+    }
+
+    @NotNull
+    private List<TypeNode> getTypes() {
+        return Objects.requireNonNull(Objects.requireNonNull(node.types).types);
     }
 
     public ClassNode toJava(String internalName) {
@@ -145,41 +149,128 @@ public class ModuleAdapter extends ModuleVisitor {
             mn.access = ACC_PUBLIC;
             mn.name = "<init>";
             mn.desc = "()V";
-            AnalyzerAdapter aa = new AnalyzerAdapter(internalName, mn.access, mn.name, mn.desc, mn);
-            aa.visitVarInsn(ALOAD, 0);
-            aa.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
+            FieldNode[] passives = (node.elems != null && node.elems.elems != null) ?
+                    new FieldNode[node.elems.elems.size()] : new FieldNode[0];
+            Context ctx = new Context(
+                    new JumpTrackingVisitor(internalName, mn.access, mn.name, mn.desc, mn),
+                    mn.access,
+                    mn.name,
+                    mn.desc,
+                    getTypes(),
+                    new TypeNode(new byte[0], new byte[0]),
+                    externs,
+                    new int[0],
+                    new Type[0],
+                    passives);
+
+            ctx.visitVarInsn(ALOAD, 0);
+            ctx.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
             if (node.mems != null) {
                 int i = 0;
                 for (MemoryNode mem : node.mems) {
-                    aa.visitVarInsn(ALOAD, 0);
-                    aa.visitLdcInsn(mem.limits.min * PAGE_SIZE);
-                    aa.visitMethodInsn(INVOKESTATIC,
+                    ctx.visitVarInsn(ALOAD, 0);
+                    ctx.visitLdcInsn(mem.limits.min * PAGE_SIZE);
+                    ctx.visitMethodInsn(INVOKESTATIC,
                             "java/nio/ByteBuffer",
                             "allocate",
                             "(I)Ljava/nio/ByteBuffer;",
                             false);
-                    aa.visitFieldInsn(GETSTATIC,
+                    ctx.visitFieldInsn(GETSTATIC,
                             "java/nio/ByteOrder",
                             "LITTLE_ENDIAN",
                             "Ljava/nio/ByteOrder;");
-                    aa.visitMethodInsn(INVOKEVIRTUAL,
+                    ctx.visitMethodInsn(INVOKEVIRTUAL,
                             "java/nio/ByteBuffer",
                             "order",
                             "(Ljava/nio/ByteOrder;)Ljava/nio/ByteBuffer;",
                             false);
-                    aa.visitFieldInsn(PUTFIELD, internalName, mems.get(i).name, Type.getDescriptor(ByteBuffer.class));
+                    ctx.visitFieldInsn(PUTFIELD, internalName, mems.get(i).name, Type.getDescriptor(ByteBuffer.class));
+                    ++i;
+                }
+            }
+            if (node.tables != null) {
+                int ti = 0;
+                for (TableNode table : node.tables) {
+                    ctx.loadThis();
+                    ctx.push(table.limits.min);
+                    ctx.newArray(Types.toJava(table.type));
+                    FieldNode fn = tables.get(ti);
+                    ctx.visitFieldInsn(PUTFIELD, internalName, fn.name, fn.desc);
+                    ++ti;
+                }
+            }
+
+            if (node.globals != null) {
+                int i = 0;
+                for (GlobalNode global : node.globals) {
+                    ctx.loadThis();
+                    ExprAdapter.translateInto(global.init, ctx);
+                    FieldNode fn = globals.get(i);
+                    ctx.visitFieldInsn(PUTFIELD, internalName, fn.name, fn.desc);
                     ++i;
                 }
             }
 
+            if (node.elems != null && node.elems.elems != null) {
+                int[] actives = new int[node.elems.elems.size()];
+                int ei = 0;
+                for (ElementNode elem : node.elems) {
+                    Type elemType = Types.toJava(elem.type);
+                    if (elem.offset == null && elem.passive) {
+                        ctx.loadThis();
+                    }
+                    ctx.push(elem.size());
+                    ctx.newArray(elemType);
+                    int i = 0;
+                    for (ExprNode init : elem) {
+                        ctx.dup();
+                        ctx.push(i);
+                        ExprAdapter.translateInto(init, ctx);
+                        ctx.arrayStore(elemType);
+                        ++i;
+                    }
+                    if (elem.offset != null) {
+                        ctx.storeLocal(actives[ei] = ctx.newLocal(Type.getType("[" + elemType)));
+                    } else if (elem.passive) {
+                        FieldNode fn = passives[ei] = new FieldNode(ACC_PRIVATE,
+                                "elem" + ei,
+                                "[" + elemType,
+                                null,
+                                null);
+                        cn.fields.add(fn);
+                        ctx.visitFieldInsn(PUTFIELD, internalName, fn.name, fn.desc);
+                    } else {
+                        ctx.pop();
+                    }
+                    ++ei;
+                }
+
+                ei = 0;
+                for (ElementNode elem : node.elems) {
+                    if (elem.offset != null) {
+                        if (elem.table != 0) throw new IllegalStateException();
+                        TypedExtern table = externs.tables.get(elem.table);
+                        ctx.loadLocal(actives[ei]);
+                        ctx.push(0);
+                        table.emitGet(ctx);
+                        ExprAdapter.translateInto(elem.offset, ctx);
+                        ctx.push(elem.size());
+                        ctx.visitMethodInsn(INVOKESTATIC, "java/lang/System", "arraycopy",
+                                "(Ljava/lang/Object;ILjava/lang/Object;II)V",
+                                false);
+                    }
+                    ++ei;
+                }
+            }
+
             if (node.start != null) {
-                aa.visitVarInsn(ALOAD, 0);
+                ctx.visitVarInsn(ALOAD, 0);
                 MethodNode start = funcs.get(node.start.func);
                 if (!"()V".equals(start.desc)) throw new IllegalArgumentException();
-                aa.visitMethodInsn(INVOKEVIRTUAL, internalName, start.name, start.desc, false);
+                ctx.visitMethodInsn(INVOKEVIRTUAL, internalName, start.name, start.desc, false);
             }
-            aa.visitInsn(Opcodes.RETURN);
-            aa.visitMaxs(0, 0);
+            ctx.visitInsn(Opcodes.RETURN);
+            ctx.visitMaxs(/* calculated */ 0, 0);
             cn.methods.add(mn);
         }
         // endregion
@@ -221,16 +312,16 @@ public class ModuleAdapter extends ModuleVisitor {
                         method.access,
                         method.name,
                         method.desc,
-                        Objects.requireNonNull(node.types).types,
+                        getTypes(),
                         funcType,
                         externs,
                         indeces,
-                        types);
+                        types, new FieldNode[0]);
                 ExprAdapter.translateInto(code.expr, ctx);
                 aa.visitLabel(end);
                 ctx.compress(funcType.returns);
                 ctx.returnValue();
-                aa.visitMaxs(0, 0);
+                aa.visitMaxs(/* calculated */ 0, 0);
                 ++ci;
             }
         }

@@ -46,7 +46,14 @@ public class ExprAdapter {
         });
 
         // region Control
-        putRule(UNREACHABLE, (ctx, insn) -> ctx.throwException(Type.getType(AssertionError.class), "Unreachable"));
+        putRule(UNREACHABLE, (ctx, insn) -> {
+            Type aeType = Type.getType(AssertionError.class);
+            ctx.newInstance(aeType);
+            ctx.dup();
+            ctx.push("Unreachable");
+            ctx.invokeConstructor(aeType, new Method("<init>", "(Ljava/lang/Object;)V"));
+            ctx.throwException();
+        });
         putRule(Opcodes.NOP, (ctx, insn) -> { /* NOP */ });
         ExprAdapter.<BlockInsnNode>putRule(BLOCK, (ctx, insn) -> ctx.pushBlock(new Block.BBlock(insn.blockType)));
         ExprAdapter.<BlockInsnNode>putRule(LOOP, (ctx, insn) ->
@@ -114,8 +121,7 @@ public class ExprAdapter {
         putRule(REF_IS_NULL, (ctx, insn) -> ctx.jumpStack(IFNULL));
         ExprAdapter.<FuncInsnNode>putRule(REF_FUNC, (ctx, insn) -> {
             Type.getType(MethodHandle.class);
-            ctx
-                    .externs.funcs.get(insn.function).emitGet(ctx);
+            ctx.externs.funcs.get(insn.function).emitGet(ctx);
         });
         // endregion
         // region Parametric
@@ -188,21 +194,95 @@ public class ExprAdapter {
         });
         ExprAdapter.<TableInsnNode>putRule(TABLE_SET, (ctx, insn) -> {
             TypedExtern table = ctx.externs.tables.get(insn.table);
-            Type valType = Types.toJava(table.type());
             table.emitGet(ctx);
             ctx.dupX2();
             ctx.pop();
-            ctx.arrayStore(valType);
+            ctx.arrayStore(Types.toJava(table.type()));
         });
-        PREFIX_RULES[TABLE_SIZE] = (Rule<PrefixTableInsnNode>) (ctx, insn) -> {
-            TypedExtern table = ctx.externs.tables.get(insn.table);
+        PREFIX_RULES[TABLE_INIT] = (Rule<PrefixBinaryTableInsnNode>) (ctx, insn) -> {
+            TypedExtern table = ctx.externs.tables.get(insn.firstIndex);
+            FieldNode elem = ctx.passiveElems[insn.secondIndex];
+            if (elem == null) throw new IllegalStateException("No such passive elem");
+            // System.arraycopy(src, srcPos, dest, destPos, length);
+            int n = ctx.newLocal(Type.INT_TYPE);
+            ctx.storeLocal(n);
+            int s = ctx.newLocal(Type.INT_TYPE);
+            ctx.storeLocal(s);
+            int d = ctx.newLocal(Type.INT_TYPE);
+            ctx.storeLocal(d);
+
+            ctx.loadThis();
+            ctx.visitFieldInsn(GETFIELD, ctx.getName(), elem.name, elem.desc);
+            ctx.loadLocal(s);
             table.emitGet(ctx);
-            ctx.arrayLength();
+            ctx.loadLocal(d);
+            ctx.loadLocal(n);
+            ctx.visitMethodInsn(INVOKESTATIC, "java/lang/System", "arraycopy",
+                    "(Ljava/lang/Object;ILjava/lang/Object;II)V",
+                    false);
+        };
+        PREFIX_RULES[ELEM_DROP] = (Rule<PrefixTableInsnNode>) (ctx, insn) -> {
+            FieldNode elem = ctx.passiveElems[insn.table];
+            if (elem == null) throw new IllegalStateException("No such passive elem");
+            ctx.loadThis();
+            ctx.push((String) null);
+            ctx.visitFieldInsn(PUTFIELD, ctx.getName(), elem.name, elem.desc);
+        };
+        PREFIX_RULES[TABLE_COPY] = (Rule<PrefixBinaryTableInsnNode>) (ctx, insn) -> {
+            TypedExtern srcTable = ctx.externs.tables.get(insn.secondIndex);
+            TypedExtern dstTable = ctx.externs.tables.get(insn.firstIndex);
+            // System.arraycopy(src, srcPos, dest, destPos, length);
+            int n = ctx.newLocal(Type.INT_TYPE);
+            ctx.storeLocal(n);
+            int s = ctx.newLocal(Type.INT_TYPE);
+            ctx.storeLocal(s);
+            int d = ctx.newLocal(Type.INT_TYPE);
+            ctx.storeLocal(d);
+
+            ctx.loadThis();
+            srcTable.emitGet(ctx);
+            ctx.loadLocal(s);
+            dstTable.emitGet(ctx);
+            ctx.loadLocal(d);
+            ctx.loadLocal(n);
+            ctx.visitMethodInsn(INVOKESTATIC, "java/lang/System", "arrayCopy",
+                    "(Ljava/lang/Object;ILjava/lang/Object;II)V",
+                    false);
         };
         PREFIX_RULES[TABLE_GROW] = (Rule<PrefixTableInsnNode>) (ctx, insn) -> {
             // TODO maybe implement table growth?
             ctx.pop2();
             ctx.push(-1);
+        };
+        PREFIX_RULES[TABLE_SIZE] = (Rule<PrefixTableInsnNode>) (ctx, insn) -> {
+            TypedExtern table = ctx.externs.tables.get(insn.table);
+            table.emitGet(ctx);
+            ctx.arrayLength();
+        };
+        PREFIX_RULES[TABLE_FILL] = (Rule<PrefixTableInsnNode>) (ctx, insn) -> {
+            TypedExtern table = ctx.externs.tables.get(insn.table);
+            Type tableType = Types.toJava(table.type());
+            int i = ctx.newLocal(Type.INT_TYPE);
+            ctx.storeLocal(i);
+            int v = ctx.newLocal(tableType);
+            ctx.storeLocal(v);
+            int n = ctx.newLocal(Type.INT_TYPE);
+            ctx.storeLocal(n);
+
+            table.emitGet(ctx);
+            Label loop = ctx.mark();
+            Label end = new Label();
+            ctx.loadLocal(n);
+            ctx.visitJumpInsn(IFEQ, end);
+            ctx.dup();
+            ctx.loadLocal(i);
+            ctx.loadLocal(v);
+            ctx.arrayStore(tableType);
+            ctx.iinc(i, 1);
+            ctx.iinc(n, -1);
+            ctx.goTo(loop);
+            ctx.mark(end);
+            ctx.pop();
         };
         // endregion
         // region Memory

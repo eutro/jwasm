@@ -10,11 +10,16 @@ import org.objectweb.asm.util.CheckClassAdapter;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Locale;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ModuleAdapterTest extends ModuleTestBase {
 
@@ -51,7 +56,21 @@ public class ModuleAdapterTest extends ModuleTestBase {
     }
 
     @Test
-    void unsimple() throws IOException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        adapt("unsimple");
+    void unsimple() throws Throwable {
+        Object adapted = adapt("unsimple");
+        MethodHandle div = MethodHandles.insertArguments(MethodHandles.lookup()
+                .unreflect(adapted.getClass().getMethod("div", int.class, int.class)),
+                0,
+                adapted);
+        MethodHandle divU = MethodHandles.insertArguments(MethodHandles.lookup()
+                        .unreflect(adapted.getClass().getMethod("div_u", long.class, long.class)),
+                0,
+                adapted);
+        assertEquals(50, (int) div.invokeExact(100, 2));
+        assertEquals(Long.MAX_VALUE, (long) divU.invokeExact(-1L, 2L));
+        assertThrows(AssertionError.class, () -> {
+            @SuppressWarnings("unused")
+            int ignored = (int) div.invokeExact(1, 0);
+        });
     }
 }
