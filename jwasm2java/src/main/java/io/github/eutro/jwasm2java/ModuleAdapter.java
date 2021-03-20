@@ -363,7 +363,7 @@ public class ModuleAdapter extends ModuleVisitor {
 
         if (node.start != null) {
             ctx.visitVarInsn(ALOAD, 0);
-            MethodNode start = funcs.get(node.start.func);
+            MethodNode start = funcs.get(node.start);
             if (!"()V".equals(start.desc)) throw new IllegalArgumentException();
             ctx.visitMethodInsn(INVOKEVIRTUAL, cn.name, start.name, start.desc, false);
         }
@@ -380,7 +380,7 @@ public class ModuleAdapter extends ModuleVisitor {
         Label start = new Label();
         Label end = new Label();
 
-        TypeNode funcType = getType(Objects.requireNonNull(node.funcs).funcs.get(ci).type);
+        TypeNode funcType = getType(Objects.requireNonNull(Objects.requireNonNull(node.funcs).funcs).get(ci).type);
 
         int[] indeces = new int[funcType.params.length + code.locals.length];
         Type[] types = new Type[indeces.length];

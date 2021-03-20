@@ -91,6 +91,16 @@ loadScripts(document, 'script');</script>
 <pre>public class <span class="type-name-label">ElementNode</span>
 extends <a href="../ElementVisitor.html" title="class in io.github.eutro.jwasm">ElementVisitor</a>
 implements java.lang.Iterable&lt;<a href="ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a>&gt;</pre>
+<div class="block">A node that represents an
+ <a href="https://webassembly.github.io/spec/core/syntax/modules.html#syntax-elem">element segment</a>
+ in the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#element-section">element section</a>
+ of a module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ElementSegmentsVisitor.html#visitElem()"><code>ElementSegmentsVisitor.visitElem()</code></a>, 
+<a href="ElementSegmentsNode.html" title="class in io.github.eutro.jwasm.tree"><code>ElementSegmentsNode</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -112,32 +122,49 @@ implements java.lang.Iterable&lt;<a href="ExprNode.html" title="class in io.gith
 <tr class="alt-color">
 <td class="col-first"><code>int[]</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#indeces">indeces</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The vector of function
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-funcidx">indeces</a>
+ to reference in the init exprs,
+ or <code>null</code> if the <a href="#init"><code>init expressions</code></a> are explicitly declared.</div>
+</td>
 </tr>
 <tr class="row-color">
 <td class="col-first"><code>java.util.List&lt;<a href="ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a>&gt;</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#init">init</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The vector of <code>init</code> exprs, or <code>null</code> if the <a href="#indeces"><code>function indeces</code></a> should be used.</div>
+</td>
 </tr>
 <tr class="alt-color">
 <td class="col-first"><code><a href="ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a></code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#offset">offset</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The offset expression of an active element segment, or <code>null</code> if it is not active.</div>
+</td>
 </tr>
 <tr class="row-color">
 <td class="col-first"><code>boolean</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#passive">passive</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Whether the element segment is passive, if it is not active.</div>
+</td>
 </tr>
 <tr class="alt-color">
 <td class="col-first"><code>int</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#table">table</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The table index of the element segment, if it is active.</div>
+</td>
 </tr>
 <tr class="row-color">
 <td class="col-first"><code>byte</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#type">type</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/syntax/types.html#syntax-reftype">reftype</a>
+ of the element segment.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -189,17 +216,25 @@ implements java.lang.Iterable&lt;<a href="ExprNode.html" title="class in io.gith
 <tr class="alt-color" id="i0">
 <td class="col-first"><code>void</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#accept(io.github.eutro.jwasm.ElementVisitor)">accept</a></span>&#8203;(<a href="../ElementVisitor.html" title="class in io.github.eutro.jwasm">ElementVisitor</a>&nbsp;eev)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Make the given <a href="../ElementVisitor.html" title="class in io.github.eutro.jwasm"><code>ElementVisitor</code></a> visit this element.</div>
+</td>
 </tr>
 <tr class="row-color" id="i1">
 <td class="col-first"><code>@NotNull java.util.Iterator&lt;<a href="ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a>&gt;</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#iterator()">iterator</a></span>()</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Returns an iterator over the init expressions in this element segment,
+ whether they be <a href="#indeces"><code>implicitly derived from function indeces</code></a>
+ or <a href="#init"><code>explicitly declared</code></a>.</div>
+</td>
 </tr>
 <tr class="alt-color" id="i2">
 <td class="col-first"><code>int</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#size()">size</a></span>()</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The number of init expressions in this element segment, the size of <a href="#iterator()"><code>iterator()</code></a>.</div>
+</td>
 </tr>
 <tr class="row-color" id="i3">
 <td class="col-first"><code><a href="../ExprVisitor.html" title="class in io.github.eutro.jwasm">ExprVisitor</a></code></td>
@@ -264,36 +299,61 @@ implements java.lang.Iterable&lt;<a href="ExprNode.html" title="class in io.gith
 <section class="detail" id="passive">
 <h3>passive</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="member-name">passive</span></div>
+<div class="block">Whether the element segment is passive, if it is not active.
+ <p>
+ True if passive, false if declarative, ignored if active.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="#offset"><code>offset</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="table">
 <h3>table</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="member-name">table</span></div>
+<div class="block">The table index of the element segment, if it is active.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="offset">
 <h3>offset</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a></span>&nbsp;<span class="member-name">offset</span></div>
+<div class="block">The offset expression of an active element segment, or <code>null</code> if it is not active.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="type">
 <h3>type</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte</span>&nbsp;<span class="member-name">type</span></div>
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/syntax/types.html#syntax-reftype">reftype</a>
+ of the element segment.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="indeces">
 <h3>indeces</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int[]</span>&nbsp;<span class="member-name">indeces</span></div>
+<div class="block">The vector of function
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-funcidx">indeces</a>
+ to reference in the init exprs,
+ or <code>null</code> if the <a href="#init"><code>init expressions</code></a> are explicitly declared.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="#init"><code>init</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="init">
 <h3>init</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">java.util.List&lt;<a href="ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a>&gt;</span>&nbsp;<span class="member-name">init</span></div>
+<div class="block">The vector of <code>init</code> exprs, or <code>null</code> if the <a href="#indeces"><code>function indeces</code></a> should be used.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="#indeces"><code>indeces</code></a></dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -322,6 +382,22 @@ implements java.lang.Iterable&lt;<a href="ExprNode.html" title="class in io.gith
 <section class="detail" id="accept(io.github.eutro.jwasm.ElementVisitor)">
 <h3>accept</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="member-name">accept</span>&#8203;(<span class="parameters"><a href="../ElementVisitor.html" title="class in io.github.eutro.jwasm">ElementVisitor</a>&nbsp;eev)</span></div>
+<div class="block">Make the given <a href="../ElementVisitor.html" title="class in io.github.eutro.jwasm"><code>ElementVisitor</code></a> visit this element.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>eev</code> - The visitor to visit.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="size()">
+<h3>size</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="member-name">size</span>()</div>
+<div class="block">The number of init expressions in this element segment, the size of <a href="#iterator()"><code>iterator()</code></a>.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The number of expressions in this element segment.</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -413,16 +489,15 @@ implements java.lang.Iterable&lt;<a href="ExprNode.html" title="class in io.gith
 <h3>iterator</h3>
 <div class="member-signature"><span class="annotations">@NotNull
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@NotNull java.util.Iterator&lt;<a href="ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a>&gt;</span>&nbsp;<span class="member-name">iterator</span>()</div>
+<div class="block">Returns an iterator over the init expressions in this element segment,
+ whether they be <a href="#indeces"><code>implicitly derived from function indeces</code></a>
+ or <a href="#init"><code>explicitly declared</code></a>.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code>iterator</code>&nbsp;in interface&nbsp;<code>java.lang.Iterable&lt;<a href="ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a>&gt;</code></dd>
+<dt>Returns:</dt>
+<dd>An iterator over the init expressions in this element segment.</dd>
 </dl>
-</section>
-</li>
-<li>
-<section class="detail" id="size()">
-<h3>size</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="member-name">size</span>()</div>
 </section>
 </li>
 </ul>

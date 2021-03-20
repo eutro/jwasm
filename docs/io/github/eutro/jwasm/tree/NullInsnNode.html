@@ -78,6 +78,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="type-name-label">NullInsnNode</span>
 extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tree">AbstractInsnNode</a></pre>
+<div class="block">A node that represents a ref.null instruction.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ExprVisitor.html#visitNullInsn(byte)"><code>ExprVisitor.visitNullInsn(byte)</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -99,7 +104,10 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 <tr class="alt-color">
 <td class="col-first"><code>byte</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#type">type</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-reftype">reftype</a>
+ of the null value.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -125,7 +133,9 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 <tbody>
 <tr class="alt-color">
 <th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(byte)">NullInsnNode</a></span>&#8203;(byte&nbsp;type)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Construct a <a href="NullInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>NullInsnNode</code></a> with the given type.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -154,6 +164,8 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 <section class="detail" id="type">
 <h3>type</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte</span>&nbsp;<span class="member-name">type</span></div>
+<div class="block">The <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-reftype">reftype</a>
+ of the null value.</div>
 </section>
 </li>
 </ul>
@@ -168,6 +180,12 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 <section class="detail" id="&lt;init&gt;(byte)">
 <h3>NullInsnNode</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="member-name">NullInsnNode</span>&#8203;(<span class="parameters">byte&nbsp;type)</span></div>
+<div class="block">Construct a <a href="NullInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>NullInsnNode</code></a> with the given type.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>type</code> - The <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-reftype">reftype</a>
+             of the null value.</dd>
+</dl>
 </section>
 </li>
 </ul>

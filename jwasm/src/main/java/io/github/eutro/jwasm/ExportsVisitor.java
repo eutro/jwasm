@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * A visitor that visits the
- * <a href="https://webassembly.github.io/spec/core/binary/modules.html#global-section">global section</a>
+ * <a href="https://webassembly.github.io/spec/core/binary/modules.html#export-section">export section</a>
  * of a module.
  * <p>
  * Methods are expected to be called in the order:
@@ -30,7 +30,7 @@ public class ExportsVisitor extends BaseVisitor<ExportsVisitor> {
     }
 
     /**
-     * Visit an export of the module.
+     * Visit an export of a module.
      *
      * @param name  The name of the export.
      * @param type  The type of the export, one of

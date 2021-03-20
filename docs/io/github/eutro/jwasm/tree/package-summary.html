@@ -68,13 +68,16 @@ loadScripts(document, 'script');</script>
 <tr class="alt-color">
 <th class="col-first" scope="row"><a href="AbstractImportNode.html" title="class in io.github.eutro.jwasm.tree">AbstractImportNode</a></th>
 <td class="col-last">
-<div class="block">A note that represents an import of a module.</div>
+<div class="block">A note that represents an
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#import-section">import</a>
+ of a module.</div>
 </td>
 </tr>
 <tr class="row-color">
 <th class="col-first" scope="row"><a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tree">AbstractInsnNode</a></th>
 <td class="col-last">
-<div class="block">A node that represents a bytecode instruction.</div>
+<div class="block">A node that represents a bytecode
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instruction</a>.</div>
 </td>
 </tr>
 <tr class="alt-color">
@@ -104,13 +107,17 @@ loadScripts(document, 'script');</script>
 <tr class="alt-color">
 <th class="col-first" scope="row"><a href="CodeNode.html" title="class in io.github.eutro.jwasm.tree">CodeNode</a></th>
 <td class="col-last">
-<div class="block">A node that represents a the code of a function.</div>
+<div class="block">A node that represents a the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#code-section">code</a>
+ of a function.</div>
 </td>
 </tr>
 <tr class="row-color">
 <th class="col-first" scope="row"><a href="CodesNode.html" title="class in io.github.eutro.jwasm.tree">CodesNode</a></th>
 <td class="col-last">
-<div class="block">A node that represents a vector of function bodies.</div>
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#code-section">code section</a>
+ of a module.</div>
 </td>
 </tr>
 <tr class="alt-color">
@@ -122,164 +129,273 @@ loadScripts(document, 'script');</script>
 <tr class="row-color">
 <th class="col-first" scope="row"><a href="CustomNode.html" title="class in io.github.eutro.jwasm.tree">CustomNode</a></th>
 <td class="col-last">
-<div class="block">A node which represents a custom section of a module.</div>
+<div class="block">A node which represents a
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#custom-section">custom section</a>
+ of a module.</div>
 </td>
 </tr>
 <tr class="alt-color">
 <th class="col-first" scope="row"><a href="DataNode.html" title="class in io.github.eutro.jwasm.tree">DataNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents a
+ <a href="https://webassembly.github.io/spec/core/syntax/modules.html#syntax-data">data segment</a>
+ in the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#data-section">data section</a>
+ of a module.</div>
+</td>
 </tr>
 <tr class="row-color">
 <th class="col-first" scope="row"><a href="DataSegmentsNode.html" title="class in io.github.eutro.jwasm.tree">DataSegmentsNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#data-section">data section</a>
+ of a module.</div>
+</td>
 </tr>
 <tr class="alt-color">
 <th class="col-first" scope="row"><a href="ElementNode.html" title="class in io.github.eutro.jwasm.tree">ElementNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents an
+ <a href="https://webassembly.github.io/spec/core/syntax/modules.html#syntax-elem">element segment</a>
+ in the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#element-section">element section</a>
+ of a module.</div>
+</td>
 </tr>
 <tr class="row-color">
 <th class="col-first" scope="row"><a href="ElementSegmentsNode.html" title="class in io.github.eutro.jwasm.tree">ElementSegmentsNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#element-section">element section</a>
+ of a module.</div>
+</td>
 </tr>
 <tr class="alt-color">
 <th class="col-first" scope="row"><a href="ElseInsnNode.html" title="class in io.github.eutro.jwasm.tree">ElseInsnNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents an optional <a href="../Opcodes.html#ELSE"><code>else</code></a> pseudo-instruction in an <a href="../Opcodes.html#IF"><code>if</code></a> block.</div>
+</td>
 </tr>
 <tr class="row-color">
 <th class="col-first" scope="row"><a href="EndInsnNode.html" title="class in io.github.eutro.jwasm.tree">EndInsnNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents the <a href="../Opcodes.html#END"><code>end</code></a> of a
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#control-instructions">block</a>
+ or
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#expressions">expression</a>.</div>
+</td>
 </tr>
 <tr class="alt-color">
 <th class="col-first" scope="row"><a href="ExportNode.html" title="class in io.github.eutro.jwasm.tree">ExportNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents an export of a module.</div>
+</td>
 </tr>
 <tr class="row-color">
 <th class="col-first" scope="row"><a href="ExportsNode.html" title="class in io.github.eutro.jwasm.tree">ExportsNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#export-section">export section</a>
+ of a module.</div>
+</td>
 </tr>
 <tr class="alt-color">
 <th class="col-first" scope="row"><a href="ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents an
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-expr">expression</a>.</div>
+</td>
 </tr>
 <tr class="row-color">
 <th class="col-first" scope="row"><a href="FuncImportNode.html" title="class in io.github.eutro.jwasm.tree">FuncImportNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents a function import.</div>
+</td>
 </tr>
 <tr class="alt-color">
-<th class="col-first" scope="row"><a href="FuncInsnNode.html" title="class in io.github.eutro.jwasm.tree">FuncInsnNode</a></th>
-<td class="col-last">&nbsp;</td>
+<th class="col-first" scope="row"><a href="FuncNode.html" title="class in io.github.eutro.jwasm.tree">FuncNode</a></th>
+<td class="col-last">
+<div class="block">A node that represents the type of a function that is defined in the module.</div>
+</td>
 </tr>
 <tr class="row-color">
-<th class="col-first" scope="row"><a href="FuncNode.html" title="class in io.github.eutro.jwasm.tree">FuncNode</a></th>
-<td class="col-last">&nbsp;</td>
+<th class="col-first" scope="row"><a href="FuncRefInsnNode.html" title="class in io.github.eutro.jwasm.tree">FuncRefInsnNode</a></th>
+<td class="col-last">
+<div class="block">A node that represents a ref.func instruction.</div>
+</td>
 </tr>
 <tr class="alt-color">
 <th class="col-first" scope="row"><a href="FunctionsNode.html" title="class in io.github.eutro.jwasm.tree">FunctionsNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#function-section">function section</a>
+ of a module.</div>
+</td>
 </tr>
 <tr class="row-color">
 <th class="col-first" scope="row"><a href="GlobalImportNode.html" title="class in io.github.eutro.jwasm.tree">GlobalImportNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents a global import.</div>
+</td>
 </tr>
 <tr class="alt-color">
 <th class="col-first" scope="row"><a href="GlobalNode.html" title="class in io.github.eutro.jwasm.tree">GlobalNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents a global of a module.</div>
+</td>
 </tr>
 <tr class="row-color">
 <th class="col-first" scope="row"><a href="GlobalsNode.html" title="class in io.github.eutro.jwasm.tree">GlobalsNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#global-section">global section</a>
+ of a module.</div>
+</td>
 </tr>
 <tr class="alt-color">
 <th class="col-first" scope="row"><a href="GlobalTypeNode.html" title="class in io.github.eutro.jwasm.tree">GlobalTypeNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents the type of an imported, exported or a module's own, global.</div>
+</td>
 </tr>
 <tr class="row-color">
 <th class="col-first" scope="row"><a href="ImportsNode.html" title="class in io.github.eutro.jwasm.tree">ImportsNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#import-section">import section</a>
+ of a module.</div>
+</td>
 </tr>
 <tr class="alt-color">
 <th class="col-first" scope="row"><a href="IndexedMemInsnNode.html" title="class in io.github.eutro.jwasm.tree">IndexedMemInsnNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents a prefixed
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#memory-instructions">memory</a>
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>
+ with an <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-dataidx">index</a> argument.</div>
+</td>
 </tr>
 <tr class="row-color">
 <th class="col-first" scope="row"><a href="InsnNode.html" title="class in io.github.eutro.jwasm.tree">InsnNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents an instruction with no immediate arguments.</div>
+</td>
 </tr>
 <tr class="alt-color">
 <th class="col-first" scope="row"><a href="MemImportNode.html" title="class in io.github.eutro.jwasm.tree">MemImportNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents a memory import.</div>
+</td>
 </tr>
 <tr class="row-color">
 <th class="col-first" scope="row"><a href="MemInsnNode.html" title="class in io.github.eutro.jwasm.tree">MemInsnNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents a memory instruction with a single memory argument.</div>
+</td>
 </tr>
 <tr class="alt-color">
 <th class="col-first" scope="row"><a href="MemoriesNode.html" title="class in io.github.eutro.jwasm.tree">MemoriesNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#memory-section">memory section</a>
+ of a module.</div>
+</td>
 </tr>
 <tr class="row-color">
 <th class="col-first" scope="row"><a href="MemoryNode.html" title="class in io.github.eutro.jwasm.tree">MemoryNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents a linear memory of a module.</div>
+</td>
 </tr>
 <tr class="alt-color">
 <th class="col-first" scope="row"><a href="ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents a WebAssembly
+ <a href="https://webassembly.github.io/spec/core/syntax/modules.html">module</a>.</div>
+</td>
 </tr>
 <tr class="row-color">
 <th class="col-first" scope="row"><a href="NullInsnNode.html" title="class in io.github.eutro.jwasm.tree">NullInsnNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents a ref.null instruction.</div>
+</td>
 </tr>
 <tr class="alt-color">
 <th class="col-first" scope="row"><a href="PrefixBinaryTableInsnNode.html" title="class in io.github.eutro.jwasm.tree">PrefixBinaryTableInsnNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents a table instruction with two immediate index arguments.</div>
+</td>
 </tr>
 <tr class="row-color">
 <th class="col-first" scope="row"><a href="PrefixInsnNode.html" title="class in io.github.eutro.jwasm.tree">PrefixInsnNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents a prefix instruction.</div>
+</td>
 </tr>
 <tr class="alt-color">
 <th class="col-first" scope="row"><a href="PrefixTableInsnNode.html" title="class in io.github.eutro.jwasm.tree">PrefixTableInsnNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents a prefixed table instruction.</div>
+</td>
 </tr>
 <tr class="row-color">
 <th class="col-first" scope="row"><a href="SelectInsnNode.html" title="class in io.github.eutro.jwasm.tree">SelectInsnNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents a select instruction with explicit type arguments.</div>
+</td>
 </tr>
 <tr class="alt-color">
-<th class="col-first" scope="row"><a href="StartNode.html" title="class in io.github.eutro.jwasm.tree">StartNode</a></th>
-<td class="col-last">&nbsp;</td>
-</tr>
-<tr class="row-color">
 <th class="col-first" scope="row"><a href="TableBreakInsnNode.html" title="class in io.github.eutro.jwasm.tree">TableBreakInsnNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents a br_table instruction.</div>
+</td>
 </tr>
-<tr class="alt-color">
+<tr class="row-color">
 <th class="col-first" scope="row"><a href="TableImportNode.html" title="class in io.github.eutro.jwasm.tree">TableImportNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents a function import.</div>
+</td>
 </tr>
-<tr class="row-color">
+<tr class="alt-color">
 <th class="col-first" scope="row"><a href="TableInsnNode.html" title="class in io.github.eutro.jwasm.tree">TableInsnNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents a table instruction.</div>
+</td>
 </tr>
-<tr class="alt-color">
+<tr class="row-color">
 <th class="col-first" scope="row"><a href="TableNode.html" title="class in io.github.eutro.jwasm.tree">TableNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents a table of a module.</div>
+</td>
 </tr>
-<tr class="row-color">
+<tr class="alt-color">
 <th class="col-first" scope="row"><a href="TablesNode.html" title="class in io.github.eutro.jwasm.tree">TablesNode</a></th>
-<td class="col-last">&nbsp;</td>
-</tr>
-<tr class="alt-color">
-<th class="col-first" scope="row"><a href="TypeNode.html" title="class in io.github.eutro.jwasm.tree">TypeNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#table-section">table section</a>
+ of a module.</div>
+</td>
 </tr>
 <tr class="row-color">
-<th class="col-first" scope="row"><a href="TypesNode.html" title="class in io.github.eutro.jwasm.tree">TypesNode</a></th>
-<td class="col-last">&nbsp;</td>
+<th class="col-first" scope="row"><a href="TypeNode.html" title="class in io.github.eutro.jwasm.tree">TypeNode</a></th>
+<td class="col-last">
+<div class="block">A node that represents a
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#function-types"><code>functype</code></a>.</div>
+</td>
 </tr>
 <tr class="alt-color">
+<th class="col-first" scope="row"><a href="TypesNode.html" title="class in io.github.eutro.jwasm.tree">TypesNode</a></th>
+<td class="col-last">
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#type-section">type section</a>
+ of a module.</div>
+</td>
+</tr>
+<tr class="row-color">
 <th class="col-first" scope="row"><a href="VariableInsnNode.html" title="class in io.github.eutro.jwasm.tree">VariableInsnNode</a></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A node that represents a variable instruction.</div>
+</td>
 </tr>
 </tbody>
 </table>

@@ -80,6 +80,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="type-name-label">PrefixTableInsnNode</span>
 extends <a href="PrefixInsnNode.html" title="class in io.github.eutro.jwasm.tree">PrefixInsnNode</a></pre>
+<div class="block">A node that represents a prefixed table instruction.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ExprVisitor.html#visitPrefixTableInsn(int,int)"><code>ExprVisitor.visitPrefixTableInsn(int, int)</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -101,7 +106,11 @@ extends <a href="PrefixInsnNode.html" title="class in io.github.eutro.jwasm.tree
 <tr class="alt-color">
 <td class="col-first"><code>int</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#table">table</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-tableidx">index</a>
+ of the table.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -131,7 +140,9 @@ extends <a href="PrefixInsnNode.html" title="class in io.github.eutro.jwasm.tree
 <tr class="alt-color">
 <th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(int,int)">PrefixTableInsnNode</a></span>&#8203;(int&nbsp;intOpcode,
 int&nbsp;table)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Construct a <a href="PrefixTableInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>PrefixTableInsnNode</code></a> with the given opcode and table.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -160,6 +171,9 @@ int&nbsp;table)</code></th>
 <section class="detail" id="table">
 <h3>table</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="member-name">table</span></div>
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-tableidx">index</a>
+ of the table.</div>
 </section>
 </li>
 </ul>
@@ -175,6 +189,14 @@ int&nbsp;table)</code></th>
 <h3>PrefixTableInsnNode</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="member-name">PrefixTableInsnNode</span>&#8203;(<span class="parameters">int&nbsp;intOpcode,
 int&nbsp;table)</span></div>
+<div class="block">Construct a <a href="PrefixTableInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>PrefixTableInsnNode</code></a> with the given opcode and table.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>intOpcode</code> - The opcode of the instruction.</dd>
+<dd><code>table</code> - The
+                  <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-tableidx">index</a>
+                  of the table.</dd>
+</dl>
 </section>
 </li>
 </ul>

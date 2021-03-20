@@ -91,6 +91,13 @@ loadScripts(document, 'script');</script>
 <pre>public class <span class="type-name-label">TablesNode</span>
 extends <a href="../TablesVisitor.html" title="class in io.github.eutro.jwasm">TablesVisitor</a>
 implements java.lang.Iterable&lt;<a href="TableNode.html" title="class in io.github.eutro.jwasm.tree">TableNode</a>&gt;</pre>
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#table-section">table section</a>
+ of a module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ModuleVisitor.html#visitTables()"><code>ModuleVisitor.visitTables()</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -112,7 +119,9 @@ implements java.lang.Iterable&lt;<a href="TableNode.html" title="class in io.git
 <tr class="alt-color">
 <td class="col-first"><code>@Nullable java.util.List&lt;<a href="TableNode.html" title="class in io.github.eutro.jwasm.tree">TableNode</a>&gt;</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#tables">tables</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The vector of <a href="TableNode.html" title="class in io.github.eutro.jwasm.tree"><code>TableNode</code></a>s, or <code>null</code> if there aren't any.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -164,7 +173,9 @@ implements java.lang.Iterable&lt;<a href="TableNode.html" title="class in io.git
 <tr class="alt-color" id="i0">
 <td class="col-first"><code>void</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#accept(io.github.eutro.jwasm.TablesVisitor)">accept</a></span>&#8203;(<a href="../TablesVisitor.html" title="class in io.github.eutro.jwasm">TablesVisitor</a>&nbsp;tv)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Make the given <a href="../TablesVisitor.html" title="class in io.github.eutro.jwasm"><code>TablesVisitor</code></a> visit all the tables of this node.</div>
+</td>
 </tr>
 <tr class="row-color" id="i1">
 <td class="col-first"><code>@NotNull java.util.Iterator&lt;<a href="TableNode.html" title="class in io.github.eutro.jwasm.tree">TableNode</a>&gt;</code></td>
@@ -209,6 +220,7 @@ byte&nbsp;type)</code></th>
 <h3>tables</h3>
 <div class="member-signature"><span class="annotations">@Nullable
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable java.util.List&lt;<a href="TableNode.html" title="class in io.github.eutro.jwasm.tree">TableNode</a>&gt;</span>&nbsp;<span class="member-name">tables</span></div>
+<div class="block">The vector of <a href="TableNode.html" title="class in io.github.eutro.jwasm.tree"><code>TableNode</code></a>s, or <code>null</code> if there aren't any.</div>
 </section>
 </li>
 </ul>
@@ -237,6 +249,11 @@ byte&nbsp;type)</code></th>
 <section class="detail" id="accept(io.github.eutro.jwasm.TablesVisitor)">
 <h3>accept</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="member-name">accept</span>&#8203;(<span class="parameters"><a href="../TablesVisitor.html" title="class in io.github.eutro.jwasm">TablesVisitor</a>&nbsp;tv)</span></div>
+<div class="block">Make the given <a href="../TablesVisitor.html" title="class in io.github.eutro.jwasm"><code>TablesVisitor</code></a> visit all the tables of this node.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>tv</code> - The visitor to visit.</dd>
+</dl>
 </section>
 </li>
 <li>

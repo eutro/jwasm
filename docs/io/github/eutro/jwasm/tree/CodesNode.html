@@ -91,7 +91,9 @@ loadScripts(document, 'script');</script>
 <pre>public class <span class="type-name-label">CodesNode</span>
 extends <a href="../CodesVisitor.html" title="class in io.github.eutro.jwasm">CodesVisitor</a>
 implements java.lang.Iterable&lt;<a href="CodeNode.html" title="class in io.github.eutro.jwasm.tree">CodeNode</a>&gt;</pre>
-<div class="block">A node that represents a vector of function bodies.</div>
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#code-section">code section</a>
+ of a module.</div>
 <dl class="notes">
 <dt>See Also:</dt>
 <dd><a href="../ModuleVisitor.html#visitCode()"><code>ModuleVisitor.visitCode()</code></a>, 
@@ -119,7 +121,7 @@ implements java.lang.Iterable&lt;<a href="CodeNode.html" title="class in io.gith
 <td class="col-first"><code>@Nullable java.util.List&lt;<a href="CodeNode.html" title="class in io.github.eutro.jwasm.tree">CodeNode</a>&gt;</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#codes">codes</a></span></code></th>
 <td class="col-last">
-<div class="block">A list of <a href="CodeNode.html" title="class in io.github.eutro.jwasm.tree"><code>CodeNode</code></a>s, or <code>null</code> if there aren't any.</div>
+<div class="block">The vector of <a href="CodeNode.html" title="class in io.github.eutro.jwasm.tree"><code>CodeNode</code></a>s, or <code>null</code> if there aren't any.</div>
 </td>
 </tr>
 </tbody>
@@ -217,7 +219,7 @@ implements java.lang.Iterable&lt;<a href="CodeNode.html" title="class in io.gith
 <h3>codes</h3>
 <div class="member-signature"><span class="annotations">@Nullable
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable java.util.List&lt;<a href="CodeNode.html" title="class in io.github.eutro.jwasm.tree">CodeNode</a>&gt;</span>&nbsp;<span class="member-name">codes</span></div>
-<div class="block">A list of <a href="CodeNode.html" title="class in io.github.eutro.jwasm.tree"><code>CodeNode</code></a>s, or <code>null</code> if there aren't any.</div>
+<div class="block">The vector of <a href="CodeNode.html" title="class in io.github.eutro.jwasm.tree"><code>CodeNode</code></a>s, or <code>null</code> if there aren't any.</div>
 </section>
 </li>
 </ul>

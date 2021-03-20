@@ -30,7 +30,9 @@ public class TypesVisitor extends BaseVisitor<TypesVisitor> {
     }
 
     /**
-     * Visit a <a href="https://webassembly.github.io/spec/core/binary/types.html#function-types">{@code functype}</a> element of the type vector.
+     * Visit a
+     * <a href="https://webassembly.github.io/spec/core/binary/types.html#function-types">{@code functype}</a>
+     * element of the type vector.
      *
      * @param params  The parameter
      *                <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-valtype">valtype</a>s

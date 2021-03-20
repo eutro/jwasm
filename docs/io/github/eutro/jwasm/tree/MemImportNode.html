@@ -84,6 +84,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="type-name-label">MemImportNode</span>
 extends <a href="AbstractImportNode.html" title="class in io.github.eutro.jwasm.tree">AbstractImportNode</a></pre>
+<div class="block">A node that represents a memory import.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ImportsVisitor.html#visitMemImport(java.lang.String,java.lang.String,int,java.lang.Integer)"><code>ImportsVisitor.visitMemImport(String, String, int, Integer)</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -105,7 +110,9 @@ extends <a href="AbstractImportNode.html" title="class in io.github.eutro.jwasm.
 <tr class="alt-color">
 <td class="col-first"><code><a href="../Limits.html" title="class in io.github.eutro.jwasm">Limits</a></code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#limits">limits</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The limits of the imported memory.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -133,7 +140,9 @@ extends <a href="AbstractImportNode.html" title="class in io.github.eutro.jwasm.
 <th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(java.lang.String,java.lang.String,io.github.eutro.jwasm.Limits)">MemImportNode</a></span>&#8203;(java.lang.String&nbsp;module,
 java.lang.String&nbsp;name,
 <a href="../Limits.html" title="class in io.github.eutro.jwasm">Limits</a>&nbsp;limits)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Construct a <a href="MemImportNode.html" title="class in io.github.eutro.jwasm.tree"><code>MemImportNode</code></a> with the given module, name and limits.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -185,6 +194,7 @@ java.lang.String&nbsp;name,
 <section class="detail" id="limits">
 <h3>limits</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../Limits.html" title="class in io.github.eutro.jwasm">Limits</a></span>&nbsp;<span class="member-name">limits</span></div>
+<div class="block">The limits of the imported memory.</div>
 </section>
 </li>
 </ul>
@@ -201,6 +211,13 @@ java.lang.String&nbsp;name,
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="member-name">MemImportNode</span>&#8203;(<span class="parameters">java.lang.String&nbsp;module,
 java.lang.String&nbsp;name,
 <a href="../Limits.html" title="class in io.github.eutro.jwasm">Limits</a>&nbsp;limits)</span></div>
+<div class="block">Construct a <a href="MemImportNode.html" title="class in io.github.eutro.jwasm.tree"><code>MemImportNode</code></a> with the given module, name and limits.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>module</code> - The module to import from.</dd>
+<dd><code>name</code> - The name to import.</dd>
+<dd><code>limits</code> - The limits of the imported memory.</dd>
+</dl>
 </section>
 </li>
 </ul>

@@ -1,5 +1,6 @@
 package io.github.eutro.jwasm.tree;
 
+import io.github.eutro.jwasm.ElementSegmentsVisitor;
 import io.github.eutro.jwasm.ElementVisitor;
 import io.github.eutro.jwasm.ExprVisitor;
 import org.jetbrains.annotations.NotNull;
@@ -9,14 +10,65 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * A node that represents an
+ * <a href="https://webassembly.github.io/spec/core/syntax/modules.html#syntax-elem">element segment</a>
+ * in the
+ * <a href="https://webassembly.github.io/spec/core/binary/modules.html#element-section">element section</a>
+ * of a module.
+ *
+ * @see ElementSegmentsVisitor#visitElem()
+ * @see ElementSegmentsNode
+ */
 public class ElementNode extends ElementVisitor implements Iterable<ExprNode> {
+    /**
+     * Whether the element segment is passive, if it is not active.
+     * <p>
+     * True if passive, false if declarative, ignored if active.
+     *
+     * @see #offset
+     */
     public boolean passive;
+
+    /**
+     * The table index of the element segment, if it is active.
+     */
     public int table;
+
+    /**
+     * The offset expression of an active element segment, or {@code null} if it is not active.
+     */
     public ExprNode offset;
+
+    /**
+     * The
+     * <a href="https://webassembly.github.io/spec/core/syntax/types.html#syntax-reftype">reftype</a>
+     * of the element segment.
+     */
     public byte type;
+
+    /**
+     * The vector of function
+     * <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-funcidx">indeces</a>
+     * to reference in the init exprs,
+     * or {@code null} if the {@link #init init expressions} are explicitly declared.
+     *
+     * @see #init
+     */
     public int[] indeces;
+
+    /**
+     * The vector of {@code init} exprs, or {@code null} if the {@link #indeces function indeces} should be used.
+     *
+     * @see #indeces
+     */
     public List<ExprNode> init;
 
+    /**
+     * Make the given {@link ElementVisitor} visit this element.
+     *
+     * @param eev The visitor to visit.
+     */
     public void accept(ElementVisitor eev) {
         if (offset == null) {
             eev.visitNonActiveMode(passive);
@@ -34,6 +86,15 @@ public class ElementNode extends ElementVisitor implements Iterable<ExprNode> {
             }
         }
         eev.visitEnd();
+    }
+
+    /**
+     * The number of init expressions in this element segment, the size of {@link #iterator()}.
+     *
+     * @return The number of expressions in this element segment.
+     */
+    public int size() {
+        return init == null ? indeces.length : init.size();
     }
 
     @Override
@@ -65,18 +126,21 @@ public class ElementNode extends ElementVisitor implements Iterable<ExprNode> {
         return en;
     }
 
+    /**
+     * Returns an iterator over the init expressions in this element segment,
+     * whether they be {@link #indeces implicitly derived from function indeces}
+     * or {@link #init explicitly declared}.
+     *
+     * @return An iterator over the init expressions in this element segment.
+     */
     @NotNull
     @Override
     public Iterator<ExprNode> iterator() {
         return init == null ? Arrays.stream(indeces).mapToObj(f -> {
             ExprNode en = new ExprNode();
-            en.visitFuncInsn(f);
+            en.visitFuncRefInsn(f);
             en.visitEndInsn();
             return en;
         }).iterator() : init.iterator();
-    }
-
-    public int size() {
-        return init == null ? indeces.length : init.size();
     }
 }

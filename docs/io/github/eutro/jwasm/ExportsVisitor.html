@@ -89,7 +89,7 @@ loadScripts(document, 'script');</script>
 <pre>public class <span class="type-name-label">ExportsVisitor</span>
 extends <a href="BaseVisitor.html" title="class in io.github.eutro.jwasm">BaseVisitor</a>&lt;<a href="ExportsVisitor.html" title="class in io.github.eutro.jwasm">ExportsVisitor</a>&gt;</pre>
 <div class="block">A visitor that visits the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#global-section">global section</a>
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#export-section">export section</a>
  of a module.
  <p>
  Methods are expected to be called in the order:
@@ -161,7 +161,7 @@ extends <a href="BaseVisitor.html" title="class in io.github.eutro.jwasm">BaseVi
 byte&nbsp;type,
 int&nbsp;index)</code></th>
 <td class="col-last">
-<div class="block">Visit an export of the module.</div>
+<div class="block">Visit an export of a module.</div>
 </td>
 </tr>
 </tbody>
@@ -219,7 +219,7 @@ int&nbsp;index)</code></th>
 @NotNull java.lang.String&nbsp;name,
 byte&nbsp;type,
 int&nbsp;index)</span></div>
-<div class="block">Visit an export of the module.</div>
+<div class="block">Visit an export of a module.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>name</code> - The name of the export.</dd>

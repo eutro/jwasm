@@ -76,6 +76,12 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="type-name-label">GlobalTypeNode</span>
 extends java.lang.Object</pre>
+<div class="block">A node that represents the type of an imported, exported or a module's own, global.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../GlobalsVisitor.html#visitGlobal(byte,byte)"><code>GlobalsVisitor.visitGlobal(byte, byte)</code></a>, 
+<a href="../ImportsVisitor.html#visitGlobalImport(java.lang.String,java.lang.String,byte,byte)"><code>ImportsVisitor.visitGlobalImport(String, String, byte, byte)</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -97,12 +103,24 @@ extends java.lang.Object</pre>
 <tr class="alt-color">
 <td class="col-first"><code>byte</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#mut">mut</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-mut">mutability</a>
+ of the
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-globaltype">globaltype</a>
+ of the global.</div>
+</td>
 </tr>
 <tr class="row-color">
 <td class="col-first"><code>byte</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#type">type</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-valtype">valtype</a>
+ of the
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-globaltype">globaltype</a>
+ of the global.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -126,7 +144,9 @@ extends java.lang.Object</pre>
 <tr class="alt-color">
 <th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(byte,byte)">GlobalTypeNode</a></span>&#8203;(byte&nbsp;mut,
 byte&nbsp;type)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Construct a <a href="GlobalTypeNode.html" title="class in io.github.eutro.jwasm.tree"><code>GlobalTypeNode</code></a> with the given mutability and type.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -155,12 +175,22 @@ byte&nbsp;type)</code></th>
 <section class="detail" id="mut">
 <h3>mut</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte</span>&nbsp;<span class="member-name">mut</span></div>
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-mut">mutability</a>
+ of the
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-globaltype">globaltype</a>
+ of the global.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="type">
 <h3>type</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte</span>&nbsp;<span class="member-name">type</span></div>
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-valtype">valtype</a>
+ of the
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-globaltype">globaltype</a>
+ of the global.</div>
 </section>
 </li>
 </ul>
@@ -176,6 +206,20 @@ byte&nbsp;type)</code></th>
 <h3>GlobalTypeNode</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="member-name">GlobalTypeNode</span>&#8203;(<span class="parameters">byte&nbsp;mut,
 byte&nbsp;type)</span></div>
+<div class="block">Construct a <a href="GlobalTypeNode.html" title="class in io.github.eutro.jwasm.tree"><code>GlobalTypeNode</code></a> with the given mutability and type.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>mut</code> - The
+             <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-mut">mutability</a>
+             of the
+             <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-globaltype">globaltype</a>
+             of the global.</dd>
+<dd><code>type</code> - The
+             <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-valtype">valtype</a>
+             of the
+             <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-globaltype">globaltype</a>
+             of the global.</dd>
+</dl>
 </section>
 </li>
 </ul>

@@ -57,7 +57,9 @@ loadScripts(document, 'script');</script>
 <dl class="index">
 <dt><a href="io/github/eutro/jwasm/tree/AbstractImportNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">AbstractImportNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
 <dd>
-<div class="block">A note that represents an import of a module.</div>
+<div class="block">A note that represents an
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#import-section">import</a>
+ of a module.</div>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/AbstractImportNode.html#%3Cinit%3E(java.lang.String,java.lang.String)">AbstractImportNode(String, String)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/AbstractImportNode.html" title="class in io.github.eutro.jwasm.tree">AbstractImportNode</a></dt>
 <dd>
@@ -65,7 +67,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="io/github/eutro/jwasm/tree/AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">AbstractInsnNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
 <dd>
-<div class="block">A node that represents a bytecode instruction.</div>
+<div class="block">A node that represents a bytecode
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instruction</a>.</div>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/AbstractInsnNode.html#%3Cinit%3E(byte)">AbstractInsnNode(byte)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tree">AbstractInsnNode</a></dt>
 <dd>
@@ -76,43 +79,95 @@ loadScripts(document, 'script');</script>
 <div class="block">Make the given <a href="io/github/eutro/jwasm/CodesVisitor.html" title="class in io.github.eutro.jwasm"><code>CodesVisitor</code></a> visit the codes of this node.</div>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/DataSegmentsNode.html#accept(io.github.eutro.jwasm.DataSegmentsVisitor)">accept(DataSegmentsVisitor)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/DataSegmentsNode.html" title="class in io.github.eutro.jwasm.tree">DataSegmentsNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Make the given <a href="io/github/eutro/jwasm/DataSegmentsVisitor.html" title="class in io.github.eutro.jwasm"><code>DataSegmentsVisitor</code></a> visit all the data segments of this node.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/DataNode.html#accept(io.github.eutro.jwasm.DataVisitor)">accept(DataVisitor)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/DataNode.html" title="class in io.github.eutro.jwasm.tree">DataNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Make the given <a href="io/github/eutro/jwasm/DataVisitor.html" title="class in io.github.eutro.jwasm"><code>DataVisitor</code></a> visit this data segment.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ElementSegmentsNode.html#accept(io.github.eutro.jwasm.ElementSegmentsVisitor)">accept(ElementSegmentsVisitor)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ElementSegmentsNode.html" title="class in io.github.eutro.jwasm.tree">ElementSegmentsNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Make the given <a href="io/github/eutro/jwasm/ElementSegmentsVisitor.html" title="class in io.github.eutro.jwasm"><code>ElementSegmentsVisitor</code></a> visit all the element segments of this node.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ElementNode.html#accept(io.github.eutro.jwasm.ElementVisitor)">accept(ElementVisitor)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ElementNode.html" title="class in io.github.eutro.jwasm.tree">ElementNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Make the given <a href="io/github/eutro/jwasm/ElementVisitor.html" title="class in io.github.eutro.jwasm"><code>ElementVisitor</code></a> visit this element.</div>
+</dd>
+<dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ExportNode.html#accept(io.github.eutro.jwasm.ExportsVisitor)">accept(ExportsVisitor)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ExportNode.html" title="class in io.github.eutro.jwasm.tree">ExportNode</a></dt>
+<dd>
+<div class="block">Make the given <a href="io/github/eutro/jwasm/ExportsVisitor.html" title="class in io.github.eutro.jwasm"><code>ExportsVisitor</code></a> visit this export.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ExportsNode.html#accept(io.github.eutro.jwasm.ExportsVisitor)">accept(ExportsVisitor)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ExportsNode.html" title="class in io.github.eutro.jwasm.tree">ExportsNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Make the given <a href="io/github/eutro/jwasm/ExportsVisitor.html" title="class in io.github.eutro.jwasm"><code>ExportsVisitor</code></a> visit all the exports of this node.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ExprNode.html#accept(io.github.eutro.jwasm.ExprVisitor)">accept(ExprVisitor)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Make the given <a href="io/github/eutro/jwasm/ExprVisitor.html" title="class in io.github.eutro.jwasm"><code>ExprVisitor</code></a> visit all the instructions of this node.</div>
+</dd>
+<dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/FuncNode.html#accept(io.github.eutro.jwasm.FunctionsVisitor)">accept(FunctionsVisitor)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/FuncNode.html" title="class in io.github.eutro.jwasm.tree">FuncNode</a></dt>
+<dd>
+<div class="block">Make the given <a href="io/github/eutro/jwasm/FunctionsVisitor.html" title="class in io.github.eutro.jwasm"><code>FunctionsVisitor</code></a> visit this function type.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/FunctionsNode.html#accept(io.github.eutro.jwasm.FunctionsVisitor)">accept(FunctionsVisitor)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/FunctionsNode.html" title="class in io.github.eutro.jwasm.tree">FunctionsNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Make the given <a href="io/github/eutro/jwasm/FunctionsVisitor.html" title="class in io.github.eutro.jwasm"><code>FunctionsVisitor</code></a> visit all the function types of this node.</div>
+</dd>
+<dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/GlobalNode.html#accept(io.github.eutro.jwasm.GlobalsVisitor)">accept(GlobalsVisitor)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/GlobalNode.html" title="class in io.github.eutro.jwasm.tree">GlobalNode</a></dt>
+<dd>
+<div class="block">Make the given <a href="io/github/eutro/jwasm/GlobalsVisitor.html" title="class in io.github.eutro.jwasm"><code>GlobalsVisitor</code></a> visit this global.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/GlobalsNode.html#accept(io.github.eutro.jwasm.GlobalsVisitor)">accept(GlobalsVisitor)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/GlobalsNode.html" title="class in io.github.eutro.jwasm.tree">GlobalsNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Make the given <a href="io/github/eutro/jwasm/GlobalsVisitor.html" title="class in io.github.eutro.jwasm"><code>GlobalsVisitor</code></a> visit all the globals of this node.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ImportsNode.html#accept(io.github.eutro.jwasm.ImportsVisitor)">accept(ImportsVisitor)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ImportsNode.html" title="class in io.github.eutro.jwasm.tree">ImportsNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Makes the given <a href="io/github/eutro/jwasm/ImportsVisitor.html" title="class in io.github.eutro.jwasm"><code>ImportsVisitor</code></a> visit all the imports of this node.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/MemoriesNode.html#accept(io.github.eutro.jwasm.MemoriesVisitor)">accept(MemoriesVisitor)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/MemoriesNode.html" title="class in io.github.eutro.jwasm.tree">MemoriesNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Make the given <a href="io/github/eutro/jwasm/MemoriesVisitor.html" title="class in io.github.eutro.jwasm"><code>MemoriesVisitor</code></a> visit all the memories of this node.</div>
+</dd>
+<dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/MemoryNode.html#accept(io.github.eutro.jwasm.MemoriesVisitor)">accept(MemoriesVisitor)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/MemoryNode.html" title="class in io.github.eutro.jwasm.tree">MemoryNode</a></dt>
+<dd>
+<div class="block">Make the given <a href="io/github/eutro/jwasm/MemoriesVisitor.html" title="class in io.github.eutro.jwasm"><code>MemoriesVisitor</code></a> visit this memory.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/ModuleReader.html#accept(io.github.eutro.jwasm.ModuleVisitor)">accept(ModuleVisitor)</a></span> - Method in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/ModuleReader.html" title="class in io.github.eutro.jwasm">ModuleReader</a></dt>
 <dd>
-<div class="block">Makes the given <a href="io/github/eutro/jwasm/ModuleVisitor.html" title="class in io.github.eutro.jwasm"><code>ModuleVisitor</code></a> visit the structure of the module.</div>
+<div class="block">Make the given <a href="io/github/eutro/jwasm/ModuleVisitor.html" title="class in io.github.eutro.jwasm"><code>ModuleVisitor</code></a> visit the structure of the module.</div>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/CustomNode.html#accept(io.github.eutro.jwasm.ModuleVisitor)">accept(ModuleVisitor)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/CustomNode.html" title="class in io.github.eutro.jwasm.tree">CustomNode</a></dt>
 <dd>
 <div class="block">Make the given <a href="io/github/eutro/jwasm/ModuleVisitor.html" title="class in io.github.eutro.jwasm"><code>ModuleVisitor</code></a> visit the section of this node.</div>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ModuleNode.html#accept(io.github.eutro.jwasm.ModuleVisitor)">accept(ModuleVisitor)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Make the given <a href="io/github/eutro/jwasm/ModuleVisitor.html" title="class in io.github.eutro.jwasm"><code>ModuleVisitor</code></a> visit the header and all the sections of this node.</div>
+</dd>
+<dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/TableNode.html#accept(io.github.eutro.jwasm.TablesVisitor)">accept(TablesVisitor)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/TableNode.html" title="class in io.github.eutro.jwasm.tree">TableNode</a></dt>
+<dd>
+<div class="block">Make the given <a href="io/github/eutro/jwasm/TablesVisitor.html" title="class in io.github.eutro.jwasm"><code>TablesVisitor</code></a> visit this table.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/TablesNode.html#accept(io.github.eutro.jwasm.TablesVisitor)">accept(TablesVisitor)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/TablesNode.html" title="class in io.github.eutro.jwasm.tree">TablesNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Make the given <a href="io/github/eutro/jwasm/TablesVisitor.html" title="class in io.github.eutro.jwasm"><code>TablesVisitor</code></a> visit all the tables of this node.</div>
+</dd>
+<dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/TypeNode.html#accept(io.github.eutro.jwasm.TypesVisitor)">accept(TypesVisitor)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/TypeNode.html" title="class in io.github.eutro.jwasm.tree">TypeNode</a></dt>
+<dd>
+<div class="block">Make the given <a href="io/github/eutro/jwasm/TypesVisitor.html" title="class in io.github.eutro.jwasm"><code>TypesVisitor</code></a> visit this type.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/TypesNode.html#accept(io.github.eutro.jwasm.TypesVisitor)">accept(TypesVisitor)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/TypesNode.html" title="class in io.github.eutro.jwasm.tree">TypesNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Make the given <a href="io/github/eutro/jwasm/TypesVisitor.html" title="class in io.github.eutro.jwasm"><code>TypesVisitor</code></a> visit all the types of this node.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm2java/ModuleAdapter.html#addImports(io.github.eutro.jwasm2java.Externs)">addImports(Externs)</a></span> - Method in class io.github.eutro.jwasm2java.<a href="io/github/eutro/jwasm2java/ModuleAdapter.html" title="class in io.github.eutro.jwasm2java">ModuleAdapter</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/MemInsnNode.html#align">align</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/MemInsnNode.html" title="class in io.github.eutro.jwasm.tree">MemInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The <code>align</code> of the argument.</div>
+</dd>
 </dl>
 <h2 class="title" id="I:B">B</h2>
 <dl class="index">
@@ -229,7 +284,9 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="io/github/eutro/jwasm/tree/CodeNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">CodeNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
 <dd>
-<div class="block">A node that represents a the code of a function.</div>
+<div class="block">A node that represents a the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#code-section">code</a>
+ of a function.</div>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/CodeNode.html#%3Cinit%3E(byte%5B%5D,io.github.eutro.jwasm.tree.ExprNode)">CodeNode(byte[], ExprNode)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/CodeNode.html" title="class in io.github.eutro.jwasm.tree">CodeNode</a></dt>
 <dd>
@@ -237,13 +294,17 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/CodesNode.html#codes">codes</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/CodesNode.html" title="class in io.github.eutro.jwasm.tree">CodesNode</a></dt>
 <dd>
-<div class="block">A list of <a href="io/github/eutro/jwasm/tree/CodeNode.html" title="class in io.github.eutro.jwasm.tree"><code>CodeNode</code></a>s, or <code>null</code> if there aren't any.</div>
+<div class="block">The vector of <a href="io/github/eutro/jwasm/tree/CodeNode.html" title="class in io.github.eutro.jwasm.tree"><code>CodeNode</code></a>s, or <code>null</code> if there aren't any.</div>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ModuleNode.html#codes">codes</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The codes of this module.</div>
+</dd>
 <dt><a href="io/github/eutro/jwasm/tree/CodesNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">CodesNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
 <dd>
-<div class="block">A node that represents a vector of function bodies.</div>
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#code-section">code section</a>
+ of a module.</div>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/CodesNode.html#%3Cinit%3E()">CodesNode()</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/CodesNode.html" title="class in io.github.eutro.jwasm.tree">CodesNode</a></dt>
 <dd>&nbsp;</dd>
@@ -307,14 +368,18 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/tree/CustomNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">CustomNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
 <dd>
-<div class="block">A node which represents a custom section of a module.</div>
+<div class="block">A node which represents a
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#custom-section">custom section</a>
+ of a module.</div>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/CustomNode.html#%3Cinit%3E(java.lang.String,byte%5B%5D)">CustomNode(String, byte[])</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/CustomNode.html" title="class in io.github.eutro.jwasm.tree">CustomNode</a></dt>
 <dd>
 <div class="block">Construct a <a href="io/github/eutro/jwasm/tree/CustomNode.html" title="class in io.github.eutro.jwasm.tree"><code>CustomNode</code></a> with the given name and data.</div>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ModuleNode.html#customs">customs</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">An array of lists of <a href="io/github/eutro/jwasm/tree/CustomNode.html" title="class in io.github.eutro.jwasm.tree"><code>CustomNode</code></a>s that this module has.</div>
+</dd>
 </dl>
 <h2 class="title" id="I:D">D</h2>
 <dl class="index">
@@ -329,21 +394,43 @@ loadScripts(document, 'script');</script>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#DATA_PASSIVE">DATA_PASSIVE</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ModuleNode.html#dataCount">dataCount</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The data count of this module.</div>
+</dd>
 <dt><a href="io/github/eutro/jwasm/tree/DataNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">DataNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents a
+ <a href="https://webassembly.github.io/spec/core/syntax/modules.html#syntax-data">data segment</a>
+ in the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#data-section">data section</a>
+ of a module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/DataNode.html#%3Cinit%3E(byte%5B%5D)">DataNode(byte[])</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/DataNode.html" title="class in io.github.eutro.jwasm.tree">DataNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Constructs a passive <a href="io/github/eutro/jwasm/tree/DataNode.html" title="class in io.github.eutro.jwasm.tree"><code>DataNode</code></a> with only an init array.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/DataNode.html#%3Cinit%3E(byte%5B%5D,int,io.github.eutro.jwasm.tree.ExprNode)">DataNode(byte[], int, ExprNode)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/DataNode.html" title="class in io.github.eutro.jwasm.tree">DataNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct an active <a href="io/github/eutro/jwasm/tree/DataNode.html" title="class in io.github.eutro.jwasm.tree"><code>DataNode</code></a> with the given init array, memory index and offset.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/DataNode.html#%3Cinit%3E(byte%5B%5D,io.github.eutro.jwasm.tree.ExprNode)">DataNode(byte[], ExprNode)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/DataNode.html" title="class in io.github.eutro.jwasm.tree">DataNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct an active <a href="io/github/eutro/jwasm/tree/DataNode.html" title="class in io.github.eutro.jwasm.tree"><code>DataNode</code></a> with the given init array and offset.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/DataSegmentsNode.html#datas">datas</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/DataSegmentsNode.html" title="class in io.github.eutro.jwasm.tree">DataSegmentsNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The vector of <a href="io/github/eutro/jwasm/tree/DataNode.html" title="class in io.github.eutro.jwasm.tree"><code>DataNode</code></a>s, or <code>null</code> if there aren't any.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ModuleNode.html#datas">datas</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The datas of this module.</div>
+</dd>
 <dt><a href="io/github/eutro/jwasm/tree/DataSegmentsNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">DataSegmentsNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#data-section">data section</a>
+ of a module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/DataSegmentsNode.html#%3Cinit%3E()">DataSegmentsNode()</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/DataSegmentsNode.html" title="class in io.github.eutro.jwasm.tree">DataSegmentsNode</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/DataSegmentsVisitor.html" title="class in io.github.eutro.jwasm"><span class="type-name-link">DataSegmentsVisitor</span></a> - Class in <a href="io/github/eutro/jwasm/package-summary.html">io.github.eutro.jwasm</a></dt>
@@ -401,7 +488,11 @@ loadScripts(document, 'script');</script>
 <div class="block">Constructs a writer with an optional <a href="io/github/eutro/jwasm/DataWriter.html#onEnd"><code>end callback</code></a>.</div>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/TableBreakInsnNode.html#defaultLabel">defaultLabel</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/TableBreakInsnNode.html" title="class in io.github.eutro.jwasm.tree">TableBreakInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">index</a>
+ of the default label.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/BaseVisitor.html#dl">dl</a></span> - Variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/BaseVisitor.html" title="class in io.github.eutro.jwasm">BaseVisitor</a></dt>
 <dd>
 <div class="block">The visitor to delegate all method calls to, or <code>null</code>.</div>
@@ -426,11 +517,21 @@ loadScripts(document, 'script');</script>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#ELEM_TABLE_INDEX">ELEM_TABLE_INDEX</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/tree/ElementNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">ElementNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents an
+ <a href="https://webassembly.github.io/spec/core/syntax/modules.html#syntax-elem">element segment</a>
+ in the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#element-section">element section</a>
+ of a module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ElementNode.html#%3Cinit%3E()">ElementNode()</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ElementNode.html" title="class in io.github.eutro.jwasm.tree">ElementNode</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/tree/ElementSegmentsNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">ElementSegmentsNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#element-section">element section</a>
+ of a module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ElementSegmentsNode.html#%3Cinit%3E()">ElementSegmentsNode()</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ElementSegmentsNode.html" title="class in io.github.eutro.jwasm.tree">ElementSegmentsNode</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/ElementSegmentsVisitor.html" title="class in io.github.eutro.jwasm"><span class="type-name-link">ElementSegmentsVisitor</span></a> - Class in <a href="io/github/eutro/jwasm/package-summary.html">io.github.eutro.jwasm</a></dt>
@@ -490,23 +591,38 @@ loadScripts(document, 'script');</script>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#ELEMKIND">ELEMKIND</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ElementSegmentsNode.html#elems">elems</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ElementSegmentsNode.html" title="class in io.github.eutro.jwasm.tree">ElementSegmentsNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The vector of <a href="io/github/eutro/jwasm/tree/ElementNode.html" title="class in io.github.eutro.jwasm.tree"><code>ElementNode</code></a>s, or <code>null</code> if there aren't any.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ModuleNode.html#elems">elems</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The element segments of this module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#ELSE">ELSE</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/tree/ElseInsnNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">ElseInsnNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents an optional <a href="io/github/eutro/jwasm/Opcodes.html#ELSE"><code>else</code></a> pseudo-instruction in an <a href="io/github/eutro/jwasm/Opcodes.html#IF"><code>if</code></a> block.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ElseInsnNode.html#%3Cinit%3E()">ElseInsnNode()</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ElseInsnNode.html" title="class in io.github.eutro.jwasm.tree">ElseInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct an <a href="io/github/eutro/jwasm/tree/ElseInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>ElseInsnNode</code></a>.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#EMPTY_TYPE">EMPTY_TYPE</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#END">END</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/tree/EndInsnNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">EndInsnNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents the <a href="io/github/eutro/jwasm/Opcodes.html#END"><code>end</code></a> of a
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#control-instructions">block</a>
+ or
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#expressions">expression</a>.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/EndInsnNode.html#%3Cinit%3E()">EndInsnNode()</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/EndInsnNode.html" title="class in io.github.eutro.jwasm.tree">EndInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Constructs an <a href="io/github/eutro/jwasm/tree/EndInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>EndInsnNode</code></a>.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/ByteInputStream.html#expect()">expect()</a></span> - Method in interface io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/ByteInputStream.html" title="interface in io.github.eutro.jwasm">ByteInputStream</a></dt>
 <dd>
 <div class="block">Get a byte from the stream, throwing a <a href="io/github/eutro/jwasm/ValidationException.html" title="class in io.github.eutro.jwasm"><code>ValidationException</code></a> if the end of the stream was reached.</div>
@@ -516,13 +632,21 @@ loadScripts(document, 'script');</script>
 <div class="block">Expect the stream to be empty, throwing a <a href="io/github/eutro/jwasm/ValidationException.html" title="class in io.github.eutro.jwasm"><code>ValidationException</code></a> if it is not.</div>
 </dd>
 <dt><a href="io/github/eutro/jwasm/tree/ExportNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">ExportNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents an export of a module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ExportNode.html#%3Cinit%3E(java.lang.String,byte,int)">ExportNode(String, byte, int)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ExportNode.html" title="class in io.github.eutro.jwasm.tree">ExportNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct an <a href="io/github/eutro/jwasm/tree/ExportNode.html" title="class in io.github.eutro.jwasm.tree"><code>ExportNode</code></a> with the given name, type and index.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ExportsNode.html#exports">exports</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ExportsNode.html" title="class in io.github.eutro.jwasm.tree">ExportsNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The vector of <a href="io/github/eutro/jwasm/tree/ExportNode.html" title="class in io.github.eutro.jwasm.tree"><code>ExportNode</code></a>s, or <code>null</code> if there aren't any.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ModuleNode.html#exports">exports</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The exports of this module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#EXPORTS_FUNC">EXPORTS_FUNC</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#EXPORTS_GLOBAL">EXPORTS_GLOBAL</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
@@ -532,13 +656,17 @@ loadScripts(document, 'script');</script>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#EXPORTS_TABLE">EXPORTS_TABLE</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/tree/ExportsNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">ExportsNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#export-section">export section</a>
+ of a module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ExportsNode.html#%3Cinit%3E()">ExportsNode()</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ExportsNode.html" title="class in io.github.eutro.jwasm.tree">ExportsNode</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/ExportsVisitor.html" title="class in io.github.eutro.jwasm"><span class="type-name-link">ExportsVisitor</span></a> - Class in <a href="io/github/eutro/jwasm/package-summary.html">io.github.eutro.jwasm</a></dt>
 <dd>
 <div class="block">A visitor that visits the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#global-section">global section</a>
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#export-section">export section</a>
  of a module.</div>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/ExportsVisitor.html#%3Cinit%3E()">ExportsVisitor()</a></span> - Constructor for class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/ExportsVisitor.html" title="class in io.github.eutro.jwasm">ExportsVisitor</a></dt>
@@ -566,7 +694,10 @@ loadScripts(document, 'script');</script>
 <div class="block">The body of the function.</div>
 </dd>
 <dt><a href="io/github/eutro/jwasm/tree/ExprNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">ExprNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents an
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-expr">expression</a>.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ExprNode.html#%3Cinit%3E()">ExprNode()</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/ExprVisitor.html" title="class in io.github.eutro.jwasm"><span class="type-name-link">ExprVisitor</span></a> - Class in <a href="io/github/eutro/jwasm/package-summary.html">io.github.eutro.jwasm</a></dt>
@@ -720,7 +851,11 @@ loadScripts(document, 'script');</script>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#F64_TRUNC">F64_TRUNC</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/PrefixBinaryTableInsnNode.html#firstIndex">firstIndex</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/PrefixBinaryTableInsnNode.html" title="class in io.github.eutro.jwasm.tree">PrefixBinaryTableInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-tableidx">index</a>
+ of the target table.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/ModuleReader.html#fromBytes(byte%5B%5D)">fromBytes(byte[])</a></span> - Static method in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/ModuleReader.html" title="class in io.github.eutro.jwasm">ModuleReader</a></dt>
 <dd>
 <div class="block">Construct a <a href="io/github/eutro/jwasm/ModuleReader.html" title="class in io.github.eutro.jwasm"><code>ModuleReader</code></a> that reads from the given byte array.</div>
@@ -734,36 +869,58 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Construct a <a href="io/github/eutro/jwasm/ModuleReader.html" title="class in io.github.eutro.jwasm"><code>ModuleReader</code></a> that reads from the given input stream.</div>
 </dd>
-<dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/StartNode.html#func">func</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/StartNode.html" title="class in io.github.eutro.jwasm.tree">StartNode</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/tree/FuncImportNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">FuncImportNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents a function import.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/FuncImportNode.html#%3Cinit%3E(java.lang.String,java.lang.String,int)">FuncImportNode(String, String, int)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/FuncImportNode.html" title="class in io.github.eutro.jwasm.tree">FuncImportNode</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="io/github/eutro/jwasm/tree/FuncInsnNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">FuncInsnNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/FuncInsnNode.html#%3Cinit%3E(int)">FuncInsnNode(int)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/FuncInsnNode.html" title="class in io.github.eutro.jwasm.tree">FuncInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct a <a href="io/github/eutro/jwasm/tree/FuncImportNode.html" title="class in io.github.eutro.jwasm.tree"><code>FuncImportNode</code></a> with the given module, name and type.</div>
+</dd>
 <dt><a href="io/github/eutro/jwasm/tree/FuncNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">FuncNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents the type of a function that is defined in the module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/FuncNode.html#%3Cinit%3E(int)">FuncNode(int)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/FuncNode.html" title="class in io.github.eutro.jwasm.tree">FuncNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct a <a href="io/github/eutro/jwasm/tree/FuncNode.html" title="class in io.github.eutro.jwasm.tree"><code>FuncNode</code></a> with the given type.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#FUNCREF">FUNCREF</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="io/github/eutro/jwasm/tree/FuncRefInsnNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">FuncRefInsnNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
+<dd>
+<div class="block">A node that represents a ref.func instruction.</div>
+</dd>
+<dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/FuncRefInsnNode.html#%3Cinit%3E(int)">FuncRefInsnNode(int)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/FuncRefInsnNode.html" title="class in io.github.eutro.jwasm.tree">FuncRefInsnNode</a></dt>
+<dd>
+<div class="block">Construct a <a href="io/github/eutro/jwasm/tree/FuncRefInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>FuncRefInsnNode</code></a> with the given function.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/FunctionsNode.html#funcs">funcs</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/FunctionsNode.html" title="class in io.github.eutro.jwasm.tree">FunctionsNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The vector of <a href="io/github/eutro/jwasm/tree/FuncNode.html" title="class in io.github.eutro.jwasm.tree"><code>FuncNode</code></a>s in this module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ModuleNode.html#funcs">funcs</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The function types of this module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/CallInsnNode.html#function">function</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/CallInsnNode.html" title="class in io.github.eutro.jwasm.tree">CallInsnNode</a></dt>
 <dd>
 <div class="block">The
  <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-funcidx">index</a>
  of the function to call.</div>
 </dd>
-<dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/FuncInsnNode.html#function">function</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/FuncInsnNode.html" title="class in io.github.eutro.jwasm.tree">FuncInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/FuncRefInsnNode.html#function">function</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/FuncRefInsnNode.html" title="class in io.github.eutro.jwasm.tree">FuncRefInsnNode</a></dt>
+<dd>
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-funcidx">index</a>
+ of the function to reference.</div>
+</dd>
 <dt><a href="io/github/eutro/jwasm/tree/FunctionsNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">FunctionsNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#function-section">function section</a>
+ of a module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/FunctionsNode.html#%3Cinit%3E()">FunctionsNode()</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/FunctionsNode.html" title="class in io.github.eutro.jwasm.tree">FunctionsNode</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/FunctionsVisitor.html" title="class in io.github.eutro.jwasm"><span class="type-name-link">FunctionsVisitor</span></a> - Class in <a href="io/github/eutro/jwasm/package-summary.html">io.github.eutro.jwasm</a></dt>
@@ -837,7 +994,10 @@ loadScripts(document, 'script');</script>
 <div class="block">Read a vector of bytes from the stream.</div>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ModuleNode.html#getCustoms(byte)">getCustoms(byte)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Get the list of custom sections after a given known section, as described in <a href="io/github/eutro/jwasm/tree/ModuleNode.html#customs"><code>ModuleNode.customs</code></a>,
+ creating the list if it does not exist yet.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/ByteInputStream.html#getFloat32()">getFloat32()</a></span> - Method in interface io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/ByteInputStream.html" title="interface in io.github.eutro.jwasm">ByteInputStream</a></dt>
 <dd>
 <div class="block">Gets a 32 bit floating point value from the stream, in little endian byte order, throwing an exception
@@ -901,19 +1061,35 @@ loadScripts(document, 'script');</script>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#GLOBAL_SET">GLOBAL_SET</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/tree/GlobalImportNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">GlobalImportNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents a global import.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/GlobalImportNode.html#%3Cinit%3E(java.lang.String,java.lang.String,io.github.eutro.jwasm.tree.GlobalTypeNode)">GlobalImportNode(String, String, GlobalTypeNode)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/GlobalImportNode.html" title="class in io.github.eutro.jwasm.tree">GlobalImportNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct a <a href="io/github/eutro/jwasm/tree/GlobalImportNode.html" title="class in io.github.eutro.jwasm.tree"><code>GlobalImportNode</code></a> with the given module, name and type.</div>
+</dd>
 <dt><a href="io/github/eutro/jwasm/tree/GlobalNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">GlobalNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents a global of a module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/GlobalNode.html#%3Cinit%3E(io.github.eutro.jwasm.tree.GlobalTypeNode,io.github.eutro.jwasm.tree.ExprNode)">GlobalNode(GlobalTypeNode, ExprNode)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/GlobalNode.html" title="class in io.github.eutro.jwasm.tree">GlobalNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct a <a href="io/github/eutro/jwasm/tree/GlobalNode.html" title="class in io.github.eutro.jwasm.tree"><code>GlobalNode</code></a> with the given type and init expression.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/GlobalsNode.html#globals">globals</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/GlobalsNode.html" title="class in io.github.eutro.jwasm.tree">GlobalsNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The vector of <a href="io/github/eutro/jwasm/tree/GlobalNode.html" title="class in io.github.eutro.jwasm.tree"><code>GlobalNode</code></a>s, or <code>null</code> if there aren't any.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ModuleNode.html#globals">globals</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The globals of this module.</div>
+</dd>
 <dt><a href="io/github/eutro/jwasm/tree/GlobalsNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">GlobalsNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#global-section">global section</a>
+ of a module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/GlobalsNode.html#%3Cinit%3E()">GlobalsNode()</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/GlobalsNode.html" title="class in io.github.eutro.jwasm.tree">GlobalsNode</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/GlobalsVisitor.html" title="class in io.github.eutro.jwasm"><span class="type-name-link">GlobalsVisitor</span></a> - Class in <a href="io/github/eutro/jwasm/package-summary.html">io.github.eutro.jwasm</a></dt>
@@ -943,9 +1119,13 @@ loadScripts(document, 'script');</script>
 <div class="block">Constructs a writer with an optional <a href="io/github/eutro/jwasm/GlobalsWriter.html#onEnd"><code>end callback</code></a>.</div>
 </dd>
 <dt><a href="io/github/eutro/jwasm/tree/GlobalTypeNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">GlobalTypeNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents the type of an imported, exported or a module's own, global.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/GlobalTypeNode.html#%3Cinit%3E(byte,byte)">GlobalTypeNode(byte, byte)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/GlobalTypeNode.html" title="class in io.github.eutro.jwasm.tree">GlobalTypeNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct a <a href="io/github/eutro/jwasm/tree/GlobalTypeNode.html" title="class in io.github.eutro.jwasm.tree"><code>GlobalTypeNode</code></a> with the given mutability and type.</div>
+</dd>
 </dl>
 <h2 class="title" id="I:I">I</h2>
 <dl class="index">
@@ -1166,9 +1346,13 @@ loadScripts(document, 'script');</script>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#IF">IF</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ImportsNode.html#imports">imports</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ImportsNode.html" title="class in io.github.eutro.jwasm.tree">ImportsNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The vector of <a href="io/github/eutro/jwasm/tree/AbstractImportNode.html" title="class in io.github.eutro.jwasm.tree"><code>AbstractImportNode</code></a>s, or <code>null</code> if there aren't any.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ModuleNode.html#imports">imports</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The imports of this module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#IMPORTS_FUNC">IMPORTS_FUNC</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#IMPORTS_GLOBAL">IMPORTS_GLOBAL</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
@@ -1178,7 +1362,11 @@ loadScripts(document, 'script');</script>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#IMPORTS_TABLE">IMPORTS_TABLE</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/tree/ImportsNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">ImportsNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#import-section">import section</a>
+ of a module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ImportsNode.html#%3Cinit%3E()">ImportsNode()</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ImportsNode.html" title="class in io.github.eutro.jwasm.tree">ImportsNode</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/ImportsVisitor.html" title="class in io.github.eutro.jwasm"><span class="type-name-link">ImportsVisitor</span></a> - Class in <a href="io/github/eutro/jwasm/package-summary.html">io.github.eutro.jwasm</a></dt>
@@ -1220,23 +1408,45 @@ loadScripts(document, 'script');</script>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/TableImportNode.html#importType()">importType()</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/TableImportNode.html" title="class in io.github.eutro.jwasm.tree">TableImportNode</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ElementNode.html#indeces">indeces</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ElementNode.html" title="class in io.github.eutro.jwasm.tree">ElementNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The vector of function
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-funcidx">indeces</a>
+ to reference in the init exprs,
+ or <code>null</code> if the <a href="io/github/eutro/jwasm/tree/ElementNode.html#init"><code>init expressions</code></a> are explicitly declared.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ExportNode.html#index">index</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ExportNode.html" title="class in io.github.eutro.jwasm.tree">ExportNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The <a href="https://webassembly.github.io/spec/core/binary/modules.html#indices">index</a>
+ of the exported value.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/IndexedMemInsnNode.html#index">index</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/IndexedMemInsnNode.html" title="class in io.github.eutro.jwasm.tree">IndexedMemInsnNode</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/VariableInsnNode.html#index">index</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/VariableInsnNode.html" title="class in io.github.eutro.jwasm.tree">VariableInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-dataidx">index</a>
+ argument.</div>
+</dd>
 <dt><a href="io/github/eutro/jwasm/tree/IndexedMemInsnNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">IndexedMemInsnNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents a prefixed
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#memory-instructions">memory</a>
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>
+ with an <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-dataidx">index</a> argument.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/IndexedMemInsnNode.html#%3Cinit%3E(int,int)">IndexedMemInsnNode(int, int)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/IndexedMemInsnNode.html" title="class in io.github.eutro.jwasm.tree">IndexedMemInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct an <a href="io/github/eutro/jwasm/tree/IndexedMemInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>IndexedMemInsnNode</code></a> with the given integer opcode and index.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/DataNode.html#init">init</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/DataNode.html" title="class in io.github.eutro.jwasm.tree">DataNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The <code>init</code> bytes of the data segment.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ElementNode.html#init">init</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ElementNode.html" title="class in io.github.eutro.jwasm.tree">ElementNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The vector of <code>init</code> exprs, or <code>null</code> if the <a href="io/github/eutro/jwasm/tree/ElementNode.html#indeces"><code>function indeces</code></a> should be used.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/GlobalNode.html#init">init</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/GlobalNode.html" title="class in io.github.eutro.jwasm.tree">GlobalNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The init expression of the global.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/ByteInputStream.InputStreamByteInputStream.html#%3Cinit%3E(java.io.InputStream)">InputStreamByteInputStream(InputStream)</a></span> - Constructor for class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/ByteInputStream.InputStreamByteInputStream.html" title="class in io.github.eutro.jwasm">ByteInputStream.InputStreamByteInputStream</a></dt>
 <dd>
 <div class="block">Construct a <a href="io/github/eutro/jwasm/ByteInputStream.InputStreamByteInputStream.html" title="class in io.github.eutro.jwasm"><code>ByteInputStream.InputStreamByteInputStream</code></a> from an input stream.</div>
@@ -1244,11 +1454,17 @@ loadScripts(document, 'script');</script>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#INSN_PREFIX">INSN_PREFIX</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/tree/InsnNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">InsnNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents an instruction with no immediate arguments.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/InsnNode.html#%3Cinit%3E(byte)">InsnNode(byte)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/InsnNode.html" title="class in io.github.eutro.jwasm.tree">InsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct an <a href="io/github/eutro/jwasm/tree/InsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>InsnNode</code></a> with the given opcode.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ExprNode.html#instructions">instructions</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The list of <a href="io/github/eutro/jwasm/tree/AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>instructions</code></a> in this expression, or <code>null</code> if there aren't any.</div>
+</dd>
 <dt><a href="io/github/eutro/jwasm2java/InteropModuleAdapter.html" title="class in io.github.eutro.jwasm2java"><span class="type-name-link">InteropModuleAdapter</span></a> - Class in <a href="io/github/eutro/jwasm2java/package-summary.html">io.github.eutro.jwasm2java</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm2java/InteropModuleAdapter.html#%3Cinit%3E()">InteropModuleAdapter()</a></span> - Constructor for class io.github.eutro.jwasm2java.<a href="io/github/eutro/jwasm2java/InteropModuleAdapter.html" title="class in io.github.eutro.jwasm2java">InteropModuleAdapter</a></dt>
@@ -1256,7 +1472,9 @@ loadScripts(document, 'script');</script>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm2java/InteropModuleAdapter.html#%3Cinit%3E(io.github.eutro.jwasm.tree.ModuleNode)">InteropModuleAdapter(ModuleNode)</a></span> - Constructor for class io.github.eutro.jwasm2java.<a href="io/github/eutro/jwasm2java/InteropModuleAdapter.html" title="class in io.github.eutro.jwasm2java">InteropModuleAdapter</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/PrefixInsnNode.html#intOpcode">intOpcode</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/PrefixInsnNode.html" title="class in io.github.eutro.jwasm.tree">PrefixInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The integer opcode of the instruction.</div>
+</dd>
 <dt><a href="io/github/eutro/jwasm/package-summary.html">io.github.eutro.jwasm</a> - package io.github.eutro.jwasm</dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a> - package io.github.eutro.jwasm.tree</dt>
@@ -1268,7 +1486,11 @@ loadScripts(document, 'script');</script>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/DataSegmentsNode.html#iterator()">iterator()</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/DataSegmentsNode.html" title="class in io.github.eutro.jwasm.tree">DataSegmentsNode</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ElementNode.html#iterator()">iterator()</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ElementNode.html" title="class in io.github.eutro.jwasm.tree">ElementNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Returns an iterator over the init expressions in this element segment,
+ whether they be <a href="io/github/eutro/jwasm/tree/ElementNode.html#indeces"><code>implicitly derived from function indeces</code></a>
+ or <a href="io/github/eutro/jwasm/tree/ElementNode.html#init"><code>explicitly declared</code></a>.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ElementSegmentsNode.html#iterator()">iterator()</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ElementSegmentsNode.html" title="class in io.github.eutro.jwasm.tree">ElementSegmentsNode</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ExportsNode.html#iterator()">iterator()</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ExportsNode.html" title="class in io.github.eutro.jwasm.tree">ExportsNode</a></dt>
@@ -1297,19 +1519,30 @@ loadScripts(document, 'script');</script>
  of the label.</div>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/TableBreakInsnNode.html#labels">labels</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/TableBreakInsnNode.html" title="class in io.github.eutro.jwasm.tree">TableBreakInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The table of label
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">indeces</a>.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#LIMIT_NOMAX">LIMIT_NOMAX</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#LIMIT_WMAX">LIMIT_WMAX</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/MemImportNode.html#limits">limits</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/MemImportNode.html" title="class in io.github.eutro.jwasm.tree">MemImportNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The limits of the imported memory.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/MemoryNode.html#limits">limits</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/MemoryNode.html" title="class in io.github.eutro.jwasm.tree">MemoryNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The limits of the memory.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/TableImportNode.html#limits">limits</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/TableImportNode.html" title="class in io.github.eutro.jwasm.tree">TableImportNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The limits of the imported table.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/TableNode.html#limits">limits</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/TableNode.html" title="class in io.github.eutro.jwasm.tree">TableNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The limits of the table.</div>
+</dd>
 <dt><a href="io/github/eutro/jwasm/Limits.html" title="class in io.github.eutro.jwasm"><span class="type-name-link">Limits</span></a> - Class in <a href="io/github/eutro/jwasm/package-summary.html">io.github.eutro.jwasm</a></dt>
 <dd>
 <div class="block">A class that represents a WebAssembly
@@ -1343,17 +1576,31 @@ loadScripts(document, 'script');</script>
 <div class="block">The maximum of the limit, or <code>null</code> if there is none.</div>
 </dd>
 <dt><a href="io/github/eutro/jwasm/tree/MemImportNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">MemImportNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents a memory import.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/MemImportNode.html#%3Cinit%3E(java.lang.String,java.lang.String,io.github.eutro.jwasm.Limits)">MemImportNode(String, String, Limits)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/MemImportNode.html" title="class in io.github.eutro.jwasm.tree">MemImportNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct a <a href="io/github/eutro/jwasm/tree/MemImportNode.html" title="class in io.github.eutro.jwasm.tree"><code>MemImportNode</code></a> with the given module, name and limits.</div>
+</dd>
 <dt><a href="io/github/eutro/jwasm/tree/MemInsnNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">MemInsnNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents a memory instruction with a single memory argument.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/MemInsnNode.html#%3Cinit%3E(byte,int,int)">MemInsnNode(byte, int, int)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/MemInsnNode.html" title="class in io.github.eutro.jwasm.tree">MemInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct a <a href="io/github/eutro/jwasm/tree/MemInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>MemInsnNode</code></a> with the given opcode, align and offset.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/MemoriesNode.html#memories">memories</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/MemoriesNode.html" title="class in io.github.eutro.jwasm.tree">MemoriesNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The vector of <a href="io/github/eutro/jwasm/tree/MemoryNode.html" title="class in io.github.eutro.jwasm.tree"><code>MemoryNode</code></a>s, or <code>null</code> if there aren't any.</div>
+</dd>
 <dt><a href="io/github/eutro/jwasm/tree/MemoriesNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">MemoriesNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#memory-section">memory section</a>
+ of a module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/MemoriesNode.html#%3Cinit%3E()">MemoriesNode()</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/MemoriesNode.html" title="class in io.github.eutro.jwasm.tree">MemoriesNode</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/MemoriesVisitor.html" title="class in io.github.eutro.jwasm"><span class="type-name-link">MemoriesVisitor</span></a> - Class in <a href="io/github/eutro/jwasm/package-summary.html">io.github.eutro.jwasm</a></dt>
@@ -1383,7 +1630,11 @@ loadScripts(document, 'script');</script>
 <div class="block">Constructs a writer with an optional <a href="io/github/eutro/jwasm/MemoriesWriter.html#onEnd"><code>end callback</code></a>.</div>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/DataNode.html#memory">memory</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/DataNode.html" title="class in io.github.eutro.jwasm.tree">DataNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The memory
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-memidx">index</a>
+ of the data segment.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#MEMORY_COPY">MEMORY_COPY</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#MEMORY_FILL">MEMORY_FILL</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
@@ -1395,11 +1646,17 @@ loadScripts(document, 'script');</script>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#MEMORY_SIZE">MEMORY_SIZE</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/tree/MemoryNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">MemoryNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents a linear memory of a module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/MemoryNode.html#%3Cinit%3E(io.github.eutro.jwasm.Limits)">MemoryNode(Limits)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/MemoryNode.html" title="class in io.github.eutro.jwasm.tree">MemoryNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct a <a href="io/github/eutro/jwasm/tree/MemoryNode.html" title="class in io.github.eutro.jwasm.tree"><code>MemoryNode</code></a> with the given limits.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ModuleNode.html#mems">mems</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The memories of this module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Limits.html#min">min</a></span> - Variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Limits.html" title="class in io.github.eutro.jwasm">Limits</a></dt>
 <dd>
 <div class="block">The minimum of the limit.</div>
@@ -1415,7 +1672,10 @@ loadScripts(document, 'script');</script>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm2java/ModuleAdapter.html#%3Cinit%3E(io.github.eutro.jwasm.tree.ModuleNode)">ModuleAdapter(ModuleNode)</a></span> - Constructor for class io.github.eutro.jwasm2java.<a href="io/github/eutro/jwasm2java/ModuleAdapter.html" title="class in io.github.eutro.jwasm2java">ModuleAdapter</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">ModuleNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents a WebAssembly
+ <a href="https://webassembly.github.io/spec/core/syntax/modules.html">module</a>.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ModuleNode.html#%3Cinit%3E()">ModuleNode()</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/ModuleReader.html" title="class in io.github.eutro.jwasm"><span class="type-name-link">ModuleReader</span></a>&lt;<a href="io/github/eutro/jwasm/ModuleReader.html" title="type parameter in ModuleReader">E</a> extends java.lang.Exception&gt; - Class in <a href="io/github/eutro/jwasm/package-summary.html">io.github.eutro.jwasm</a></dt>
@@ -1446,7 +1706,13 @@ loadScripts(document, 'script');</script>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/ModuleWriter.html#%3Cinit%3E()">ModuleWriter()</a></span> - Constructor for class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/ModuleWriter.html" title="class in io.github.eutro.jwasm">ModuleWriter</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/GlobalTypeNode.html#mut">mut</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/GlobalTypeNode.html" title="class in io.github.eutro.jwasm.tree">GlobalTypeNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-mut">mutability</a>
+ of the
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-globaltype">globaltype</a>
+ of the global.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#MUT_CONST">MUT_CONST</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#MUT_VAR">MUT_VAR</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
@@ -1463,24 +1729,36 @@ loadScripts(document, 'script');</script>
 <div class="block">The name of the custom section, for further identification.</div>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ExportNode.html#name">name</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ExportNode.html" title="class in io.github.eutro.jwasm.tree">ExportNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The name of the export.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm2java/ModuleAdapter.html#node">node</a></span> - Variable in class io.github.eutro.jwasm2java.<a href="io/github/eutro/jwasm2java/ModuleAdapter.html" title="class in io.github.eutro.jwasm2java">ModuleAdapter</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#NOP">NOP</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/tree/NullInsnNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">NullInsnNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents a ref.null instruction.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/NullInsnNode.html#%3Cinit%3E(byte)">NullInsnNode(byte)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/NullInsnNode.html" title="class in io.github.eutro.jwasm.tree">NullInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct a <a href="io/github/eutro/jwasm/tree/NullInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>NullInsnNode</code></a> with the given type.</div>
+</dd>
 </dl>
 <h2 class="title" id="I:O">O</h2>
 <dl class="index">
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/DataNode.html#offset">offset</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/DataNode.html" title="class in io.github.eutro.jwasm.tree">DataNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The <code>offset</code> expr.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ElementNode.html#offset">offset</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ElementNode.html" title="class in io.github.eutro.jwasm.tree">ElementNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The offset expression of an active element segment, or <code>null</code> if it is not active.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/MemInsnNode.html#offset">offset</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/MemInsnNode.html" title="class in io.github.eutro.jwasm.tree">MemInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The <code>offset</code> of the argument.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/CodesWriter.html#onEnd">onEnd</a></span> - Variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/CodesWriter.html" title="class in io.github.eutro.jwasm">CodesWriter</a></dt>
 <dd>
 <div class="block">A callback that is called from <a href="io/github/eutro/jwasm/CodesWriter.html#visitEnd()"><code>CodesWriter.visitEnd()</code></a>, or <code>null</code>.</div>
@@ -1537,8 +1815,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">The opcode of this instruction.</div>
 </dd>
-<dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/VariableInsnNode.html#opcode">opcode</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/VariableInsnNode.html" title="class in io.github.eutro.jwasm.tree">VariableInsnNode</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm"><span class="type-name-link">Opcodes</span></a> - Class in <a href="io/github/eutro/jwasm/package-summary.html">io.github.eutro.jwasm</a></dt>
 <dd>
 <div class="block">A list of WebAssembly constants and opcodes.</div>
@@ -1551,23 +1827,42 @@ loadScripts(document, 'script');</script>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#PAGE_SIZE">PAGE_SIZE</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/TypeNode.html#params">params</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/TypeNode.html" title="class in io.github.eutro.jwasm.tree">TypeNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The parameter
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-valtype">valtype</a>s
+ of the
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-functype">functype</a>.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ElementNode.html#passive">passive</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ElementNode.html" title="class in io.github.eutro.jwasm.tree">ElementNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Whether the element segment is passive, if it is not active.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm2java/InteropModuleAdapter.html#PREFIX">PREFIX</a></span> - Static variable in class io.github.eutro.jwasm2java.<a href="io/github/eutro/jwasm2java/InteropModuleAdapter.html" title="class in io.github.eutro.jwasm2java">InteropModuleAdapter</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/tree/PrefixBinaryTableInsnNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">PrefixBinaryTableInsnNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents a table instruction with two immediate index arguments.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/PrefixBinaryTableInsnNode.html#%3Cinit%3E(int,int,int)">PrefixBinaryTableInsnNode(int, int, int)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/PrefixBinaryTableInsnNode.html" title="class in io.github.eutro.jwasm.tree">PrefixBinaryTableInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct a <a href="io/github/eutro/jwasm/tree/PrefixBinaryTableInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>PrefixBinaryTableInsnNode</code></a> with the given opcode and immediate arguments.</div>
+</dd>
 <dt><a href="io/github/eutro/jwasm/tree/PrefixInsnNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">PrefixInsnNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents a prefix instruction.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/PrefixInsnNode.html#%3Cinit%3E(int)">PrefixInsnNode(int)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/PrefixInsnNode.html" title="class in io.github.eutro.jwasm.tree">PrefixInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct an <a href="io/github/eutro/jwasm/tree/PrefixInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>PrefixInsnNode</code></a> with the given integer opcode.</div>
+</dd>
 <dt><a href="io/github/eutro/jwasm/tree/PrefixTableInsnNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">PrefixTableInsnNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents a prefixed table instruction.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/PrefixTableInsnNode.html#%3Cinit%3E(int,int)">PrefixTableInsnNode(int, int)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/PrefixTableInsnNode.html" title="class in io.github.eutro.jwasm.tree">PrefixTableInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct a <a href="io/github/eutro/jwasm/tree/PrefixTableInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>PrefixTableInsnNode</code></a> with the given opcode and table.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/ByteOutputStream.BaosByteOutputStream.html#put(byte)">put(byte)</a></span> - Method in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/ByteOutputStream.BaosByteOutputStream.html" title="class in io.github.eutro.jwasm">ByteOutputStream.BaosByteOutputStream</a></dt>
 <dd>
 <div class="block">Write a byte to the stream.</div>
@@ -1677,12 +1972,21 @@ loadScripts(document, 'script');</script>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#RETURN">RETURN</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/TypeNode.html#returns">returns</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/TypeNode.html" title="class in io.github.eutro.jwasm.tree">TypeNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The return
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-valtype">valtype</a>s
+ of the
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-functype">functype</a>.</div>
+</dd>
 </dl>
 <h2 class="title" id="I:S">S</h2>
 <dl class="index">
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/PrefixBinaryTableInsnNode.html#secondIndex">secondIndex</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/PrefixBinaryTableInsnNode.html" title="class in io.github.eutro.jwasm.tree">PrefixBinaryTableInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The second
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#indices">index</a>
+ argument.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#SECTION_CODE">SECTION_CODE</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#SECTION_CUSTOM">SECTION_CUSTOM</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
@@ -1724,13 +2028,19 @@ loadScripts(document, 'script');</script>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#SELECT">SELECT</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/tree/SelectInsnNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">SelectInsnNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents a select instruction with explicit type arguments.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/SelectInsnNode.html#%3Cinit%3E(byte%5B%5D)">SelectInsnNode(byte[])</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/SelectInsnNode.html" title="class in io.github.eutro.jwasm.tree">SelectInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct a <a href="io/github/eutro/jwasm/tree/SelectInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>SelectInsnNode</code></a> with the given types.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#SELECTT">SELECTT</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ElementNode.html#size()">size()</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ElementNode.html" title="class in io.github.eutro.jwasm.tree">ElementNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The number of init expressions in this element segment, the size of <a href="io/github/eutro/jwasm/tree/ElementNode.html#iterator()"><code>ElementNode.iterator()</code></a>.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/ByteInputStream.ByteBufferByteInputStream.html#skip(int)">skip(int)</a></span> - Method in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/ByteInputStream.ByteBufferByteInputStream.html" title="class in io.github.eutro.jwasm">ByteInputStream.ByteBufferByteInputStream</a></dt>
 <dd>
 <div class="block">Skip a number of bytes from the stream, terminating early if the end of the stream is reached.</div>
@@ -1756,11 +2066,9 @@ loadScripts(document, 'script');</script>
 <div class="block">Skip all the remaining bytes in the stream.</div>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ModuleNode.html#start">start</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="io/github/eutro/jwasm/tree/StartNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">StartNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
-<dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/StartNode.html#%3Cinit%3E(int)">StartNode(int)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/StartNode.html" title="class in io.github.eutro.jwasm.tree">StartNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The start of this module.</div>
+</dd>
 </dl>
 <h2 class="title" id="I:T">T</h2>
 <dl class="index">
@@ -1771,11 +2079,21 @@ loadScripts(document, 'script');</script>
  to look up the reference in.</div>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ElementNode.html#table">table</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ElementNode.html" title="class in io.github.eutro.jwasm.tree">ElementNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The table index of the element segment, if it is active.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/PrefixTableInsnNode.html#table">table</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/PrefixTableInsnNode.html" title="class in io.github.eutro.jwasm.tree">PrefixTableInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-tableidx">index</a>
+ of the table.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/TableInsnNode.html#table">table</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/TableInsnNode.html" title="class in io.github.eutro.jwasm.tree">TableInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-tableidx">index</a>
+ of the table.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#TABLE_COPY">TABLE_COPY</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#TABLE_FILL">TABLE_FILL</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
@@ -1791,27 +2109,51 @@ loadScripts(document, 'script');</script>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#TABLE_SIZE">TABLE_SIZE</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/tree/TableBreakInsnNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">TableBreakInsnNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents a br_table instruction.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/TableBreakInsnNode.html#%3Cinit%3E(int%5B%5D,int)">TableBreakInsnNode(int[], int)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/TableBreakInsnNode.html" title="class in io.github.eutro.jwasm.tree">TableBreakInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct a <a href="io/github/eutro/jwasm/tree/TableBreakInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>TableBreakInsnNode</code></a> with the given labels and default label.</div>
+</dd>
 <dt><a href="io/github/eutro/jwasm/tree/TableImportNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">TableImportNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents a function import.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/TableImportNode.html#%3Cinit%3E(java.lang.String,java.lang.String,io.github.eutro.jwasm.Limits,byte)">TableImportNode(String, String, Limits, byte)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/TableImportNode.html" title="class in io.github.eutro.jwasm.tree">TableImportNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct a <a href="io/github/eutro/jwasm/tree/TableImportNode.html" title="class in io.github.eutro.jwasm.tree"><code>TableImportNode</code></a> with the given module, name, limits and type.</div>
+</dd>
 <dt><a href="io/github/eutro/jwasm/tree/TableInsnNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">TableInsnNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents a table instruction.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/TableInsnNode.html#%3Cinit%3E(byte,int)">TableInsnNode(byte, int)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/TableInsnNode.html" title="class in io.github.eutro.jwasm.tree">TableInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct a <a href="io/github/eutro/jwasm/tree/TableInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>TableInsnNode</code></a> with the given opcode and table.</div>
+</dd>
 <dt><a href="io/github/eutro/jwasm/tree/TableNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">TableNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents a table of a module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/TableNode.html#%3Cinit%3E(io.github.eutro.jwasm.Limits,byte)">TableNode(Limits, byte)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/TableNode.html" title="class in io.github.eutro.jwasm.tree">TableNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct a <a href="io/github/eutro/jwasm/tree/TableNode.html" title="class in io.github.eutro.jwasm.tree"><code>TableNode</code></a> with the given limits and type.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ModuleNode.html#tables">tables</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The tables of this module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/TablesNode.html#tables">tables</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/TablesNode.html" title="class in io.github.eutro.jwasm.tree">TablesNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The vector of <a href="io/github/eutro/jwasm/tree/TableNode.html" title="class in io.github.eutro.jwasm.tree"><code>TableNode</code></a>s, or <code>null</code> if there aren't any.</div>
+</dd>
 <dt><a href="io/github/eutro/jwasm/tree/TablesNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">TablesNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#table-section">table section</a>
+ of a module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/TablesNode.html#%3Cinit%3E()">TablesNode()</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/TablesNode.html" title="class in io.github.eutro.jwasm.tree">TablesNode</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/TablesVisitor.html" title="class in io.github.eutro.jwasm"><span class="type-name-link">TablesVisitor</span></a> - Class in <a href="io/github/eutro/jwasm/package-summary.html">io.github.eutro.jwasm</a></dt>
@@ -1869,39 +2211,93 @@ loadScripts(document, 'script');</script>
  of the function's type.</div>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ElementNode.html#type">type</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ElementNode.html" title="class in io.github.eutro.jwasm.tree">ElementNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/syntax/types.html#syntax-reftype">reftype</a>
+ of the element segment.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ExportNode.html#type">type</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ExportNode.html" title="class in io.github.eutro.jwasm.tree">ExportNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The type of the export, one of
+ <a href="io/github/eutro/jwasm/Opcodes.html#EXPORTS_FUNC"><code>Opcodes.EXPORTS_FUNC</code></a>,
+ <a href="io/github/eutro/jwasm/Opcodes.html#EXPORTS_TABLE"><code>Opcodes.EXPORTS_TABLE</code></a>,
+ <a href="io/github/eutro/jwasm/Opcodes.html#EXPORTS_MEM"><code>Opcodes.EXPORTS_MEM</code></a> or
+ <a href="io/github/eutro/jwasm/Opcodes.html#EXPORTS_GLOBAL"><code>Opcodes.EXPORTS_GLOBAL</code></a>.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/FuncImportNode.html#type">type</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/FuncImportNode.html" title="class in io.github.eutro.jwasm.tree">FuncImportNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-typeidx">index</a>
+ of the type of the imported function.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/FuncNode.html#type">type</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/FuncNode.html" title="class in io.github.eutro.jwasm.tree">FuncNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-typeidx">index</a>
+ of the function's type.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/GlobalImportNode.html#type">type</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/GlobalImportNode.html" title="class in io.github.eutro.jwasm.tree">GlobalImportNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The type of the imported global.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/GlobalNode.html#type">type</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/GlobalNode.html" title="class in io.github.eutro.jwasm.tree">GlobalNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The the type of the global.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/GlobalTypeNode.html#type">type</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/GlobalTypeNode.html" title="class in io.github.eutro.jwasm.tree">GlobalTypeNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-valtype">valtype</a>
+ of the
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-globaltype">globaltype</a>
+ of the global.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/NullInsnNode.html#type">type</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/NullInsnNode.html" title="class in io.github.eutro.jwasm.tree">NullInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-reftype">reftype</a>
+ of the null value.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/SelectInsnNode.html#type">type</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/SelectInsnNode.html" title="class in io.github.eutro.jwasm.tree">SelectInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-valtype">valtype</a>s
+ of the instruction.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/TableImportNode.html#type">type</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/TableImportNode.html" title="class in io.github.eutro.jwasm.tree">TableImportNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-reftype">reftype</a>
+ of values in the imported table.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/TableNode.html#type">type</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/TableNode.html" title="class in io.github.eutro.jwasm.tree">TableNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-reftype">reftype</a>
+ of values in the table.</div>
+</dd>
 <dt><a href="io/github/eutro/jwasm/tree/TypeNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">TypeNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents a
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#function-types"><code>functype</code></a>.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/TypeNode.html#%3Cinit%3E(byte%5B%5D,byte%5B%5D)">TypeNode(byte[], byte[])</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/TypeNode.html" title="class in io.github.eutro.jwasm.tree">TypeNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct a <a href="io/github/eutro/jwasm/tree/TypeNode.html" title="class in io.github.eutro.jwasm.tree"><code>TypeNode</code></a> with the given params and returns.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ModuleNode.html#types">types</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The types of this module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/TypesNode.html#types">types</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/TypesNode.html" title="class in io.github.eutro.jwasm.tree">TypesNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The vector of <a href="io/github/eutro/jwasm/tree/TypeNode.html" title="class in io.github.eutro.jwasm.tree"><code>TypeNode</code></a>s, or <code>null</code> if there aren't any.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#TYPES_FUNCTION">TYPES_FUNCTION</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/tree/TypesNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">TypesNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#type-section">type section</a>
+ of a module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/TypesNode.html#%3Cinit%3E()">TypesNode()</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/TypesNode.html" title="class in io.github.eutro.jwasm.tree">TypesNode</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/TypesVisitor.html" title="class in io.github.eutro.jwasm"><span class="type-name-link">TypesVisitor</span></a> - Class in <a href="io/github/eutro/jwasm/package-summary.html">io.github.eutro.jwasm</a></dt>
@@ -1957,16 +2353,28 @@ loadScripts(document, 'script');</script>
  representing <code>i32</code>, <code>i64</code>, <code>f32</code> and <code>f64</code>
  <code>const</code> instructions respectively.</div>
 </dd>
+<dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/VariableInsnNode.html#variable">variable</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/VariableInsnNode.html" title="class in io.github.eutro.jwasm.tree">VariableInsnNode</a></dt>
+<dd>
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/syntax/modules.html#syntax-index">index</a>
+ of the variable.</div>
+</dd>
 <dt><a href="io/github/eutro/jwasm/tree/VariableInsnNode.html" title="class in io.github.eutro.jwasm.tree"><span class="type-name-link">VariableInsnNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A node that represents a variable instruction.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/VariableInsnNode.html#%3Cinit%3E(byte,int)">VariableInsnNode(byte, int)</a></span> - Constructor for class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/VariableInsnNode.html" title="class in io.github.eutro.jwasm.tree">VariableInsnNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct a <a href="io/github/eutro/jwasm/tree/VariableInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>VariableInsnNode</code></a> with the given opcode and index.</div>
+</dd>
 <dt><a href="io/github/eutro/jwasm/VectorWriter.html" title="interface in io.github.eutro.jwasm"><span class="type-name-link">VectorWriter</span></a> - Interface in <a href="io/github/eutro/jwasm/package-summary.html">io.github.eutro.jwasm</a></dt>
 <dd>
 <div class="block">An interface for <code>*Writer</code>s that write a vector of values.</div>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ModuleNode.html#version">version</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">The version field of the module.</div>
+</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/Opcodes.html#VERSION">VERSION</a></span> - Static variable in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/DataVisitor.html#visitActive(int)">visitActive(int)</a></span> - Method in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/DataVisitor.html" title="class in io.github.eutro.jwasm">DataVisitor</a></dt>
@@ -2119,7 +2527,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/ExprVisitor.html#visitElseInsn()">visitElseInsn()</a></span> - Method in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/ExprVisitor.html" title="class in io.github.eutro.jwasm">ExprVisitor</a></dt>
 <dd>
-<div class="block">Visit the optional <a href="io/github/eutro/jwasm/Opcodes.html#ELSE"><code>else</code></a> in an <a href="io/github/eutro/jwasm/Opcodes.html#IF"><code>if</code></a> block.</div>
+<div class="block">Visit the optional <a href="io/github/eutro/jwasm/Opcodes.html#ELSE"><code>else</code></a> pseudo-instruction in an <a href="io/github/eutro/jwasm/Opcodes.html#IF"><code>if</code></a> block.</div>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/ExprWriter.html#visitElseInsn()">visitElseInsn()</a></span> - Method in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/ExprWriter.html" title="class in io.github.eutro.jwasm">ExprWriter</a></dt>
 <dd>&nbsp;</dd>
@@ -2168,7 +2576,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/ExportsVisitor.html#visitExport(java.lang.String,byte,int)">visitExport(String, byte, int)</a></span> - Method in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/ExportsVisitor.html" title="class in io.github.eutro.jwasm">ExportsVisitor</a></dt>
 <dd>
-<div class="block">Visit an export of the module.</div>
+<div class="block">Visit an export of a module.</div>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/ExportsWriter.html#visitExport(java.lang.String,byte,int)">visitExport(String, byte, int)</a></span> - Method in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/ExportsWriter.html" title="class in io.github.eutro.jwasm">ExportsWriter</a></dt>
 <dd>&nbsp;</dd>
@@ -2200,15 +2608,15 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ImportsNode.html#visitFuncImport(java.lang.String,java.lang.String,int)">visitFuncImport(String, String, int)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ImportsNode.html" title="class in io.github.eutro.jwasm.tree">ImportsNode</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="member-name-link"><a href="io/github/eutro/jwasm/ExprVisitor.html#visitFuncInsn(int)">visitFuncInsn(int)</a></span> - Method in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/ExprVisitor.html" title="class in io.github.eutro.jwasm">ExprVisitor</a></dt>
+<dt><span class="member-name-link"><a href="io/github/eutro/jwasm/ExprVisitor.html#visitFuncRefInsn(int)">visitFuncRefInsn(int)</a></span> - Method in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/ExprVisitor.html" title="class in io.github.eutro.jwasm">ExprVisitor</a></dt>
 <dd>
 <div class="block">Visit a
  <a href="https://webassembly.github.io/spec/core/syntax/instructions.html#syntax-instr-ref">ref.func</a>
  <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>.</div>
 </dd>
-<dt><span class="member-name-link"><a href="io/github/eutro/jwasm/ExprWriter.html#visitFuncInsn(int)">visitFuncInsn(int)</a></span> - Method in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/ExprWriter.html" title="class in io.github.eutro.jwasm">ExprWriter</a></dt>
+<dt><span class="member-name-link"><a href="io/github/eutro/jwasm/ExprWriter.html#visitFuncRefInsn(int)">visitFuncRefInsn(int)</a></span> - Method in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/ExprWriter.html" title="class in io.github.eutro.jwasm">ExprWriter</a></dt>
 <dd>&nbsp;</dd>
-<dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ExprNode.html#visitFuncInsn(int)">visitFuncInsn(int)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a></dt>
+<dt><span class="member-name-link"><a href="io/github/eutro/jwasm/tree/ExprNode.html#visitFuncRefInsn(int)">visitFuncRefInsn(int)</a></span> - Method in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/ModuleVisitor.html#visitFuncs()">visitFuncs()</a></span> - Method in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/ModuleVisitor.html" title="class in io.github.eutro.jwasm">ModuleVisitor</a></dt>
 <dd>
@@ -2224,7 +2632,9 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/TypesVisitor.html#visitFuncType(byte%5B%5D,byte%5B%5D)">visitFuncType(byte[], byte[])</a></span> - Method in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/TypesVisitor.html" title="class in io.github.eutro.jwasm">TypesVisitor</a></dt>
 <dd>
-<div class="block">Visit a <a href="https://webassembly.github.io/spec/core/binary/types.html#function-types"><code>functype</code></a> element of the type vector.</div>
+<div class="block">Visit a
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#function-types"><code>functype</code></a>
+ element of the type vector.</div>
 </dd>
 <dt><span class="member-name-link"><a href="io/github/eutro/jwasm/TypesWriter.html#visitFuncType(byte%5B%5D,byte%5B%5D)">visitFuncType(byte[], byte[])</a></span> - Method in class io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/TypesWriter.html" title="class in io.github.eutro.jwasm">TypesWriter</a></dt>
 <dd>&nbsp;</dd>

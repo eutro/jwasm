@@ -124,7 +124,7 @@ class ExprAdapter {
             ctx.push((String) null);
         })
                 .match(REF_IS_NULL).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> ctx.jumpStack(IFNULL))
-                .match(REF_FUNC).terminal((Rule<FuncInsnNode>) (ctx, insn) -> {
+                .match(REF_FUNC).terminal((Rule<FuncRefInsnNode>) (ctx, insn) -> {
             Type.getType(MethodHandle.class);
             ctx.externs.funcs.get(insn.function).emitGet(ctx);
         });
@@ -165,29 +165,29 @@ class ExprAdapter {
         // region Variable
         b
                 .match(LOCAL_GET).terminal((Rule<VariableInsnNode>) (ctx, insn) -> {
-            ctx.localType(insn.index);
-            ctx.visitVarInsn(ctx.localType(insn.index).getOpcode(ILOAD), ctx.localIndex(insn.index));
+            ctx.localType(insn.variable);
+            ctx.visitVarInsn(ctx.localType(insn.variable).getOpcode(ILOAD), ctx.localIndex(insn.variable));
         })
                 .match(LOCAL_SET).terminal((Rule<VariableInsnNode>) (ctx, insn) -> {
-            ctx.localType(insn.index);
-            ctx.visitVarInsn(ctx.localType(insn.index).getOpcode(ISTORE), ctx.localIndex(insn.index));
+            ctx.localType(insn.variable);
+            ctx.visitVarInsn(ctx.localType(insn.variable).getOpcode(ISTORE), ctx.localIndex(insn.variable));
         })
                 .match(LOCAL_TEE).terminal((Rule<VariableInsnNode>) (ctx, insn) -> {
-            Type type = ctx.localType(insn.index);
+            Type type = ctx.localType(insn.variable);
             if (type.getSize() == 2) {
                 ctx.dup2();
             } else {
                 ctx.dup();
             }
-            ctx.visitVarInsn(type.getOpcode(ISTORE), ctx.localIndex(insn.index));
+            ctx.visitVarInsn(type.getOpcode(ISTORE), ctx.localIndex(insn.variable));
         })
                 .match(GLOBAL_GET).terminal((Rule<VariableInsnNode>) (ctx, insn) -> {
-            TypedExtern global1 = ctx.externs.globals.get(insn.index);
+            TypedExtern global1 = ctx.externs.globals.get(insn.variable);
             Types.toJava(global1.type());
             global1.emitGet(ctx);
         })
                 .match(GLOBAL_SET).terminal((Rule<VariableInsnNode>) (ctx, insn) -> {
-            TypedExtern global = ctx.externs.globals.get(insn.index);
+            TypedExtern global = ctx.externs.globals.get(insn.variable);
             Types.toJava(global.type());
             global.emitSet(ctx);
         });

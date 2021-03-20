@@ -82,6 +82,13 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="type-name-label">PrefixInsnNode</span>
 extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tree">AbstractInsnNode</a></pre>
+<div class="block">A node that represents a prefix instruction.
+ <p>
+ This class has no immediate arguments, but subclasses might.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ExprVisitor.html#visitPrefixInsn(int)"><code>ExprVisitor.visitPrefixInsn(int)</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -103,7 +110,9 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 <tr class="alt-color">
 <td class="col-first"><code>int</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#intOpcode">intOpcode</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The integer opcode of the instruction.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -129,7 +138,9 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 <tbody>
 <tr class="alt-color">
 <th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(int)">PrefixInsnNode</a></span>&#8203;(int&nbsp;intOpcode)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Construct an <a href="PrefixInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>PrefixInsnNode</code></a> with the given integer opcode.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -158,6 +169,7 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 <section class="detail" id="intOpcode">
 <h3>intOpcode</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="member-name">intOpcode</span></div>
+<div class="block">The integer opcode of the instruction.</div>
 </section>
 </li>
 </ul>
@@ -172,6 +184,11 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 <section class="detail" id="&lt;init&gt;(int)">
 <h3>PrefixInsnNode</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="member-name">PrefixInsnNode</span>&#8203;(<span class="parameters">int&nbsp;intOpcode)</span></div>
+<div class="block">Construct an <a href="PrefixInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>PrefixInsnNode</code></a> with the given integer opcode.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>intOpcode</code> - The integer opcode of the instruction.</dd>
+</dl>
 </section>
 </li>
 </ul>

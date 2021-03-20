@@ -4,9 +4,12 @@ import io.github.eutro.jwasm.ImportsVisitor;
 import io.github.eutro.jwasm.Opcodes;
 
 /**
- * A note that represents an import of a module.
+ * A note that represents an
+ * <a href="https://webassembly.github.io/spec/core/binary/modules.html#import-section">import</a>
+ * of a module.
  *
  * @see ImportsVisitor
+ * @see ImportsNode
  */
 public abstract class AbstractImportNode {
     /**

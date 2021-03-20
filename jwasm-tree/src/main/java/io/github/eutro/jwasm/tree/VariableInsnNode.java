@@ -2,17 +2,40 @@ package io.github.eutro.jwasm.tree;
 
 import io.github.eutro.jwasm.ExprVisitor;
 
+/**
+ * A node that represents a variable instruction.
+ *
+ * @see ExprVisitor#visitVariableInsn(byte, int)
+ */
 public class VariableInsnNode extends AbstractInsnNode {
-    public byte opcode;
-    public int index;
+    /**
+     * The
+     * <a href="https://webassembly.github.io/spec/core/syntax/modules.html#syntax-index">index</a>
+     * of the variable.
+     */
+    public int variable;
 
-    public VariableInsnNode(byte opcode, int index) {
+    /**
+     * Construct a {@link VariableInsnNode} with the given opcode and index.
+     *
+     * @param opcode   The opcode of the instruction.
+     * @param variable The
+     *                 <a href="https://webassembly.github.io/spec/core/syntax/modules.html#syntax-index">index</a>
+     *                 of the variable.
+     */
+    public VariableInsnNode(byte opcode, int variable) {
         super(opcode);
-        this.index = index;
+        this.variable = variable;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param ev The visitor to visit.
+     * @see ExprVisitor#visitVariableInsn(byte, int)
+     */
     @Override
     void accept(ExprVisitor ev) {
-        ev.visitVariableInsn(opcode, index);
+        ev.visitVariableInsn(opcode, variable);
     }
 }

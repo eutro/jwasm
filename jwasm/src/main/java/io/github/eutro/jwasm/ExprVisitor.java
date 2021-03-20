@@ -48,7 +48,7 @@ public class ExprVisitor extends BaseVisitor<ExprVisitor> {
      * <p>
      * It has no immediate arguments.
      *
-     * @param opcode The opcode of the instruction.
+     * @param opcode The integer opcode of the instruction.
      */
     public void visitPrefixInsn(int opcode) {
         if (dl != null) dl.visitPrefixInsn(opcode);
@@ -89,8 +89,8 @@ public class ExprVisitor extends BaseVisitor<ExprVisitor> {
      *                 <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-funcidx">index</a>
      *                 of the function to reference.
      */
-    public void visitFuncInsn(int function) {
-        if (dl != null) dl.visitFuncInsn(function);
+    public void visitFuncRefInsn(int function) {
+        if (dl != null) dl.visitFuncRefInsn(function);
     }
 
     /**
@@ -112,13 +112,13 @@ public class ExprVisitor extends BaseVisitor<ExprVisitor> {
      * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#variable-instructions">variable</a>
      * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>.
      *
-     * @param opcode The opcode of the instruction.
-     * @param index  The
-     *               <a href="https://webassembly.github.io/spec/core/syntax/modules.html#syntax-index">index</a>
-     *               of the variable.
+     * @param opcode   The opcode of the instruction.
+     * @param variable The
+     *                 <a href="https://webassembly.github.io/spec/core/syntax/modules.html#syntax-index">index</a>
+     *                 of the variable.
      */
-    public void visitVariableInsn(byte opcode, int index) {
-        if (dl != null) dl.visitVariableInsn(opcode, index);
+    public void visitVariableInsn(byte opcode, int variable) {
+        if (dl != null) dl.visitVariableInsn(opcode, variable);
     }
 
     /**
@@ -210,7 +210,7 @@ public class ExprVisitor extends BaseVisitor<ExprVisitor> {
     }
 
     /**
-     * Visit the optional {@link Opcodes#ELSE else} in an {@link Opcodes#IF if} block.
+     * Visit the optional {@link Opcodes#ELSE else} pseudo-instruction in an {@link Opcodes#IF if} block.
      */
     public void visitElseInsn() {
         if (dl != null) dl.visitElseInsn();

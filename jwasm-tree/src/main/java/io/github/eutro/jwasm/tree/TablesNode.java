@@ -1,6 +1,7 @@
 package io.github.eutro.jwasm.tree;
 
 import io.github.eutro.jwasm.Limits;
+import io.github.eutro.jwasm.ModuleVisitor;
 import io.github.eutro.jwasm.TablesVisitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,13 +11,28 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * A node that represents the
+ * <a href="https://webassembly.github.io/spec/core/binary/modules.html#table-section">table section</a>
+ * of a module.
+ *
+ * @see ModuleVisitor#visitTables()
+ */
 public class TablesNode extends TablesVisitor implements Iterable<TableNode> {
+    /**
+     * The vector of {@link TableNode}s, or {@code null} if there aren't any.
+     */
     public @Nullable List<TableNode> tables;
 
+    /**
+     * Make the given {@link TablesVisitor} visit all the tables of this node.
+     *
+     * @param tv The visitor to visit.
+     */
     public void accept(TablesVisitor tv) {
         if (tables != null) {
             for (TableNode table : tables) {
-                tv.visitTable(table.limits.min, table.limits.max, table.type);
+                table.accept(tv);
             }
         }
         tv.visitEnd();

@@ -86,6 +86,16 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="type-name-label">DataNode</span>
 extends <a href="../DataVisitor.html" title="class in io.github.eutro.jwasm">DataVisitor</a></pre>
+<div class="block">A node that represents a
+ <a href="https://webassembly.github.io/spec/core/syntax/modules.html#syntax-data">data segment</a>
+ in the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#data-section">data section</a>
+ of a module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../DataSegmentsVisitor.html#visitData()"><code>DataSegmentsVisitor.visitData()</code></a>, 
+<a href="DataSegmentsNode.html" title="class in io.github.eutro.jwasm.tree"><code>DataSegmentsNode</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -107,17 +117,25 @@ extends <a href="../DataVisitor.html" title="class in io.github.eutro.jwasm">Dat
 <tr class="alt-color">
 <td class="col-first"><code>byte[]</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#init">init</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The <code>init</code> bytes of the data segment.</div>
+</td>
 </tr>
 <tr class="row-color">
 <td class="col-first"><code>int</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#memory">memory</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The memory
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-memidx">index</a>
+ of the data segment.</div>
+</td>
 </tr>
 <tr class="alt-color">
 <td class="col-first"><code><a href="ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a></code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#offset">offset</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The <code>offset</code> expr.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -143,18 +161,24 @@ extends <a href="../DataVisitor.html" title="class in io.github.eutro.jwasm">Dat
 <tbody>
 <tr class="alt-color">
 <th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(byte%5B%5D)">DataNode</a></span>&#8203;(byte[]&nbsp;init)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Constructs a passive <a href="DataNode.html" title="class in io.github.eutro.jwasm.tree"><code>DataNode</code></a> with only an init array.</div>
+</td>
 </tr>
 <tr class="row-color">
 <th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(byte%5B%5D,int,io.github.eutro.jwasm.tree.ExprNode)">DataNode</a></span>&#8203;(byte[]&nbsp;init,
 int&nbsp;memory,
 <a href="ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a>&nbsp;offset)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Construct an active <a href="DataNode.html" title="class in io.github.eutro.jwasm.tree"><code>DataNode</code></a> with the given init array, memory index and offset.</div>
+</td>
 </tr>
 <tr class="alt-color">
 <th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(byte%5B%5D,io.github.eutro.jwasm.tree.ExprNode)">DataNode</a></span>&#8203;(byte[]&nbsp;init,
 <a href="ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a>&nbsp;offset)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Construct an active <a href="DataNode.html" title="class in io.github.eutro.jwasm.tree"><code>DataNode</code></a> with the given init array and offset.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -180,7 +204,9 @@ int&nbsp;memory,
 <tr class="alt-color" id="i0">
 <td class="col-first"><code>void</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#accept(io.github.eutro.jwasm.DataVisitor)">accept</a></span>&#8203;(<a href="../DataVisitor.html" title="class in io.github.eutro.jwasm">DataVisitor</a>&nbsp;dv)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Make the given <a href="../DataVisitor.html" title="class in io.github.eutro.jwasm"><code>DataVisitor</code></a> visit this data segment.</div>
+</td>
 </tr>
 <tr class="row-color" id="i1">
 <td class="col-first"><code>@Nullable <a href="../ExprVisitor.html" title="class in io.github.eutro.jwasm">ExprVisitor</a></code></td>
@@ -221,18 +247,23 @@ int&nbsp;memory,
 <section class="detail" id="init">
 <h3>init</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte[]</span>&nbsp;<span class="member-name">init</span></div>
+<div class="block">The <code>init</code> bytes of the data segment.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="memory">
 <h3>memory</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="member-name">memory</span></div>
+<div class="block">The memory
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-memidx">index</a>
+ of the data segment.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="offset">
 <h3>offset</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a></span>&nbsp;<span class="member-name">offset</span></div>
+<div class="block">The <code>offset</code> expr.</div>
 </section>
 </li>
 </ul>
@@ -247,6 +278,11 @@ int&nbsp;memory,
 <section class="detail" id="&lt;init&gt;(byte[])">
 <h3>DataNode</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="member-name">DataNode</span>&#8203;(<span class="parameters">byte[]&nbsp;init)</span></div>
+<div class="block">Constructs a passive <a href="DataNode.html" title="class in io.github.eutro.jwasm.tree"><code>DataNode</code></a> with only an init array.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>init</code> - The <code>init</code> bytes of the data segment.</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -254,6 +290,12 @@ int&nbsp;memory,
 <h3>DataNode</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="member-name">DataNode</span>&#8203;(<span class="parameters">byte[]&nbsp;init,
 <a href="ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a>&nbsp;offset)</span></div>
+<div class="block">Construct an active <a href="DataNode.html" title="class in io.github.eutro.jwasm.tree"><code>DataNode</code></a> with the given init array and offset.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>init</code> - The <code>init</code> bytes of the data segment.</dd>
+<dd><code>offset</code> - The <code>offset</code> expr.</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -262,6 +304,15 @@ int&nbsp;memory,
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="member-name">DataNode</span>&#8203;(<span class="parameters">byte[]&nbsp;init,
 int&nbsp;memory,
 <a href="ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a>&nbsp;offset)</span></div>
+<div class="block">Construct an active <a href="DataNode.html" title="class in io.github.eutro.jwasm.tree"><code>DataNode</code></a> with the given init array, memory index and offset.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>init</code> - The <code>init</code> bytes of the data segment.</dd>
+<dd><code>memory</code> - The memory
+               <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-memidx">index</a>
+               of the data segment.</dd>
+<dd><code>offset</code> - The <code>offset</code> expr.</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -276,6 +327,11 @@ int&nbsp;memory,
 <section class="detail" id="accept(io.github.eutro.jwasm.DataVisitor)">
 <h3>accept</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="member-name">accept</span>&#8203;(<span class="parameters"><a href="../DataVisitor.html" title="class in io.github.eutro.jwasm">DataVisitor</a>&nbsp;dv)</span></div>
+<div class="block">Make the given <a href="../DataVisitor.html" title="class in io.github.eutro.jwasm"><code>DataVisitor</code></a> visit this data segment.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>dv</code> - The visitor to visit.</dd>
+</dl>
 </section>
 </li>
 <li>

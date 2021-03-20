@@ -89,7 +89,7 @@ public class ExprWriter extends ExprVisitor implements ByteArrayConvertible {
     }
 
     @Override
-    public void visitFuncInsn(int function) {
+    public void visitFuncRefInsn(int function) {
         out.put(Opcodes.REF_FUNC);
         out.putVarUInt(function);
     }
@@ -101,9 +101,9 @@ public class ExprWriter extends ExprVisitor implements ByteArrayConvertible {
     }
 
     @Override
-    public void visitVariableInsn(byte opcode, int index) {
+    public void visitVariableInsn(byte opcode, int variable) {
         out.put(opcode);
-        out.putVarUInt(index);
+        out.putVarUInt(variable);
     }
 
     @Override

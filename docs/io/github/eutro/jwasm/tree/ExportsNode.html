@@ -91,6 +91,13 @@ loadScripts(document, 'script');</script>
 <pre>public class <span class="type-name-label">ExportsNode</span>
 extends <a href="../ExportsVisitor.html" title="class in io.github.eutro.jwasm">ExportsVisitor</a>
 implements java.lang.Iterable&lt;<a href="ExportNode.html" title="class in io.github.eutro.jwasm.tree">ExportNode</a>&gt;</pre>
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#export-section">export section</a>
+ of a module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ModuleVisitor.html#visitExports()"><code>ModuleVisitor.visitExports()</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -112,7 +119,9 @@ implements java.lang.Iterable&lt;<a href="ExportNode.html" title="class in io.gi
 <tr class="alt-color">
 <td class="col-first"><code>@Nullable java.util.List&lt;<a href="ExportNode.html" title="class in io.github.eutro.jwasm.tree">ExportNode</a>&gt;</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#exports">exports</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The vector of <a href="ExportNode.html" title="class in io.github.eutro.jwasm.tree"><code>ExportNode</code></a>s, or <code>null</code> if there aren't any.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -164,7 +173,9 @@ implements java.lang.Iterable&lt;<a href="ExportNode.html" title="class in io.gi
 <tr class="alt-color" id="i0">
 <td class="col-first"><code>void</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#accept(io.github.eutro.jwasm.ExportsVisitor)">accept</a></span>&#8203;(<a href="../ExportsVisitor.html" title="class in io.github.eutro.jwasm">ExportsVisitor</a>&nbsp;ev)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Make the given <a href="../ExportsVisitor.html" title="class in io.github.eutro.jwasm"><code>ExportsVisitor</code></a> visit all the exports of this node.</div>
+</td>
 </tr>
 <tr class="row-color" id="i1">
 <td class="col-first"><code>@NotNull java.util.Iterator&lt;<a href="ExportNode.html" title="class in io.github.eutro.jwasm.tree">ExportNode</a>&gt;</code></td>
@@ -177,7 +188,7 @@ implements java.lang.Iterable&lt;<a href="ExportNode.html" title="class in io.gi
 byte&nbsp;type,
 int&nbsp;index)</code></th>
 <td class="col-last">
-<div class="block">Visit an export of the module.</div>
+<div class="block">Visit an export of a module.</div>
 </td>
 </tr>
 </tbody>
@@ -209,6 +220,7 @@ int&nbsp;index)</code></th>
 <h3>exports</h3>
 <div class="member-signature"><span class="annotations">@Nullable
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable java.util.List&lt;<a href="ExportNode.html" title="class in io.github.eutro.jwasm.tree">ExportNode</a>&gt;</span>&nbsp;<span class="member-name">exports</span></div>
+<div class="block">The vector of <a href="ExportNode.html" title="class in io.github.eutro.jwasm.tree"><code>ExportNode</code></a>s, or <code>null</code> if there aren't any.</div>
 </section>
 </li>
 </ul>
@@ -237,6 +249,11 @@ int&nbsp;index)</code></th>
 <section class="detail" id="accept(io.github.eutro.jwasm.ExportsVisitor)">
 <h3>accept</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="member-name">accept</span>&#8203;(<span class="parameters"><a href="../ExportsVisitor.html" title="class in io.github.eutro.jwasm">ExportsVisitor</a>&nbsp;ev)</span></div>
+<div class="block">Make the given <a href="../ExportsVisitor.html" title="class in io.github.eutro.jwasm"><code>ExportsVisitor</code></a> visit all the exports of this node.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>ev</code> - The visitor to visit.</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -247,7 +264,7 @@ int&nbsp;index)</code></th>
 byte&nbsp;type,
 int&nbsp;index)</span></div>
 <div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="../ExportsVisitor.html#visitExport(java.lang.String,byte,int)">ExportsVisitor</a></code></span></div>
-<div class="block">Visit an export of the module.</div>
+<div class="block">Visit an export of a module.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../ExportsVisitor.html#visitExport(java.lang.String,byte,int)">visitExport</a></code>&nbsp;in class&nbsp;<code><a href="../ExportsVisitor.html" title="class in io.github.eutro.jwasm">ExportsVisitor</a></code></dd>

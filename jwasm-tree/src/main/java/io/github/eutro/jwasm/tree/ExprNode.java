@@ -8,13 +8,27 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+/**
+ * A node that represents an
+ * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-expr">expression</a>.
+ */
 public class ExprNode extends ExprVisitor implements Iterable<AbstractInsnNode> {
+    /**
+     * The list of {@link AbstractInsnNode instructions} in this expression, or {@code null} if there aren't any.
+     */
     public @Nullable LinkedList<AbstractInsnNode> instructions;
 
+    /**
+     * Make the given {@link ExprVisitor} visit all the instructions of this node.
+     *
+     * @param ev The visitor to visit.
+     */
     public void accept(ExprVisitor ev) {
         if (instructions != null) {
+            int depth = 0;
             for (AbstractInsnNode next : instructions) {
-                if (next instanceof EndInsnNode) break;
+                if (next instanceof BlockInsnNode) depth++;
+                else if (next instanceof EndInsnNode && --depth < 0) break;
                 next.accept(ev);
             }
         }
@@ -47,8 +61,8 @@ public class ExprNode extends ExprVisitor implements Iterable<AbstractInsnNode> 
     }
 
     @Override
-    public void visitFuncInsn(int function) {
-        insns().addLast(new FuncInsnNode(function));
+    public void visitFuncRefInsn(int function) {
+        insns().addLast(new FuncRefInsnNode(function));
     }
 
     @Override
@@ -57,8 +71,8 @@ public class ExprNode extends ExprVisitor implements Iterable<AbstractInsnNode> 
     }
 
     @Override
-    public void visitVariableInsn(byte opcode, int index) {
-        insns().addLast(new VariableInsnNode(opcode, index));
+    public void visitVariableInsn(byte opcode, int variable) {
+        insns().addLast(new VariableInsnNode(opcode, variable));
     }
 
     @Override

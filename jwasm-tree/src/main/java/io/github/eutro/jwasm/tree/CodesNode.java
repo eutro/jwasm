@@ -12,14 +12,16 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * A node that represents a vector of function bodies.
+ * A node that represents the
+ * <a href="https://webassembly.github.io/spec/core/binary/modules.html#code-section">code section</a>
+ * of a module.
  *
  * @see ModuleVisitor#visitCode()
  * @see CodeNode
  */
 public class CodesNode extends CodesVisitor implements Iterable<CodeNode> {
     /**
-     * A list of {@link CodeNode}s, or {@code null} if there aren't any.
+     * The vector of {@link CodeNode}s, or {@code null} if there aren't any.
      */
     public @Nullable List<CodeNode> codes;
 

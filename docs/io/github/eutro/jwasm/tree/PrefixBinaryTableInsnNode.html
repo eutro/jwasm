@@ -80,6 +80,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="type-name-label">PrefixBinaryTableInsnNode</span>
 extends <a href="PrefixInsnNode.html" title="class in io.github.eutro.jwasm.tree">PrefixInsnNode</a></pre>
+<div class="block">A node that represents a table instruction with two immediate index arguments.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ExprVisitor.html#visitPrefixBinaryTableInsn(int,int,int)"><code>ExprVisitor.visitPrefixBinaryTableInsn(int, int, int)</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -101,12 +106,20 @@ extends <a href="PrefixInsnNode.html" title="class in io.github.eutro.jwasm.tree
 <tr class="alt-color">
 <td class="col-first"><code>int</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#firstIndex">firstIndex</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-tableidx">index</a>
+ of the target table.</div>
+</td>
 </tr>
 <tr class="row-color">
 <td class="col-first"><code>int</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#secondIndex">secondIndex</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The second
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#indices">index</a>
+ argument.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -137,7 +150,9 @@ extends <a href="PrefixInsnNode.html" title="class in io.github.eutro.jwasm.tree
 <th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(int,int,int)">PrefixBinaryTableInsnNode</a></span>&#8203;(int&nbsp;intOpcode,
 int&nbsp;firstIndex,
 int&nbsp;secondIndex)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Construct a <a href="PrefixBinaryTableInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>PrefixBinaryTableInsnNode</code></a> with the given opcode and immediate arguments.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -166,12 +181,18 @@ int&nbsp;secondIndex)</code></th>
 <section class="detail" id="firstIndex">
 <h3>firstIndex</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="member-name">firstIndex</span></div>
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-tableidx">index</a>
+ of the target table.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="secondIndex">
 <h3>secondIndex</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="member-name">secondIndex</span></div>
+<div class="block">The second
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#indices">index</a>
+ argument.</div>
 </section>
 </li>
 </ul>
@@ -188,6 +209,17 @@ int&nbsp;secondIndex)</code></th>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="member-name">PrefixBinaryTableInsnNode</span>&#8203;(<span class="parameters">int&nbsp;intOpcode,
 int&nbsp;firstIndex,
 int&nbsp;secondIndex)</span></div>
+<div class="block">Construct a <a href="PrefixBinaryTableInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>PrefixBinaryTableInsnNode</code></a> with the given opcode and immediate arguments.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>intOpcode</code> - The opcode of the instruction.</dd>
+<dd><code>firstIndex</code> - The
+                    <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-tableidx">index</a>
+                    of the target table.</dd>
+<dd><code>secondIndex</code> - The second
+                    <a href="https://webassembly.github.io/spec/core/binary/modules.html#indices">index</a>
+                    argument.</dd>
+</dl>
 </section>
 </li>
 </ul>

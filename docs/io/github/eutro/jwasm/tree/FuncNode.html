@@ -15,7 +15,13 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.min.js"></script>
 </head>
 <body class="class-declaration-page">
-<script type="text/javascript">var pathtoroot = "../../../../../";
+<script type="text/javascript">var data = {"i0":10};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
+var altColor = "alt-color";
+var rowColor = "row-color";
+var tableTab = "table-tab";
+var activeTableTab = "active-table-tab";
+var pathtoroot = "../../../../../";
 loadScripts(document, 'script');</script>
 <noscript>
 <div>JavaScript is disabled on your browser.</div>
@@ -49,7 +55,7 @@ loadScripts(document, 'script');</script>
 <li>Detail:&nbsp;</li>
 <li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
-<li>Method</li>
+<li><a href="#method.detail">Method</a></li>
 </ul>
 </div>
 <div class="nav-list-search"><label for="search">SEARCH:</label>
@@ -76,6 +82,7 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="type-name-label">FuncNode</span>
 extends java.lang.Object</pre>
+<div class="block">A node that represents the type of a function that is defined in the module.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -97,7 +104,11 @@ extends java.lang.Object</pre>
 <tr class="alt-color">
 <td class="col-first"><code>int</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#type">type</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-typeidx">index</a>
+ of the function's type.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -120,7 +131,9 @@ extends java.lang.Object</pre>
 <tbody>
 <tr class="alt-color">
 <th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(int)">FuncNode</a></span>&#8203;(int&nbsp;type)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Construct a <a href="FuncNode.html" title="class in io.github.eutro.jwasm.tree"><code>FuncNode</code></a> with the given type.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -131,6 +144,29 @@ extends java.lang.Object</pre>
 <li>
 <section class="method-summary" id="method.summary">
 <h2>Method Summary</h2>
+<div class="member-summary" id="method-summary-table">
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" id="t0" class="active-table-tab">All Methods</button><button role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t2" class="table-tab" onclick="show(2);">Instance Methods</button><button role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t4" class="table-tab" onclick="show(8);">Concrete Methods</button></div>
+<div id="method-summary-table.tabpanel" role="tabpanel">
+<table class="summary-table" aria-labelledby="t0">
+<thead>
+<tr>
+<th class="col-first" scope="col">Modifier and Type</th>
+<th class="col-second" scope="col">Method</th>
+<th class="col-last" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="alt-color" id="i0">
+<td class="col-first"><code>void</code></td>
+<th class="col-second" scope="row"><code><span class="member-name-link"><a href="#accept(io.github.eutro.jwasm.FunctionsVisitor)">accept</a></span>&#8203;(<a href="../FunctionsVisitor.html" title="class in io.github.eutro.jwasm">FunctionsVisitor</a>&nbsp;fv)</code></th>
+<td class="col-last">
+<div class="block">Make the given <a href="../FunctionsVisitor.html" title="class in io.github.eutro.jwasm"><code>FunctionsVisitor</code></a> visit this function type.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div class="inherited-list">
 <h3 id="methods.inherited.from.class.java.lang.Object">Methods inherited from class&nbsp;java.lang.Object</h3>
 <code>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</code></div>
@@ -149,6 +185,9 @@ extends java.lang.Object</pre>
 <section class="detail" id="type">
 <h3>type</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="member-name">type</span></div>
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-typeidx">index</a>
+ of the function's type.</div>
 </section>
 </li>
 </ul>
@@ -163,6 +202,32 @@ extends java.lang.Object</pre>
 <section class="detail" id="&lt;init&gt;(int)">
 <h3>FuncNode</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="member-name">FuncNode</span>&#8203;(<span class="parameters">int&nbsp;type)</span></div>
+<div class="block">Construct a <a href="FuncNode.html" title="class in io.github.eutro.jwasm.tree"><code>FuncNode</code></a> with the given type.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>type</code> - The
+             <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-typeidx">index</a>
+             of the function's type.</dd>
+</dl>
+</section>
+</li>
+</ul>
+</section>
+</li>
+<!-- ============ METHOD DETAIL ========== -->
+<li>
+<section class="method-details" id="method.detail">
+<h2>Method Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="accept(io.github.eutro.jwasm.FunctionsVisitor)">
+<h3>accept</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="member-name">accept</span>&#8203;(<span class="parameters"><a href="../FunctionsVisitor.html" title="class in io.github.eutro.jwasm">FunctionsVisitor</a>&nbsp;fv)</span></div>
+<div class="block">Make the given <a href="../FunctionsVisitor.html" title="class in io.github.eutro.jwasm"><code>FunctionsVisitor</code></a> visit this function type.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>fv</code> - The visitor to visit.</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -200,7 +265,7 @@ extends java.lang.Object</pre>
 <li>Detail:&nbsp;</li>
 <li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
-<li>Method</li>
+<li><a href="#method.detail">Method</a></li>
 </ul>
 </div>
 </div>

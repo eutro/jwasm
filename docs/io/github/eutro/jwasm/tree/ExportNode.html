@@ -15,7 +15,13 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.min.js"></script>
 </head>
 <body class="class-declaration-page">
-<script type="text/javascript">var pathtoroot = "../../../../../";
+<script type="text/javascript">var data = {"i0":10};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
+var altColor = "alt-color";
+var rowColor = "row-color";
+var tableTab = "table-tab";
+var activeTableTab = "active-table-tab";
+var pathtoroot = "../../../../../";
 loadScripts(document, 'script');</script>
 <noscript>
 <div>JavaScript is disabled on your browser.</div>
@@ -49,7 +55,7 @@ loadScripts(document, 'script');</script>
 <li>Detail:&nbsp;</li>
 <li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
-<li>Method</li>
+<li><a href="#method.detail">Method</a></li>
 </ul>
 </div>
 <div class="nav-list-search"><label for="search">SEARCH:</label>
@@ -76,6 +82,12 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="type-name-label">ExportNode</span>
 extends java.lang.Object</pre>
+<div class="block">A node that represents an export of a module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ExportsVisitor.html#visitExport(java.lang.String,byte,int)"><code>ExportsVisitor.visitExport(String, byte, int)</code></a>, 
+<a href="ExportsNode.html" title="class in io.github.eutro.jwasm.tree"><code>ExportsNode</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -97,17 +109,28 @@ extends java.lang.Object</pre>
 <tr class="alt-color">
 <td class="col-first"><code>int</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#index">index</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The <a href="https://webassembly.github.io/spec/core/binary/modules.html#indices">index</a>
+ of the exported value.</div>
+</td>
 </tr>
 <tr class="row-color">
 <td class="col-first"><code>@NotNull java.lang.String</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#name">name</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The name of the export.</div>
+</td>
 </tr>
 <tr class="alt-color">
 <td class="col-first"><code>byte</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#type">type</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The type of the export, one of
+ <a href="../Opcodes.html#EXPORTS_FUNC"><code>Opcodes.EXPORTS_FUNC</code></a>,
+ <a href="../Opcodes.html#EXPORTS_TABLE"><code>Opcodes.EXPORTS_TABLE</code></a>,
+ <a href="../Opcodes.html#EXPORTS_MEM"><code>Opcodes.EXPORTS_MEM</code></a> or
+ <a href="../Opcodes.html#EXPORTS_GLOBAL"><code>Opcodes.EXPORTS_GLOBAL</code></a>.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -132,7 +155,9 @@ extends java.lang.Object</pre>
 <th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(java.lang.String,byte,int)">ExportNode</a></span>&#8203;(@NotNull java.lang.String&nbsp;name,
 byte&nbsp;type,
 int&nbsp;index)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Construct an <a href="ExportNode.html" title="class in io.github.eutro.jwasm.tree"><code>ExportNode</code></a> with the given name, type and index.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -143,6 +168,29 @@ int&nbsp;index)</code></th>
 <li>
 <section class="method-summary" id="method.summary">
 <h2>Method Summary</h2>
+<div class="member-summary" id="method-summary-table">
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" id="t0" class="active-table-tab">All Methods</button><button role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t2" class="table-tab" onclick="show(2);">Instance Methods</button><button role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t4" class="table-tab" onclick="show(8);">Concrete Methods</button></div>
+<div id="method-summary-table.tabpanel" role="tabpanel">
+<table class="summary-table" aria-labelledby="t0">
+<thead>
+<tr>
+<th class="col-first" scope="col">Modifier and Type</th>
+<th class="col-second" scope="col">Method</th>
+<th class="col-last" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="alt-color" id="i0">
+<td class="col-first"><code>void</code></td>
+<th class="col-second" scope="row"><code><span class="member-name-link"><a href="#accept(io.github.eutro.jwasm.ExportsVisitor)">accept</a></span>&#8203;(<a href="../ExportsVisitor.html" title="class in io.github.eutro.jwasm">ExportsVisitor</a>&nbsp;ev)</code></th>
+<td class="col-last">
+<div class="block">Make the given <a href="../ExportsVisitor.html" title="class in io.github.eutro.jwasm"><code>ExportsVisitor</code></a> visit this export.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div class="inherited-list">
 <h3 id="methods.inherited.from.class.java.lang.Object">Methods inherited from class&nbsp;java.lang.Object</h3>
 <code>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</code></div>
@@ -162,18 +210,26 @@ int&nbsp;index)</code></th>
 <h3>name</h3>
 <div class="member-signature"><span class="annotations">@NotNull
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@NotNull java.lang.String</span>&nbsp;<span class="member-name">name</span></div>
+<div class="block">The name of the export.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="type">
 <h3>type</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte</span>&nbsp;<span class="member-name">type</span></div>
+<div class="block">The type of the export, one of
+ <a href="../Opcodes.html#EXPORTS_FUNC"><code>Opcodes.EXPORTS_FUNC</code></a>,
+ <a href="../Opcodes.html#EXPORTS_TABLE"><code>Opcodes.EXPORTS_TABLE</code></a>,
+ <a href="../Opcodes.html#EXPORTS_MEM"><code>Opcodes.EXPORTS_MEM</code></a> or
+ <a href="../Opcodes.html#EXPORTS_GLOBAL"><code>Opcodes.EXPORTS_GLOBAL</code></a>.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="index">
 <h3>index</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="member-name">index</span></div>
+<div class="block">The <a href="https://webassembly.github.io/spec/core/binary/modules.html#indices">index</a>
+ of the exported value.</div>
 </section>
 </li>
 </ul>
@@ -191,6 +247,37 @@ int&nbsp;index)</code></th>
 @NotNull java.lang.String&nbsp;name,
 byte&nbsp;type,
 int&nbsp;index)</span></div>
+<div class="block">Construct an <a href="ExportNode.html" title="class in io.github.eutro.jwasm.tree"><code>ExportNode</code></a> with the given name, type and index.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>name</code> - The name of the export.</dd>
+<dd><code>type</code> - The type of the export, one of
+              <a href="../Opcodes.html#EXPORTS_FUNC"><code>Opcodes.EXPORTS_FUNC</code></a>,
+              <a href="../Opcodes.html#EXPORTS_TABLE"><code>Opcodes.EXPORTS_TABLE</code></a>,
+              <a href="../Opcodes.html#EXPORTS_MEM"><code>Opcodes.EXPORTS_MEM</code></a> or
+              <a href="../Opcodes.html#EXPORTS_GLOBAL"><code>Opcodes.EXPORTS_GLOBAL</code></a>.</dd>
+<dd><code>index</code> - The <a href="https://webassembly.github.io/spec/core/binary/modules.html#indices">index</a>
+              of the exported value.</dd>
+</dl>
+</section>
+</li>
+</ul>
+</section>
+</li>
+<!-- ============ METHOD DETAIL ========== -->
+<li>
+<section class="method-details" id="method.detail">
+<h2>Method Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="accept(io.github.eutro.jwasm.ExportsVisitor)">
+<h3>accept</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="member-name">accept</span>&#8203;(<span class="parameters"><a href="../ExportsVisitor.html" title="class in io.github.eutro.jwasm">ExportsVisitor</a>&nbsp;ev)</span></div>
+<div class="block">Make the given <a href="../ExportsVisitor.html" title="class in io.github.eutro.jwasm"><code>ExportsVisitor</code></a> visit this export.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>ev</code> - The visitor to visit.</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -228,7 +315,7 @@ int&nbsp;index)</span></div>
 <li>Detail:&nbsp;</li>
 <li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
-<li>Method</li>
+<li><a href="#method.detail">Method</a></li>
 </ul>
 </div>
 </div>

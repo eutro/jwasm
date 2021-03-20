@@ -91,6 +91,13 @@ loadScripts(document, 'script');</script>
 <pre>public class <span class="type-name-label">FunctionsNode</span>
 extends <a href="../FunctionsVisitor.html" title="class in io.github.eutro.jwasm">FunctionsVisitor</a>
 implements java.lang.Iterable&lt;<a href="FuncNode.html" title="class in io.github.eutro.jwasm.tree">FuncNode</a>&gt;</pre>
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#function-section">function section</a>
+ of a module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="ModuleNode.html#visitFuncs()"><code>ModuleNode.visitFuncs()</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -110,9 +117,11 @@ implements java.lang.Iterable&lt;<a href="FuncNode.html" title="class in io.gith
 </thead>
 <tbody>
 <tr class="alt-color">
-<td class="col-first"><code>java.util.List&lt;<a href="FuncNode.html" title="class in io.github.eutro.jwasm.tree">FuncNode</a>&gt;</code></td>
+<td class="col-first"><code>@Nullable java.util.List&lt;<a href="FuncNode.html" title="class in io.github.eutro.jwasm.tree">FuncNode</a>&gt;</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#funcs">funcs</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The vector of <a href="FuncNode.html" title="class in io.github.eutro.jwasm.tree"><code>FuncNode</code></a>s in this module.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -164,7 +173,9 @@ implements java.lang.Iterable&lt;<a href="FuncNode.html" title="class in io.gith
 <tr class="alt-color" id="i0">
 <td class="col-first"><code>void</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#accept(io.github.eutro.jwasm.FunctionsVisitor)">accept</a></span>&#8203;(<a href="../FunctionsVisitor.html" title="class in io.github.eutro.jwasm">FunctionsVisitor</a>&nbsp;fv)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Make the given <a href="../FunctionsVisitor.html" title="class in io.github.eutro.jwasm"><code>FunctionsVisitor</code></a> visit all the function types of this node.</div>
+</td>
 </tr>
 <tr class="row-color" id="i1">
 <td class="col-first"><code>@NotNull java.util.Iterator&lt;<a href="FuncNode.html" title="class in io.github.eutro.jwasm.tree">FuncNode</a>&gt;</code></td>
@@ -205,7 +216,9 @@ implements java.lang.Iterable&lt;<a href="FuncNode.html" title="class in io.gith
 <li>
 <section class="detail" id="funcs">
 <h3>funcs</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">java.util.List&lt;<a href="FuncNode.html" title="class in io.github.eutro.jwasm.tree">FuncNode</a>&gt;</span>&nbsp;<span class="member-name">funcs</span></div>
+<div class="member-signature"><span class="annotations">@Nullable
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable java.util.List&lt;<a href="FuncNode.html" title="class in io.github.eutro.jwasm.tree">FuncNode</a>&gt;</span>&nbsp;<span class="member-name">funcs</span></div>
+<div class="block">The vector of <a href="FuncNode.html" title="class in io.github.eutro.jwasm.tree"><code>FuncNode</code></a>s in this module.</div>
 </section>
 </li>
 </ul>
@@ -234,6 +247,11 @@ implements java.lang.Iterable&lt;<a href="FuncNode.html" title="class in io.gith
 <section class="detail" id="accept(io.github.eutro.jwasm.FunctionsVisitor)">
 <h3>accept</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="member-name">accept</span>&#8203;(<span class="parameters"><a href="../FunctionsVisitor.html" title="class in io.github.eutro.jwasm">FunctionsVisitor</a>&nbsp;fv)</span></div>
+<div class="block">Make the given <a href="../FunctionsVisitor.html" title="class in io.github.eutro.jwasm"><code>FunctionsVisitor</code></a> visit all the function types of this node.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>fv</code> - The visitor to visit.</dd>
+</dl>
 </section>
 </li>
 <li>

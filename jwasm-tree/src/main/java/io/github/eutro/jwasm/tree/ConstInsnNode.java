@@ -46,9 +46,8 @@ public class ConstInsnNode extends AbstractInsnNode {
     /**
      * {@inheritDoc}
      *
-     * @see ExprVisitor#visitConstInsn(Object)
-     *
      * @param ev The visitor to visit.
+     * @see ExprVisitor#visitConstInsn(Object)
      */
     @Override
     void accept(ExprVisitor ev) {

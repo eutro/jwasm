@@ -1,29 +1,78 @@
 package io.github.eutro.jwasm.tree;
 
+import io.github.eutro.jwasm.DataSegmentsVisitor;
 import io.github.eutro.jwasm.DataVisitor;
 import io.github.eutro.jwasm.ExprVisitor;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * A node that represents a
+ * <a href="https://webassembly.github.io/spec/core/syntax/modules.html#syntax-data">data segment</a>
+ * in the
+ * <a href="https://webassembly.github.io/spec/core/binary/modules.html#data-section">data section</a>
+ * of a module.
+ *
+ * @see DataSegmentsVisitor#visitData()
+ * @see DataSegmentsNode
+ */
 public class DataNode extends DataVisitor {
+    /**
+     * The {@code init} bytes of the data segment.
+     */
     public byte[] init;
+
+    /**
+     * The memory
+     * <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-memidx">index</a>
+     * of the data segment.
+     */
     public int memory;
+
+    /**
+     * The {@code offset} expr.
+     */
     public ExprNode offset;
 
+    /**
+     * Constructs a passive {@link DataNode} with only an init array.
+     *
+     * @param init The {@code init} bytes of the data segment.
+     */
     public DataNode(byte[] init) {
         this.init = init;
     }
 
+    /**
+     * Construct an active {@link DataNode} with the given init array and offset.
+     *
+     * @param init   The {@code init} bytes of the data segment.
+     * @param offset The {@code offset} expr.
+     */
     public DataNode(byte[] init, ExprNode offset) {
         this.init = init;
         this.offset = offset;
     }
 
+    /**
+     * Construct an active {@link DataNode} with the given init array, memory index and offset.
+     *
+     * @param init   The {@code init} bytes of the data segment.
+     * @param memory The memory
+     *               <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-memidx">index</a>
+     *               of the data segment.
+     * @param offset The {@code offset} expr.
+     */
     public DataNode(byte[] init, int memory, ExprNode offset) {
         this.init = init;
         this.memory = memory;
         this.offset = offset;
     }
 
+    /**
+     * Make the given {@link DataVisitor} visit this data segment.
+     *
+     * @param dv The visitor to visit.
+     */
     public void accept(DataVisitor dv) {
         if (offset != null) {
             ExprVisitor ev = dv.visitActive(memory);

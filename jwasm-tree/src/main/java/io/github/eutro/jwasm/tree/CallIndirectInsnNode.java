@@ -42,9 +42,8 @@ public class CallIndirectInsnNode extends AbstractInsnNode {
     /**
      * {@inheritDoc}
      *
-     * @see ExprVisitor#visitCallIndirectInsn(int, int)
-     *
      * @param ev The visitor to visit.
+     * @see ExprVisitor#visitCallIndirectInsn(int, int)
      */
     @Override
     void accept(ExprVisitor ev) {

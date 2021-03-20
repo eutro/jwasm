@@ -78,6 +78,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="type-name-label">TableBreakInsnNode</span>
 extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tree">AbstractInsnNode</a></pre>
+<div class="block">A node that represents a br_table instruction.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ExprVisitor.html#visitTableBreakInsn(int%5B%5D,int)"><code>ExprVisitor.visitTableBreakInsn(int[], int)</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -99,12 +104,19 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 <tr class="alt-color">
 <td class="col-first"><code>int</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#defaultLabel">defaultLabel</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">index</a>
+ of the default label.</div>
+</td>
 </tr>
 <tr class="row-color">
 <td class="col-first"><code>int[]</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#labels">labels</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The table of label
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">indeces</a>.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -131,7 +143,9 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 <tr class="alt-color">
 <th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(int%5B%5D,int)">TableBreakInsnNode</a></span>&#8203;(int[]&nbsp;labels,
 int&nbsp;defaultLabel)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Construct a <a href="TableBreakInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>TableBreakInsnNode</code></a> with the given labels and default label.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -160,12 +174,17 @@ int&nbsp;defaultLabel)</code></th>
 <section class="detail" id="labels">
 <h3>labels</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int[]</span>&nbsp;<span class="member-name">labels</span></div>
+<div class="block">The table of label
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">indeces</a>.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="defaultLabel">
 <h3>defaultLabel</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="member-name">defaultLabel</span></div>
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">index</a>
+ of the default label.</div>
 </section>
 </li>
 </ul>
@@ -181,6 +200,15 @@ int&nbsp;defaultLabel)</code></th>
 <h3>TableBreakInsnNode</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="member-name">TableBreakInsnNode</span>&#8203;(<span class="parameters">int[]&nbsp;labels,
 int&nbsp;defaultLabel)</span></div>
+<div class="block">Construct a <a href="TableBreakInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>TableBreakInsnNode</code></a> with the given labels and default label.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>labels</code> - The table of label
+                     <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">indeces</a>.</dd>
+<dd><code>defaultLabel</code> - The
+                     <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">index</a>
+                     of the default label.</dd>
+</dl>
 </section>
 </li>
 </ul>

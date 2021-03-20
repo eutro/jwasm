@@ -3,7 +3,9 @@ package io.github.eutro.jwasm.tree;
 import io.github.eutro.jwasm.CodesVisitor;
 
 /**
- * A node that represents a the code of a function.
+ * A node that represents a the
+ * <a href="https://webassembly.github.io/spec/core/binary/modules.html#code-section">code</a>
+ * of a function.
  *
  * @see CodesVisitor#visitCode(byte[])
  * @see CodesNode

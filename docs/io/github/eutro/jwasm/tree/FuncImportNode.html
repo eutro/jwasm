@@ -84,6 +84,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="type-name-label">FuncImportNode</span>
 extends <a href="AbstractImportNode.html" title="class in io.github.eutro.jwasm.tree">AbstractImportNode</a></pre>
+<div class="block">A node that represents a function import.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ImportsVisitor.html#visitFuncImport(java.lang.String,java.lang.String,int)"><code>ImportsVisitor.visitFuncImport(String, String, int)</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -105,7 +110,11 @@ extends <a href="AbstractImportNode.html" title="class in io.github.eutro.jwasm.
 <tr class="alt-color">
 <td class="col-first"><code>int</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#type">type</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-typeidx">index</a>
+ of the type of the imported function.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -133,7 +142,9 @@ extends <a href="AbstractImportNode.html" title="class in io.github.eutro.jwasm.
 <th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(java.lang.String,java.lang.String,int)">FuncImportNode</a></span>&#8203;(java.lang.String&nbsp;module,
 java.lang.String&nbsp;name,
 int&nbsp;type)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Construct a <a href="FuncImportNode.html" title="class in io.github.eutro.jwasm.tree"><code>FuncImportNode</code></a> with the given module, name and type.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -185,6 +196,9 @@ int&nbsp;type)</code></th>
 <section class="detail" id="type">
 <h3>type</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="member-name">type</span></div>
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-typeidx">index</a>
+ of the type of the imported function.</div>
 </section>
 </li>
 </ul>
@@ -201,6 +215,15 @@ int&nbsp;type)</code></th>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="member-name">FuncImportNode</span>&#8203;(<span class="parameters">java.lang.String&nbsp;module,
 java.lang.String&nbsp;name,
 int&nbsp;type)</span></div>
+<div class="block">Construct a <a href="FuncImportNode.html" title="class in io.github.eutro.jwasm.tree"><code>FuncImportNode</code></a> with the given module, name and type.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>module</code> - The module to import from.</dd>
+<dd><code>name</code> - The name to import.</dd>
+<dd><code>type</code> - The
+               <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-typeidx">index</a>
+               of the type of the imported function.</dd>
+</dl>
 </section>
 </li>
 </ul>

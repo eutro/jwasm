@@ -73,7 +73,7 @@ public class ModuleReader<E extends Exception> {
     }
 
     /**
-     * Makes the given {@link ModuleVisitor} visit the structure of the module.
+     * Make the given {@link ModuleVisitor} visit the structure of the module.
      *
      * @param mv The {@link ModuleVisitor}.
      * @throws E                   If the {@link ByteInputStream} throws an error while reading.
@@ -494,7 +494,7 @@ public class ModuleReader<E extends Exception> {
                     ev.visitNullInsn(bb.expect());
                     break;
                 case Opcodes.REF_FUNC:
-                    ev.visitFuncInsn(bb.getVarUInt32());
+                    ev.visitFuncRefInsn(bb.getVarUInt32());
                     break;
                 case Opcodes.SELECTT:
                     ev.visitSelectInsn(bb.getByteArray());

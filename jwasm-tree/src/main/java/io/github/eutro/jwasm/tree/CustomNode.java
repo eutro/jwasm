@@ -3,7 +3,9 @@ package io.github.eutro.jwasm.tree;
 import io.github.eutro.jwasm.ModuleVisitor;
 
 /**
- * A node which represents a custom section of a module.
+ * A node which represents a
+ * <a href="https://webassembly.github.io/spec/core/binary/modules.html#custom-section">custom section</a>
+ * of a module.
  *
  * @see ModuleVisitor#visitCustom(String, byte[])
  */

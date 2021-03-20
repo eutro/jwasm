@@ -86,6 +86,8 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="type-name-label">ModuleNode</span>
 extends <a href="../ModuleVisitor.html" title="class in io.github.eutro.jwasm">ModuleVisitor</a></pre>
+<div class="block">A node that represents a WebAssembly
+ <a href="https://webassembly.github.io/spec/core/syntax/modules.html">module</a>.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -107,72 +109,100 @@ extends <a href="../ModuleVisitor.html" title="class in io.github.eutro.jwasm">M
 <tr class="alt-color">
 <td class="col-first"><code>@Nullable <a href="CodesNode.html" title="class in io.github.eutro.jwasm.tree">CodesNode</a></code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#codes">codes</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The codes of this module.</div>
+</td>
 </tr>
 <tr class="row-color">
 <td class="col-first"><code>java.util.List&lt;<a href="CustomNode.html" title="class in io.github.eutro.jwasm.tree">CustomNode</a>&gt;[]</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#customs">customs</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">An array of lists of <a href="CustomNode.html" title="class in io.github.eutro.jwasm.tree"><code>CustomNode</code></a>s that this module has.</div>
+</td>
 </tr>
 <tr class="alt-color">
 <td class="col-first"><code>@Nullable java.lang.Integer</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#dataCount">dataCount</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The data count of this module.</div>
+</td>
 </tr>
 <tr class="row-color">
 <td class="col-first"><code>@Nullable <a href="DataSegmentsNode.html" title="class in io.github.eutro.jwasm.tree">DataSegmentsNode</a></code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#datas">datas</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The datas of this module.</div>
+</td>
 </tr>
 <tr class="alt-color">
 <td class="col-first"><code>@Nullable <a href="ElementSegmentsNode.html" title="class in io.github.eutro.jwasm.tree">ElementSegmentsNode</a></code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#elems">elems</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The element segments of this module.</div>
+</td>
 </tr>
 <tr class="row-color">
 <td class="col-first"><code>@Nullable <a href="ExportsNode.html" title="class in io.github.eutro.jwasm.tree">ExportsNode</a></code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#exports">exports</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The exports of this module.</div>
+</td>
 </tr>
 <tr class="alt-color">
 <td class="col-first"><code>@Nullable <a href="FunctionsNode.html" title="class in io.github.eutro.jwasm.tree">FunctionsNode</a></code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#funcs">funcs</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The function types of this module.</div>
+</td>
 </tr>
 <tr class="row-color">
 <td class="col-first"><code>@Nullable <a href="GlobalsNode.html" title="class in io.github.eutro.jwasm.tree">GlobalsNode</a></code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#globals">globals</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The globals of this module.</div>
+</td>
 </tr>
 <tr class="alt-color">
 <td class="col-first"><code>@Nullable <a href="ImportsNode.html" title="class in io.github.eutro.jwasm.tree">ImportsNode</a></code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#imports">imports</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The imports of this module.</div>
+</td>
 </tr>
 <tr class="row-color">
 <td class="col-first"><code>@Nullable <a href="MemoriesNode.html" title="class in io.github.eutro.jwasm.tree">MemoriesNode</a></code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#mems">mems</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The memories of this module.</div>
+</td>
 </tr>
 <tr class="alt-color">
-<td class="col-first"><code>@Nullable <a href="StartNode.html" title="class in io.github.eutro.jwasm.tree">StartNode</a></code></td>
+<td class="col-first"><code>@Nullable java.lang.Integer</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#start">start</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The start of this module.</div>
+</td>
 </tr>
 <tr class="row-color">
 <td class="col-first"><code>@Nullable <a href="TablesNode.html" title="class in io.github.eutro.jwasm.tree">TablesNode</a></code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#tables">tables</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The tables of this module.</div>
+</td>
 </tr>
 <tr class="alt-color">
 <td class="col-first"><code>@Nullable <a href="TypesNode.html" title="class in io.github.eutro.jwasm.tree">TypesNode</a></code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#types">types</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The types of this module.</div>
+</td>
 </tr>
 <tr class="row-color">
 <td class="col-first"><code>int</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#version">version</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The version field of the module.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -224,12 +254,17 @@ extends <a href="../ModuleVisitor.html" title="class in io.github.eutro.jwasm">M
 <tr class="alt-color" id="i0">
 <td class="col-first"><code>void</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#accept(io.github.eutro.jwasm.ModuleVisitor)">accept</a></span>&#8203;(<a href="../ModuleVisitor.html" title="class in io.github.eutro.jwasm">ModuleVisitor</a>&nbsp;mv)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Make the given <a href="../ModuleVisitor.html" title="class in io.github.eutro.jwasm"><code>ModuleVisitor</code></a> visit the header and all the sections of this node.</div>
+</td>
 </tr>
 <tr class="row-color" id="i1">
-<td class="col-first"><code>java.util.List&lt;<a href="CustomNode.html" title="class in io.github.eutro.jwasm.tree">CustomNode</a>&gt;</code></td>
+<td class="col-first"><code>@NotNull java.util.List&lt;<a href="CustomNode.html" title="class in io.github.eutro.jwasm.tree">CustomNode</a>&gt;</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#getCustoms(byte)">getCustoms</a></span>&#8203;(byte&nbsp;section)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Get the list of custom sections after a given known section, as described in <a href="#customs"><code>customs</code></a>,
+ creating the list if it does not exist yet.</div>
+</td>
 </tr>
 <tr class="alt-color" id="i2">
 <td class="col-first"><code>@Nullable <a href="../CodesVisitor.html" title="class in io.github.eutro.jwasm">CodesVisitor</a></code></td>
@@ -381,12 +416,25 @@ byte @NotNull []&nbsp;data)</code></th>
 <section class="detail" id="version">
 <h3>version</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="member-name">version</span></div>
+<div class="block">The version field of the module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ModuleVisitor.html#visitHeader(int)"><code>ModuleVisitor.visitHeader(int)</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="customs">
 <h3>customs</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">java.util.List&lt;<a href="CustomNode.html" title="class in io.github.eutro.jwasm.tree">CustomNode</a>&gt;[]</span>&nbsp;<span class="member-name">customs</span></div>
+<div class="block">An array of lists of <a href="CustomNode.html" title="class in io.github.eutro.jwasm.tree"><code>CustomNode</code></a>s that this module has.
+ <p>
+ Since modules can contain custom sections between any two defined sections, there is a space in this array
+ for a list of custom nodes after each defined section:
+ <p>
+ <code>customs[SECTION_CUSTOM]</code> is visited before any of the other sections,
+ and <code>customs[SECTION_XXX]</code> is visited after the section <code>SECTION_XXX</code>,
+ where SECTION_XXX is one of the <code>SECTION_XXX</code> constants in <a href="../Opcodes.html" title="class in io.github.eutro.jwasm"><code>Opcodes</code></a>.</div>
 </section>
 </li>
 <li>
@@ -394,6 +442,11 @@ byte @NotNull []&nbsp;data)</code></th>
 <h3>types</h3>
 <div class="member-signature"><span class="annotations">@Nullable
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="TypesNode.html" title="class in io.github.eutro.jwasm.tree">TypesNode</a></span>&nbsp;<span class="member-name">types</span></div>
+<div class="block">The types of this module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ModuleVisitor.html#visitTypes()"><code>ModuleVisitor.visitTypes()</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
@@ -401,6 +454,11 @@ byte @NotNull []&nbsp;data)</code></th>
 <h3>imports</h3>
 <div class="member-signature"><span class="annotations">@Nullable
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="ImportsNode.html" title="class in io.github.eutro.jwasm.tree">ImportsNode</a></span>&nbsp;<span class="member-name">imports</span></div>
+<div class="block">The imports of this module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ModuleVisitor.html#visitImports()"><code>ModuleVisitor.visitImports()</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
@@ -408,6 +466,11 @@ byte @NotNull []&nbsp;data)</code></th>
 <h3>funcs</h3>
 <div class="member-signature"><span class="annotations">@Nullable
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="FunctionsNode.html" title="class in io.github.eutro.jwasm.tree">FunctionsNode</a></span>&nbsp;<span class="member-name">funcs</span></div>
+<div class="block">The function types of this module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ModuleVisitor.html#visitFuncs()"><code>ModuleVisitor.visitFuncs()</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
@@ -415,6 +478,11 @@ byte @NotNull []&nbsp;data)</code></th>
 <h3>tables</h3>
 <div class="member-signature"><span class="annotations">@Nullable
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="TablesNode.html" title="class in io.github.eutro.jwasm.tree">TablesNode</a></span>&nbsp;<span class="member-name">tables</span></div>
+<div class="block">The tables of this module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ModuleVisitor.html#visitTables()"><code>ModuleVisitor.visitTables()</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
@@ -422,6 +490,11 @@ byte @NotNull []&nbsp;data)</code></th>
 <h3>mems</h3>
 <div class="member-signature"><span class="annotations">@Nullable
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="MemoriesNode.html" title="class in io.github.eutro.jwasm.tree">MemoriesNode</a></span>&nbsp;<span class="member-name">mems</span></div>
+<div class="block">The memories of this module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ModuleVisitor.html#visitMems()"><code>ModuleVisitor.visitMems()</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
@@ -429,6 +502,11 @@ byte @NotNull []&nbsp;data)</code></th>
 <h3>globals</h3>
 <div class="member-signature"><span class="annotations">@Nullable
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="GlobalsNode.html" title="class in io.github.eutro.jwasm.tree">GlobalsNode</a></span>&nbsp;<span class="member-name">globals</span></div>
+<div class="block">The globals of this module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ModuleVisitor.html#visitGlobals()"><code>ModuleVisitor.visitGlobals()</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
@@ -436,13 +514,23 @@ byte @NotNull []&nbsp;data)</code></th>
 <h3>exports</h3>
 <div class="member-signature"><span class="annotations">@Nullable
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="ExportsNode.html" title="class in io.github.eutro.jwasm.tree">ExportsNode</a></span>&nbsp;<span class="member-name">exports</span></div>
+<div class="block">The exports of this module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ModuleVisitor.html#visitExports()"><code>ModuleVisitor.visitExports()</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="start">
 <h3>start</h3>
 <div class="member-signature"><span class="annotations">@Nullable
-</span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="StartNode.html" title="class in io.github.eutro.jwasm.tree">StartNode</a></span>&nbsp;<span class="member-name">start</span></div>
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable java.lang.Integer</span>&nbsp;<span class="member-name">start</span></div>
+<div class="block">The start of this module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ModuleVisitor.html#visitStart(int)"><code>ModuleVisitor.visitStart(int)</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
@@ -450,6 +538,11 @@ byte @NotNull []&nbsp;data)</code></th>
 <h3>elems</h3>
 <div class="member-signature"><span class="annotations">@Nullable
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="ElementSegmentsNode.html" title="class in io.github.eutro.jwasm.tree">ElementSegmentsNode</a></span>&nbsp;<span class="member-name">elems</span></div>
+<div class="block">The element segments of this module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ModuleVisitor.html#visitElems()"><code>ModuleVisitor.visitElems()</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
@@ -457,6 +550,11 @@ byte @NotNull []&nbsp;data)</code></th>
 <h3>dataCount</h3>
 <div class="member-signature"><span class="annotations">@Nullable
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable java.lang.Integer</span>&nbsp;<span class="member-name">dataCount</span></div>
+<div class="block">The data count of this module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ModuleVisitor.html#visitDataCount(int)"><code>ModuleVisitor.visitDataCount(int)</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
@@ -464,6 +562,11 @@ byte @NotNull []&nbsp;data)</code></th>
 <h3>codes</h3>
 <div class="member-signature"><span class="annotations">@Nullable
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="CodesNode.html" title="class in io.github.eutro.jwasm.tree">CodesNode</a></span>&nbsp;<span class="member-name">codes</span></div>
+<div class="block">The codes of this module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ModuleVisitor.html#visitCode()"><code>ModuleVisitor.visitCode()</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
@@ -471,6 +574,11 @@ byte @NotNull []&nbsp;data)</code></th>
 <h3>datas</h3>
 <div class="member-signature"><span class="annotations">@Nullable
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable <a href="DataSegmentsNode.html" title="class in io.github.eutro.jwasm.tree">DataSegmentsNode</a></span>&nbsp;<span class="member-name">datas</span></div>
+<div class="block">The datas of this module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ModuleVisitor.html#visitDatas()"><code>ModuleVisitor.visitDatas()</code></a></dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -499,12 +607,28 @@ byte @NotNull []&nbsp;data)</code></th>
 <section class="detail" id="accept(io.github.eutro.jwasm.ModuleVisitor)">
 <h3>accept</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="member-name">accept</span>&#8203;(<span class="parameters"><a href="../ModuleVisitor.html" title="class in io.github.eutro.jwasm">ModuleVisitor</a>&nbsp;mv)</span></div>
+<div class="block">Make the given <a href="../ModuleVisitor.html" title="class in io.github.eutro.jwasm"><code>ModuleVisitor</code></a> visit the header and all the sections of this node.
+ <p>
+ The order in which custom sections are visited is as described on the <a href="#customs"><code>customs field</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>mv</code> - The visitor to visit.</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getCustoms(byte)">
 <h3>getCustoms</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">java.util.List&lt;<a href="CustomNode.html" title="class in io.github.eutro.jwasm.tree">CustomNode</a>&gt;</span>&nbsp;<span class="member-name">getCustoms</span>&#8203;(<span class="parameters">byte&nbsp;section)</span></div>
+<div class="member-signature"><span class="annotations">@NotNull
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type">@NotNull java.util.List&lt;<a href="CustomNode.html" title="class in io.github.eutro.jwasm.tree">CustomNode</a>&gt;</span>&nbsp;<span class="member-name">getCustoms</span>&#8203;(<span class="parameters">byte&nbsp;section)</span></div>
+<div class="block">Get the list of custom sections after a given known section, as described in <a href="#customs"><code>customs</code></a>,
+ creating the list if it does not exist yet.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>section</code> - The section to put the custom sections after.</dd>
+<dt>Returns:</dt>
+<dd>The list of custom nodes following the section.</dd>
+</dl>
 </section>
 </li>
 <li>

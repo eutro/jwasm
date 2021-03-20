@@ -84,6 +84,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="type-name-label">TableImportNode</span>
 extends <a href="AbstractImportNode.html" title="class in io.github.eutro.jwasm.tree">AbstractImportNode</a></pre>
+<div class="block">A node that represents a function import.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ImportsVisitor.html#visitTableImport(java.lang.String,java.lang.String,int,java.lang.Integer,byte)"><code>ImportsVisitor.visitTableImport(String, String, int, Integer, byte)</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -105,12 +110,17 @@ extends <a href="AbstractImportNode.html" title="class in io.github.eutro.jwasm.
 <tr class="alt-color">
 <td class="col-first"><code><a href="../Limits.html" title="class in io.github.eutro.jwasm">Limits</a></code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#limits">limits</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The limits of the imported table.</div>
+</td>
 </tr>
 <tr class="row-color">
 <td class="col-first"><code>byte</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#type">type</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-reftype">reftype</a>
+ of values in the imported table.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -139,7 +149,9 @@ extends <a href="AbstractImportNode.html" title="class in io.github.eutro.jwasm.
 java.lang.String&nbsp;name,
 <a href="../Limits.html" title="class in io.github.eutro.jwasm">Limits</a>&nbsp;limits,
 byte&nbsp;type)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Construct a <a href="TableImportNode.html" title="class in io.github.eutro.jwasm.tree"><code>TableImportNode</code></a> with the given module, name, limits and type.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -191,12 +203,15 @@ byte&nbsp;type)</code></th>
 <section class="detail" id="limits">
 <h3>limits</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../Limits.html" title="class in io.github.eutro.jwasm">Limits</a></span>&nbsp;<span class="member-name">limits</span></div>
+<div class="block">The limits of the imported table.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="type">
 <h3>type</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte</span>&nbsp;<span class="member-name">type</span></div>
+<div class="block">The <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-reftype">reftype</a>
+ of values in the imported table.</div>
 </section>
 </li>
 </ul>
@@ -214,6 +229,15 @@ byte&nbsp;type)</code></th>
 java.lang.String&nbsp;name,
 <a href="../Limits.html" title="class in io.github.eutro.jwasm">Limits</a>&nbsp;limits,
 byte&nbsp;type)</span></div>
+<div class="block">Construct a <a href="TableImportNode.html" title="class in io.github.eutro.jwasm.tree"><code>TableImportNode</code></a> with the given module, name, limits and type.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>module</code> - The module to import from.</dd>
+<dd><code>name</code> - The name to import.</dd>
+<dd><code>limits</code> - The limits of the imported table.</dd>
+<dd><code>type</code> - The <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-reftype">reftype</a>
+               of values in the imported table.</dd>
+</dl>
 </section>
 </li>
 </ul>

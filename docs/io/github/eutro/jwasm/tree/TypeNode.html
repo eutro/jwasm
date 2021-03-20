@@ -15,7 +15,13 @@
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.min.js"></script>
 </head>
 <body class="class-declaration-page">
-<script type="text/javascript">var pathtoroot = "../../../../../";
+<script type="text/javascript">var data = {"i0":10};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
+var altColor = "alt-color";
+var rowColor = "row-color";
+var tableTab = "table-tab";
+var activeTableTab = "active-table-tab";
+var pathtoroot = "../../../../../";
 loadScripts(document, 'script');</script>
 <noscript>
 <div>JavaScript is disabled on your browser.</div>
@@ -49,7 +55,7 @@ loadScripts(document, 'script');</script>
 <li>Detail:&nbsp;</li>
 <li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
-<li>Method</li>
+<li><a href="#method.detail">Method</a></li>
 </ul>
 </div>
 <div class="nav-list-search"><label for="search">SEARCH:</label>
@@ -76,6 +82,12 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="type-name-label">TypeNode</span>
 extends java.lang.Object</pre>
+<div class="block">A node that represents a
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#function-types"><code>functype</code></a>.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../TypesVisitor.html#visitFuncType(byte%5B%5D,byte%5B%5D)"><code>TypesVisitor.visitFuncType(byte[], byte[])</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -95,14 +107,24 @@ extends java.lang.Object</pre>
 </thead>
 <tbody>
 <tr class="alt-color">
-<td class="col-first"><code>byte[]</code></td>
+<td class="col-first"><code>byte @NotNull []</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#params">params</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The parameter
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-valtype">valtype</a>s
+ of the
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-functype">functype</a>.</div>
+</td>
 </tr>
 <tr class="row-color">
-<td class="col-first"><code>byte[]</code></td>
+<td class="col-first"><code>byte @NotNull []</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#returns">returns</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The return
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-valtype">valtype</a>s
+ of the
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-functype">functype</a>.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -124,9 +146,11 @@ extends java.lang.Object</pre>
 </thead>
 <tbody>
 <tr class="alt-color">
-<th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(byte%5B%5D,byte%5B%5D)">TypeNode</a></span>&#8203;(byte[]&nbsp;params,
-byte[]&nbsp;returns)</code></th>
-<td class="col-last">&nbsp;</td>
+<th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(byte%5B%5D,byte%5B%5D)">TypeNode</a></span>&#8203;(byte @NotNull []&nbsp;params,
+byte @NotNull []&nbsp;returns)</code></th>
+<td class="col-last">
+<div class="block">Construct a <a href="TypeNode.html" title="class in io.github.eutro.jwasm.tree"><code>TypeNode</code></a> with the given params and returns.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -137,6 +161,29 @@ byte[]&nbsp;returns)</code></th>
 <li>
 <section class="method-summary" id="method.summary">
 <h2>Method Summary</h2>
+<div class="member-summary" id="method-summary-table">
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" id="t0" class="active-table-tab">All Methods</button><button role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t2" class="table-tab" onclick="show(2);">Instance Methods</button><button role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" id="t4" class="table-tab" onclick="show(8);">Concrete Methods</button></div>
+<div id="method-summary-table.tabpanel" role="tabpanel">
+<table class="summary-table" aria-labelledby="t0">
+<thead>
+<tr>
+<th class="col-first" scope="col">Modifier and Type</th>
+<th class="col-second" scope="col">Method</th>
+<th class="col-last" scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="alt-color" id="i0">
+<td class="col-first"><code>void</code></td>
+<th class="col-second" scope="row"><code><span class="member-name-link"><a href="#accept(io.github.eutro.jwasm.TypesVisitor)">accept</a></span>&#8203;(<a href="../TypesVisitor.html" title="class in io.github.eutro.jwasm">TypesVisitor</a>&nbsp;tv)</code></th>
+<td class="col-last">
+<div class="block">Make the given <a href="../TypesVisitor.html" title="class in io.github.eutro.jwasm"><code>TypesVisitor</code></a> visit this type.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div class="inherited-list">
 <h3 id="methods.inherited.from.class.java.lang.Object">Methods inherited from class&nbsp;java.lang.Object</h3>
 <code>clone, equals, finalize, getClass, hashCode, notify, notifyAll, toString, wait, wait, wait</code></div>
@@ -154,13 +201,21 @@ byte[]&nbsp;returns)</code></th>
 <li>
 <section class="detail" id="params">
 <h3>params</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte[]</span>&nbsp;<span class="member-name">params</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte @NotNull []</span>&nbsp;<span class="member-name">params</span></div>
+<div class="block">The parameter
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-valtype">valtype</a>s
+ of the
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-functype">functype</a>.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="returns">
 <h3>returns</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte[]</span>&nbsp;<span class="member-name">returns</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte @NotNull []</span>&nbsp;<span class="member-name">returns</span></div>
+<div class="block">The return
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-valtype">valtype</a>s
+ of the
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-functype">functype</a>.</div>
 </section>
 </li>
 </ul>
@@ -174,8 +229,39 @@ byte[]&nbsp;returns)</code></th>
 <li>
 <section class="detail" id="&lt;init&gt;(byte[],byte[])">
 <h3>TypeNode</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="member-name">TypeNode</span>&#8203;(<span class="parameters">byte[]&nbsp;params,
-byte[]&nbsp;returns)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="member-name">TypeNode</span>&#8203;(<span class="parameters">byte @NotNull []&nbsp;params,
+byte @NotNull []&nbsp;returns)</span></div>
+<div class="block">Construct a <a href="TypeNode.html" title="class in io.github.eutro.jwasm.tree"><code>TypeNode</code></a> with the given params and returns.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>params</code> - The parameter
+                <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-valtype">valtype</a>s
+                of the
+                <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-functype">functype</a>.</dd>
+<dd><code>returns</code> - The return
+                <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-valtype">valtype</a>s
+                of the
+                <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-functype">functype</a>.</dd>
+</dl>
+</section>
+</li>
+</ul>
+</section>
+</li>
+<!-- ============ METHOD DETAIL ========== -->
+<li>
+<section class="method-details" id="method.detail">
+<h2>Method Details</h2>
+<ul class="member-list">
+<li>
+<section class="detail" id="accept(io.github.eutro.jwasm.TypesVisitor)">
+<h3>accept</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="member-name">accept</span>&#8203;(<span class="parameters"><a href="../TypesVisitor.html" title="class in io.github.eutro.jwasm">TypesVisitor</a>&nbsp;tv)</span></div>
+<div class="block">Make the given <a href="../TypesVisitor.html" title="class in io.github.eutro.jwasm"><code>TypesVisitor</code></a> visit this type.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>tv</code> - The visitor to visit.</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -213,7 +299,7 @@ byte[]&nbsp;returns)</span></div>
 <li>Detail:&nbsp;</li>
 <li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
-<li>Method</li>
+<li><a href="#method.detail">Method</a></li>
 </ul>
 </div>
 </div>

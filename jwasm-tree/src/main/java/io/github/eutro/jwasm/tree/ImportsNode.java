@@ -2,6 +2,7 @@ package io.github.eutro.jwasm.tree;
 
 import io.github.eutro.jwasm.ImportsVisitor;
 import io.github.eutro.jwasm.Limits;
+import io.github.eutro.jwasm.ModuleVisitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,9 +11,24 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * A node that represents the
+ * <a href="https://webassembly.github.io/spec/core/binary/modules.html#import-section">import section</a>
+ * of a module.
+ *
+ * @see ModuleVisitor#visitImports()
+ */
 public class ImportsNode extends ImportsVisitor implements Iterable<AbstractImportNode> {
+    /**
+     * The vector of {@link AbstractImportNode}s, or {@code null} if there aren't any.
+     */
     public @Nullable List<AbstractImportNode> imports;
 
+    /**
+     * Makes the given {@link ImportsVisitor} visit all the imports of this node.
+     *
+     * @param iv The visitor to visit.
+     */
     public void accept(ImportsVisitor iv) {
         if (imports != null) {
             for (AbstractImportNode anImport : imports) {

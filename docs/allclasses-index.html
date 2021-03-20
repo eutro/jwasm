@@ -15,7 +15,7 @@
 <script type="text/javascript" src="script-dir/jquery-ui.min.js"></script>
 </head>
 <body class="all-classes-index-page">
-<script type="text/javascript">var data = {"i0":2,"i1":2,"i2":2,"i3":2,"i4":2,"i5":1,"i6":1,"i7":2,"i8":2,"i9":2,"i10":1,"i11":2,"i12":2,"i13":2,"i14":2,"i15":2,"i16":2,"i17":2,"i18":2,"i19":2,"i20":2,"i21":2,"i22":2,"i23":2,"i24":2,"i25":2,"i26":2,"i27":2,"i28":2,"i29":2,"i30":2,"i31":2,"i32":2,"i33":2,"i34":2,"i35":2,"i36":2,"i37":2,"i38":2,"i39":2,"i40":2,"i41":2,"i42":2,"i43":2,"i44":2,"i45":2,"i46":2,"i47":2,"i48":2,"i49":2,"i50":2,"i51":2,"i52":2,"i53":2,"i54":2,"i55":2,"i56":2,"i57":2,"i58":2,"i59":2,"i60":2,"i61":2,"i62":2,"i63":2,"i64":2,"i65":2,"i66":2,"i67":2,"i68":2,"i69":2,"i70":2,"i71":2,"i72":2,"i73":2,"i74":2,"i75":2,"i76":2,"i77":2,"i78":2,"i79":2,"i80":2,"i81":2,"i82":2,"i83":2,"i84":2,"i85":2,"i86":2,"i87":2,"i88":2,"i89":2,"i90":8,"i91":2,"i92":1};
+<script type="text/javascript">var data = {"i0":2,"i1":2,"i2":2,"i3":2,"i4":2,"i5":1,"i6":1,"i7":2,"i8":2,"i9":2,"i10":1,"i11":2,"i12":2,"i13":2,"i14":2,"i15":2,"i16":2,"i17":2,"i18":2,"i19":2,"i20":2,"i21":2,"i22":2,"i23":2,"i24":2,"i25":2,"i26":2,"i27":2,"i28":2,"i29":2,"i30":2,"i31":2,"i32":2,"i33":2,"i34":2,"i35":2,"i36":2,"i37":2,"i38":2,"i39":2,"i40":2,"i41":2,"i42":2,"i43":2,"i44":2,"i45":2,"i46":2,"i47":2,"i48":2,"i49":2,"i50":2,"i51":2,"i52":2,"i53":2,"i54":2,"i55":2,"i56":2,"i57":2,"i58":2,"i59":2,"i60":2,"i61":2,"i62":2,"i63":2,"i64":2,"i65":2,"i66":2,"i67":2,"i68":2,"i69":2,"i70":2,"i71":2,"i72":2,"i73":2,"i74":2,"i75":2,"i76":2,"i77":2,"i78":2,"i79":2,"i80":2,"i81":2,"i82":2,"i83":2,"i84":2,"i85":2,"i86":2,"i87":2,"i88":2,"i89":8,"i90":2,"i91":1};
 var tabs = {65535:["t0","All Classes"],1:["t1","Interface Summary"],2:["t2","Class Summary"],8:["t4","Exception Summary"]};
 var altColor = "alt-color";
 var rowColor = "row-color";
@@ -72,13 +72,16 @@ loadScripts(document, 'script');</script>
 <tr class="alt-color" id="i0">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/AbstractImportNode.html" title="class in io.github.eutro.jwasm.tree">AbstractImportNode</a></td>
 <th class="col-last" scope="row">
-<div class="block">A note that represents an import of a module.</div>
+<div class="block">A note that represents an
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#import-section">import</a>
+ of a module.</div>
 </th>
 </tr>
 <tr class="row-color" id="i1">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tree">AbstractInsnNode</a></td>
 <th class="col-last" scope="row">
-<div class="block">A node that represents a bytecode instruction.</div>
+<div class="block">A node that represents a bytecode
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instruction</a>.</div>
 </th>
 </tr>
 <tr class="alt-color" id="i2">
@@ -164,13 +167,17 @@ loadScripts(document, 'script');</script>
 <tr class="row-color" id="i15">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/CodeNode.html" title="class in io.github.eutro.jwasm.tree">CodeNode</a></td>
 <th class="col-last" scope="row">
-<div class="block">A node that represents a the code of a function.</div>
+<div class="block">A node that represents a the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#code-section">code</a>
+ of a function.</div>
 </th>
 </tr>
 <tr class="alt-color" id="i16">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/CodesNode.html" title="class in io.github.eutro.jwasm.tree">CodesNode</a></td>
 <th class="col-last" scope="row">
-<div class="block">A node that represents a vector of function bodies.</div>
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#code-section">code section</a>
+ of a module.</div>
 </th>
 </tr>
 <tr class="row-color" id="i17">
@@ -196,16 +203,28 @@ loadScripts(document, 'script');</script>
 <tr class="alt-color" id="i20">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/CustomNode.html" title="class in io.github.eutro.jwasm.tree">CustomNode</a></td>
 <th class="col-last" scope="row">
-<div class="block">A node which represents a custom section of a module.</div>
+<div class="block">A node which represents a
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#custom-section">custom section</a>
+ of a module.</div>
 </th>
 </tr>
 <tr class="row-color" id="i21">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/DataNode.html" title="class in io.github.eutro.jwasm.tree">DataNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents a
+ <a href="https://webassembly.github.io/spec/core/syntax/modules.html#syntax-data">data segment</a>
+ in the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#data-section">data section</a>
+ of a module.</div>
+</th>
 </tr>
 <tr class="alt-color" id="i22">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/DataSegmentsNode.html" title="class in io.github.eutro.jwasm.tree">DataSegmentsNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#data-section">data section</a>
+ of a module.</div>
+</th>
 </tr>
 <tr class="row-color" id="i23">
 <td class="col-first"><a href="io/github/eutro/jwasm/DataSegmentsVisitor.html" title="class in io.github.eutro.jwasm">DataSegmentsVisitor</a></td>
@@ -239,11 +258,21 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="row-color" id="i27">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/ElementNode.html" title="class in io.github.eutro.jwasm.tree">ElementNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents an
+ <a href="https://webassembly.github.io/spec/core/syntax/modules.html#syntax-elem">element segment</a>
+ in the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#element-section">element section</a>
+ of a module.</div>
+</th>
 </tr>
 <tr class="alt-color" id="i28">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/ElementSegmentsNode.html" title="class in io.github.eutro.jwasm.tree">ElementSegmentsNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#element-section">element section</a>
+ of a module.</div>
+</th>
 </tr>
 <tr class="row-color" id="i29">
 <td class="col-first"><a href="io/github/eutro/jwasm/ElementSegmentsVisitor.html" title="class in io.github.eutro.jwasm">ElementSegmentsVisitor</a></td>
@@ -277,25 +306,38 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="row-color" id="i33">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/ElseInsnNode.html" title="class in io.github.eutro.jwasm.tree">ElseInsnNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents an optional <a href="io/github/eutro/jwasm/Opcodes.html#ELSE"><code>else</code></a> pseudo-instruction in an <a href="io/github/eutro/jwasm/Opcodes.html#IF"><code>if</code></a> block.</div>
+</th>
 </tr>
 <tr class="alt-color" id="i34">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/EndInsnNode.html" title="class in io.github.eutro.jwasm.tree">EndInsnNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents the <a href="io/github/eutro/jwasm/Opcodes.html#END"><code>end</code></a> of a
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#control-instructions">block</a>
+ or
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#expressions">expression</a>.</div>
+</th>
 </tr>
 <tr class="row-color" id="i35">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/ExportNode.html" title="class in io.github.eutro.jwasm.tree">ExportNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents an export of a module.</div>
+</th>
 </tr>
 <tr class="alt-color" id="i36">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/ExportsNode.html" title="class in io.github.eutro.jwasm.tree">ExportsNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#export-section">export section</a>
+ of a module.</div>
+</th>
 </tr>
 <tr class="row-color" id="i37">
 <td class="col-first"><a href="io/github/eutro/jwasm/ExportsVisitor.html" title="class in io.github.eutro.jwasm">ExportsVisitor</a></td>
 <th class="col-last" scope="row">
 <div class="block">A visitor that visits the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#global-section">global section</a>
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#export-section">export section</a>
  of a module.</div>
 </th>
 </tr>
@@ -307,7 +349,10 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="row-color" id="i39">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents an
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-expr">expression</a>.</div>
+</th>
 </tr>
 <tr class="alt-color" id="i40">
 <td class="col-first"><a href="io/github/eutro/jwasm/ExprVisitor.html" title="class in io.github.eutro.jwasm">ExprVisitor</a></td>
@@ -324,19 +369,29 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="alt-color" id="i42">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/FuncImportNode.html" title="class in io.github.eutro.jwasm.tree">FuncImportNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents a function import.</div>
+</th>
 </tr>
 <tr class="row-color" id="i43">
-<td class="col-first"><a href="io/github/eutro/jwasm/tree/FuncInsnNode.html" title="class in io.github.eutro.jwasm.tree">FuncInsnNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<td class="col-first"><a href="io/github/eutro/jwasm/tree/FuncNode.html" title="class in io.github.eutro.jwasm.tree">FuncNode</a></td>
+<th class="col-last" scope="row">
+<div class="block">A node that represents the type of a function that is defined in the module.</div>
+</th>
 </tr>
 <tr class="alt-color" id="i44">
-<td class="col-first"><a href="io/github/eutro/jwasm/tree/FuncNode.html" title="class in io.github.eutro.jwasm.tree">FuncNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<td class="col-first"><a href="io/github/eutro/jwasm/tree/FuncRefInsnNode.html" title="class in io.github.eutro.jwasm.tree">FuncRefInsnNode</a></td>
+<th class="col-last" scope="row">
+<div class="block">A node that represents a ref.func instruction.</div>
+</th>
 </tr>
 <tr class="row-color" id="i45">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/FunctionsNode.html" title="class in io.github.eutro.jwasm.tree">FunctionsNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#function-section">function section</a>
+ of a module.</div>
+</th>
 </tr>
 <tr class="alt-color" id="i46">
 <td class="col-first"><a href="io/github/eutro/jwasm/FunctionsVisitor.html" title="class in io.github.eutro.jwasm">FunctionsVisitor</a></td>
@@ -354,15 +409,23 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="alt-color" id="i48">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/GlobalImportNode.html" title="class in io.github.eutro.jwasm.tree">GlobalImportNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents a global import.</div>
+</th>
 </tr>
 <tr class="row-color" id="i49">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/GlobalNode.html" title="class in io.github.eutro.jwasm.tree">GlobalNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents a global of a module.</div>
+</th>
 </tr>
 <tr class="alt-color" id="i50">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/GlobalsNode.html" title="class in io.github.eutro.jwasm.tree">GlobalsNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#global-section">global section</a>
+ of a module.</div>
+</th>
 </tr>
 <tr class="row-color" id="i51">
 <td class="col-first"><a href="io/github/eutro/jwasm/GlobalsVisitor.html" title="class in io.github.eutro.jwasm">GlobalsVisitor</a></td>
@@ -380,11 +443,17 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="row-color" id="i53">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/GlobalTypeNode.html" title="class in io.github.eutro.jwasm.tree">GlobalTypeNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents the type of an imported, exported or a module's own, global.</div>
+</th>
 </tr>
 <tr class="alt-color" id="i54">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/ImportsNode.html" title="class in io.github.eutro.jwasm.tree">ImportsNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#import-section">import section</a>
+ of a module.</div>
+</th>
 </tr>
 <tr class="row-color" id="i55">
 <td class="col-first"><a href="io/github/eutro/jwasm/ImportsVisitor.html" title="class in io.github.eutro.jwasm">ImportsVisitor</a></td>
@@ -402,11 +471,18 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="row-color" id="i57">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/IndexedMemInsnNode.html" title="class in io.github.eutro.jwasm.tree">IndexedMemInsnNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents a prefixed
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#memory-instructions">memory</a>
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>
+ with an <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-dataidx">index</a> argument.</div>
+</th>
 </tr>
 <tr class="alt-color" id="i58">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/InsnNode.html" title="class in io.github.eutro.jwasm.tree">InsnNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents an instruction with no immediate arguments.</div>
+</th>
 </tr>
 <tr class="row-color" id="i59">
 <td class="col-first"><a href="io/github/eutro/jwasm2java/InteropModuleAdapter.html" title="class in io.github.eutro.jwasm2java">InteropModuleAdapter</a></td>
@@ -422,15 +498,23 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="row-color" id="i61">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/MemImportNode.html" title="class in io.github.eutro.jwasm.tree">MemImportNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents a memory import.</div>
+</th>
 </tr>
 <tr class="alt-color" id="i62">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/MemInsnNode.html" title="class in io.github.eutro.jwasm.tree">MemInsnNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents a memory instruction with a single memory argument.</div>
+</th>
 </tr>
 <tr class="row-color" id="i63">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/MemoriesNode.html" title="class in io.github.eutro.jwasm.tree">MemoriesNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#memory-section">memory section</a>
+ of a module.</div>
+</th>
 </tr>
 <tr class="alt-color" id="i64">
 <td class="col-first"><a href="io/github/eutro/jwasm/MemoriesVisitor.html" title="class in io.github.eutro.jwasm">MemoriesVisitor</a></td>
@@ -448,7 +532,9 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="alt-color" id="i66">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/MemoryNode.html" title="class in io.github.eutro.jwasm.tree">MemoryNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents a linear memory of a module.</div>
+</th>
 </tr>
 <tr class="row-color" id="i67">
 <td class="col-first"><a href="io/github/eutro/jwasm2java/ModuleAdapter.html" title="class in io.github.eutro.jwasm2java">ModuleAdapter</a></td>
@@ -456,7 +542,10 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="alt-color" id="i68">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents a WebAssembly
+ <a href="https://webassembly.github.io/spec/core/syntax/modules.html">module</a>.</div>
+</th>
 </tr>
 <tr class="row-color" id="i69">
 <td class="col-first"><a href="io/github/eutro/jwasm/ModuleReader.html" title="class in io.github.eutro.jwasm">ModuleReader</a>&lt;<a href="io/github/eutro/jwasm/ModuleReader.html" title="type parameter in ModuleReader">E</a> extends java.lang.Exception&gt;</td>
@@ -479,7 +568,9 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="alt-color" id="i72">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/NullInsnNode.html" title="class in io.github.eutro.jwasm.tree">NullInsnNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents a ref.null instruction.</div>
+</th>
 </tr>
 <tr class="row-color" id="i73">
 <td class="col-first"><a href="io/github/eutro/jwasm/Opcodes.html" title="class in io.github.eutro.jwasm">Opcodes</a></td>
@@ -489,45 +580,61 @@ loadScripts(document, 'script');</script>
 </tr>
 <tr class="alt-color" id="i74">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/PrefixBinaryTableInsnNode.html" title="class in io.github.eutro.jwasm.tree">PrefixBinaryTableInsnNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents a table instruction with two immediate index arguments.</div>
+</th>
 </tr>
 <tr class="row-color" id="i75">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/PrefixInsnNode.html" title="class in io.github.eutro.jwasm.tree">PrefixInsnNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents a prefix instruction.</div>
+</th>
 </tr>
 <tr class="alt-color" id="i76">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/PrefixTableInsnNode.html" title="class in io.github.eutro.jwasm.tree">PrefixTableInsnNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents a prefixed table instruction.</div>
+</th>
 </tr>
 <tr class="row-color" id="i77">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/SelectInsnNode.html" title="class in io.github.eutro.jwasm.tree">SelectInsnNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents a select instruction with explicit type arguments.</div>
+</th>
 </tr>
 <tr class="alt-color" id="i78">
-<td class="col-first"><a href="io/github/eutro/jwasm/tree/StartNode.html" title="class in io.github.eutro.jwasm.tree">StartNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<td class="col-first"><a href="io/github/eutro/jwasm/tree/TableBreakInsnNode.html" title="class in io.github.eutro.jwasm.tree">TableBreakInsnNode</a></td>
+<th class="col-last" scope="row">
+<div class="block">A node that represents a br_table instruction.</div>
+</th>
 </tr>
 <tr class="row-color" id="i79">
-<td class="col-first"><a href="io/github/eutro/jwasm/tree/TableBreakInsnNode.html" title="class in io.github.eutro.jwasm.tree">TableBreakInsnNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<td class="col-first"><a href="io/github/eutro/jwasm/tree/TableImportNode.html" title="class in io.github.eutro.jwasm.tree">TableImportNode</a></td>
+<th class="col-last" scope="row">
+<div class="block">A node that represents a function import.</div>
+</th>
 </tr>
 <tr class="alt-color" id="i80">
-<td class="col-first"><a href="io/github/eutro/jwasm/tree/TableImportNode.html" title="class in io.github.eutro.jwasm.tree">TableImportNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<td class="col-first"><a href="io/github/eutro/jwasm/tree/TableInsnNode.html" title="class in io.github.eutro.jwasm.tree">TableInsnNode</a></td>
+<th class="col-last" scope="row">
+<div class="block">A node that represents a table instruction.</div>
+</th>
 </tr>
 <tr class="row-color" id="i81">
-<td class="col-first"><a href="io/github/eutro/jwasm/tree/TableInsnNode.html" title="class in io.github.eutro.jwasm.tree">TableInsnNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<td class="col-first"><a href="io/github/eutro/jwasm/tree/TableNode.html" title="class in io.github.eutro.jwasm.tree">TableNode</a></td>
+<th class="col-last" scope="row">
+<div class="block">A node that represents a table of a module.</div>
+</th>
 </tr>
 <tr class="alt-color" id="i82">
-<td class="col-first"><a href="io/github/eutro/jwasm/tree/TableNode.html" title="class in io.github.eutro.jwasm.tree">TableNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<td class="col-first"><a href="io/github/eutro/jwasm/tree/TablesNode.html" title="class in io.github.eutro.jwasm.tree">TablesNode</a></td>
+<th class="col-last" scope="row">
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#table-section">table section</a>
+ of a module.</div>
+</th>
 </tr>
 <tr class="row-color" id="i83">
-<td class="col-first"><a href="io/github/eutro/jwasm/tree/TablesNode.html" title="class in io.github.eutro.jwasm.tree">TablesNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
-</tr>
-<tr class="alt-color" id="i84">
 <td class="col-first"><a href="io/github/eutro/jwasm/TablesVisitor.html" title="class in io.github.eutro.jwasm">TablesVisitor</a></td>
 <th class="col-last" scope="row">
 <div class="block">A visitor that visits the
@@ -535,21 +642,28 @@ loadScripts(document, 'script');</script>
  of a module.</div>
 </th>
 </tr>
-<tr class="row-color" id="i85">
+<tr class="alt-color" id="i84">
 <td class="col-first"><a href="io/github/eutro/jwasm/TablesWriter.html" title="class in io.github.eutro.jwasm">TablesWriter</a></td>
 <th class="col-last" scope="row">
 <div class="block">A <a href="io/github/eutro/jwasm/TablesVisitor.html" title="class in io.github.eutro.jwasm"><code>TablesVisitor</code></a> that generates the corresponding WebAssembly bytecode as it is visited.</div>
 </th>
 </tr>
-<tr class="alt-color" id="i86">
+<tr class="row-color" id="i85">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/TypeNode.html" title="class in io.github.eutro.jwasm.tree">TypeNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents a
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#function-types"><code>functype</code></a>.</div>
+</th>
+</tr>
+<tr class="alt-color" id="i86">
+<td class="col-first"><a href="io/github/eutro/jwasm/tree/TypesNode.html" title="class in io.github.eutro.jwasm.tree">TypesNode</a></td>
+<th class="col-last" scope="row">
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#type-section">type section</a>
+ of a module.</div>
+</th>
 </tr>
 <tr class="row-color" id="i87">
-<td class="col-first"><a href="io/github/eutro/jwasm/tree/TypesNode.html" title="class in io.github.eutro.jwasm.tree">TypesNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
-</tr>
-<tr class="alt-color" id="i88">
 <td class="col-first"><a href="io/github/eutro/jwasm/TypesVisitor.html" title="class in io.github.eutro.jwasm">TypesVisitor</a></td>
 <th class="col-last" scope="row">
 <div class="block">A visitor that visits the
@@ -557,23 +671,25 @@ loadScripts(document, 'script');</script>
  of a module.</div>
 </th>
 </tr>
-<tr class="row-color" id="i89">
+<tr class="alt-color" id="i88">
 <td class="col-first"><a href="io/github/eutro/jwasm/TypesWriter.html" title="class in io.github.eutro.jwasm">TypesWriter</a></td>
 <th class="col-last" scope="row">
 <div class="block">A <a href="io/github/eutro/jwasm/TypesVisitor.html" title="class in io.github.eutro.jwasm"><code>TypesVisitor</code></a> that generates the corresponding WebAssembly bytecode as it is visited.</div>
 </th>
 </tr>
-<tr class="alt-color" id="i90">
+<tr class="row-color" id="i89">
 <td class="col-first"><a href="io/github/eutro/jwasm/ValidationException.html" title="class in io.github.eutro.jwasm">ValidationException</a></td>
 <th class="col-last" scope="row">
 <div class="block">An exception that may be thrown when reading an invalid module file.</div>
 </th>
 </tr>
-<tr class="row-color" id="i91">
+<tr class="alt-color" id="i90">
 <td class="col-first"><a href="io/github/eutro/jwasm/tree/VariableInsnNode.html" title="class in io.github.eutro.jwasm.tree">VariableInsnNode</a></td>
-<th class="col-last" scope="row">&nbsp;</th>
+<th class="col-last" scope="row">
+<div class="block">A node that represents a variable instruction.</div>
+</th>
 </tr>
-<tr class="alt-color" id="i92">
+<tr class="row-color" id="i91">
 <td class="col-first"><a href="io/github/eutro/jwasm/VectorWriter.html" title="interface in io.github.eutro.jwasm">VectorWriter</a></td>
 <th class="col-last" scope="row">
 <div class="block">An interface for <code>*Writer</code>s that write a vector of values.</div>

@@ -78,6 +78,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="type-name-label">MemInsnNode</span>
 extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tree">AbstractInsnNode</a></pre>
+<div class="block">A node that represents a memory instruction with a single memory argument.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ExprVisitor.html#visitMemInsn(byte,int,int)"><code>ExprVisitor.visitMemInsn(byte, int, int)</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -99,12 +104,16 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 <tr class="alt-color">
 <td class="col-first"><code>int</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#align">align</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The <code>align</code> of the argument.</div>
+</td>
 </tr>
 <tr class="row-color">
 <td class="col-first"><code>int</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#offset">offset</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The <code>offset</code> of the argument.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -132,7 +141,9 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 <th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(byte,int,int)">MemInsnNode</a></span>&#8203;(byte&nbsp;opcode,
 int&nbsp;align,
 int&nbsp;offset)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Construct a <a href="MemInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>MemInsnNode</code></a> with the given opcode, align and offset.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -161,12 +172,14 @@ int&nbsp;offset)</code></th>
 <section class="detail" id="align">
 <h3>align</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="member-name">align</span></div>
+<div class="block">The <code>align</code> of the argument.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="offset">
 <h3>offset</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="member-name">offset</span></div>
+<div class="block">The <code>offset</code> of the argument.</div>
 </section>
 </li>
 </ul>
@@ -183,6 +196,13 @@ int&nbsp;offset)</code></th>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="member-name">MemInsnNode</span>&#8203;(<span class="parameters">byte&nbsp;opcode,
 int&nbsp;align,
 int&nbsp;offset)</span></div>
+<div class="block">Construct a <a href="MemInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>MemInsnNode</code></a> with the given opcode, align and offset.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>opcode</code> - The opcode of the instruction.</dd>
+<dd><code>align</code> - The <code>align</code> of the argument.</dd>
+<dd><code>offset</code> - The <code>offset</code> of the argument.</dd>
+</dl>
 </section>
 </li>
 </ul>

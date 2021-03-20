@@ -31,9 +31,8 @@ public class BreakInsnNode extends AbstractInsnNode {
     /**
      * {@inheritDoc}
      *
-     * @see ExprVisitor#visitBreakInsn(byte, int)
-     *
      * @param ev The visitor to visit.
+     * @see ExprVisitor#visitBreakInsn(byte, int)
      */
     @Override
     void accept(ExprVisitor ev) {

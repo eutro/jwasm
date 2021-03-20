@@ -91,6 +91,14 @@ loadScripts(document, 'script');</script>
 <pre>public class <span class="type-name-label">ElementSegmentsNode</span>
 extends <a href="../ElementSegmentsVisitor.html" title="class in io.github.eutro.jwasm">ElementSegmentsVisitor</a>
 implements java.lang.Iterable&lt;<a href="ElementNode.html" title="class in io.github.eutro.jwasm.tree">ElementNode</a>&gt;</pre>
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#element-section">element section</a>
+ of a module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ModuleVisitor.html#visitElems()"><code>ModuleVisitor.visitElems()</code></a>, 
+<a href="ElementNode.html" title="class in io.github.eutro.jwasm.tree"><code>ElementNode</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -112,7 +120,9 @@ implements java.lang.Iterable&lt;<a href="ElementNode.html" title="class in io.g
 <tr class="alt-color">
 <td class="col-first"><code>@Nullable java.util.List&lt;<a href="ElementNode.html" title="class in io.github.eutro.jwasm.tree">ElementNode</a>&gt;</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#elems">elems</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The vector of <a href="ElementNode.html" title="class in io.github.eutro.jwasm.tree"><code>ElementNode</code></a>s, or <code>null</code> if there aren't any.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -164,7 +174,9 @@ implements java.lang.Iterable&lt;<a href="ElementNode.html" title="class in io.g
 <tr class="alt-color" id="i0">
 <td class="col-first"><code>void</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#accept(io.github.eutro.jwasm.ElementSegmentsVisitor)">accept</a></span>&#8203;(<a href="../ElementSegmentsVisitor.html" title="class in io.github.eutro.jwasm">ElementSegmentsVisitor</a>&nbsp;ev)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Make the given <a href="../ElementSegmentsVisitor.html" title="class in io.github.eutro.jwasm"><code>ElementSegmentsVisitor</code></a> visit all the element segments of this node.</div>
+</td>
 </tr>
 <tr class="row-color" id="i1">
 <td class="col-first"><code>@NotNull java.util.Iterator&lt;<a href="ElementNode.html" title="class in io.github.eutro.jwasm.tree">ElementNode</a>&gt;</code></td>
@@ -207,6 +219,7 @@ implements java.lang.Iterable&lt;<a href="ElementNode.html" title="class in io.g
 <h3>elems</h3>
 <div class="member-signature"><span class="annotations">@Nullable
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable java.util.List&lt;<a href="ElementNode.html" title="class in io.github.eutro.jwasm.tree">ElementNode</a>&gt;</span>&nbsp;<span class="member-name">elems</span></div>
+<div class="block">The vector of <a href="ElementNode.html" title="class in io.github.eutro.jwasm.tree"><code>ElementNode</code></a>s, or <code>null</code> if there aren't any.</div>
 </section>
 </li>
 </ul>
@@ -235,6 +248,11 @@ implements java.lang.Iterable&lt;<a href="ElementNode.html" title="class in io.g
 <section class="detail" id="accept(io.github.eutro.jwasm.ElementSegmentsVisitor)">
 <h3>accept</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="member-name">accept</span>&#8203;(<span class="parameters"><a href="../ElementSegmentsVisitor.html" title="class in io.github.eutro.jwasm">ElementSegmentsVisitor</a>&nbsp;ev)</span></div>
+<div class="block">Make the given <a href="../ElementSegmentsVisitor.html" title="class in io.github.eutro.jwasm"><code>ElementSegmentsVisitor</code></a> visit all the element segments of this node.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>ev</code> - The visitor to visit.</dd>
+</dl>
 </section>
 </li>
 <li>

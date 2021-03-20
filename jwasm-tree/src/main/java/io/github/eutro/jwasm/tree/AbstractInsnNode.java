@@ -3,7 +3,8 @@ package io.github.eutro.jwasm.tree;
 import io.github.eutro.jwasm.ExprVisitor;
 
 /**
- * A node that represents a bytecode instruction.
+ * A node that represents a bytecode
+ * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instruction</a>.
  *
  * @see ExprVisitor
  */

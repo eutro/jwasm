@@ -91,6 +91,13 @@ loadScripts(document, 'script');</script>
 <pre>public class <span class="type-name-label">TypesNode</span>
 extends <a href="../TypesVisitor.html" title="class in io.github.eutro.jwasm">TypesVisitor</a>
 implements java.lang.Iterable&lt;<a href="TypeNode.html" title="class in io.github.eutro.jwasm.tree">TypeNode</a>&gt;</pre>
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#type-section">type section</a>
+ of a module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ModuleVisitor.html#visitTypes()"><code>ModuleVisitor.visitTypes()</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -112,7 +119,9 @@ implements java.lang.Iterable&lt;<a href="TypeNode.html" title="class in io.gith
 <tr class="alt-color">
 <td class="col-first"><code>@Nullable java.util.List&lt;<a href="TypeNode.html" title="class in io.github.eutro.jwasm.tree">TypeNode</a>&gt;</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#types">types</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The vector of <a href="TypeNode.html" title="class in io.github.eutro.jwasm.tree"><code>TypeNode</code></a>s, or <code>null</code> if there aren't any.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -164,7 +173,9 @@ implements java.lang.Iterable&lt;<a href="TypeNode.html" title="class in io.gith
 <tr class="alt-color" id="i0">
 <td class="col-first"><code>void</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#accept(io.github.eutro.jwasm.TypesVisitor)">accept</a></span>&#8203;(<a href="../TypesVisitor.html" title="class in io.github.eutro.jwasm">TypesVisitor</a>&nbsp;tv)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Make the given <a href="../TypesVisitor.html" title="class in io.github.eutro.jwasm"><code>TypesVisitor</code></a> visit all the types of this node.</div>
+</td>
 </tr>
 <tr class="row-color" id="i1">
 <td class="col-first"><code>@NotNull java.util.Iterator&lt;<a href="TypeNode.html" title="class in io.github.eutro.jwasm.tree">TypeNode</a>&gt;</code></td>
@@ -176,7 +187,9 @@ implements java.lang.Iterable&lt;<a href="TypeNode.html" title="class in io.gith
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#visitFuncType(byte%5B%5D,byte%5B%5D)">visitFuncType</a></span>&#8203;(byte @NotNull []&nbsp;params,
 byte @NotNull []&nbsp;returns)</code></th>
 <td class="col-last">
-<div class="block">Visit a <a href="https://webassembly.github.io/spec/core/binary/types.html#function-types"><code>functype</code></a> element of the type vector.</div>
+<div class="block">Visit a
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#function-types"><code>functype</code></a>
+ element of the type vector.</div>
 </td>
 </tr>
 </tbody>
@@ -208,6 +221,7 @@ byte @NotNull []&nbsp;returns)</code></th>
 <h3>types</h3>
 <div class="member-signature"><span class="annotations">@Nullable
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable java.util.List&lt;<a href="TypeNode.html" title="class in io.github.eutro.jwasm.tree">TypeNode</a>&gt;</span>&nbsp;<span class="member-name">types</span></div>
+<div class="block">The vector of <a href="TypeNode.html" title="class in io.github.eutro.jwasm.tree"><code>TypeNode</code></a>s, or <code>null</code> if there aren't any.</div>
 </section>
 </li>
 </ul>
@@ -236,6 +250,11 @@ byte @NotNull []&nbsp;returns)</code></th>
 <section class="detail" id="accept(io.github.eutro.jwasm.TypesVisitor)">
 <h3>accept</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="member-name">accept</span>&#8203;(<span class="parameters"><a href="../TypesVisitor.html" title="class in io.github.eutro.jwasm">TypesVisitor</a>&nbsp;tv)</span></div>
+<div class="block">Make the given <a href="../TypesVisitor.html" title="class in io.github.eutro.jwasm"><code>TypesVisitor</code></a> visit all the types of this node.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>tv</code> - The visitor to visit.</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -244,7 +263,9 @@ byte @NotNull []&nbsp;returns)</code></th>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="member-name">visitFuncType</span>&#8203;(<span class="parameters">byte @NotNull []&nbsp;params,
 byte @NotNull []&nbsp;returns)</span></div>
 <div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="../TypesVisitor.html#visitFuncType(byte%5B%5D,byte%5B%5D)">TypesVisitor</a></code></span></div>
-<div class="block">Visit a <a href="https://webassembly.github.io/spec/core/binary/types.html#function-types"><code>functype</code></a> element of the type vector.</div>
+<div class="block">Visit a
+ <a href="https://webassembly.github.io/spec/core/binary/types.html#function-types"><code>functype</code></a>
+ element of the type vector.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="../TypesVisitor.html#visitFuncType(byte%5B%5D,byte%5B%5D)">visitFuncType</a></code>&nbsp;in class&nbsp;<code><a href="../TypesVisitor.html" title="class in io.github.eutro.jwasm">TypesVisitor</a></code></dd>

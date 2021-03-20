@@ -91,6 +91,13 @@ loadScripts(document, 'script');</script>
 <pre>public class <span class="type-name-label">ImportsNode</span>
 extends <a href="../ImportsVisitor.html" title="class in io.github.eutro.jwasm">ImportsVisitor</a>
 implements java.lang.Iterable&lt;<a href="AbstractImportNode.html" title="class in io.github.eutro.jwasm.tree">AbstractImportNode</a>&gt;</pre>
+<div class="block">A node that represents the
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#import-section">import section</a>
+ of a module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><a href="../ModuleVisitor.html#visitImports()"><code>ModuleVisitor.visitImports()</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -112,7 +119,9 @@ implements java.lang.Iterable&lt;<a href="AbstractImportNode.html" title="class 
 <tr class="alt-color">
 <td class="col-first"><code>@Nullable java.util.List&lt;<a href="AbstractImportNode.html" title="class in io.github.eutro.jwasm.tree">AbstractImportNode</a>&gt;</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#imports">imports</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The vector of <a href="AbstractImportNode.html" title="class in io.github.eutro.jwasm.tree"><code>AbstractImportNode</code></a>s, or <code>null</code> if there aren't any.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -164,7 +173,9 @@ implements java.lang.Iterable&lt;<a href="AbstractImportNode.html" title="class 
 <tr class="alt-color" id="i0">
 <td class="col-first"><code>void</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#accept(io.github.eutro.jwasm.ImportsVisitor)">accept</a></span>&#8203;(<a href="../ImportsVisitor.html" title="class in io.github.eutro.jwasm">ImportsVisitor</a>&nbsp;iv)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Makes the given <a href="../ImportsVisitor.html" title="class in io.github.eutro.jwasm"><code>ImportsVisitor</code></a> visit all the imports of this node.</div>
+</td>
 </tr>
 <tr class="row-color" id="i1">
 <td class="col-first"><code>@NotNull java.util.Iterator&lt;<a href="AbstractImportNode.html" title="class in io.github.eutro.jwasm.tree">AbstractImportNode</a>&gt;</code></td>
@@ -240,6 +251,7 @@ byte&nbsp;type)</code></th>
 <h3>imports</h3>
 <div class="member-signature"><span class="annotations">@Nullable
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable java.util.List&lt;<a href="AbstractImportNode.html" title="class in io.github.eutro.jwasm.tree">AbstractImportNode</a>&gt;</span>&nbsp;<span class="member-name">imports</span></div>
+<div class="block">The vector of <a href="AbstractImportNode.html" title="class in io.github.eutro.jwasm.tree"><code>AbstractImportNode</code></a>s, or <code>null</code> if there aren't any.</div>
 </section>
 </li>
 </ul>
@@ -268,6 +280,11 @@ byte&nbsp;type)</code></th>
 <section class="detail" id="accept(io.github.eutro.jwasm.ImportsVisitor)">
 <h3>accept</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="member-name">accept</span>&#8203;(<span class="parameters"><a href="../ImportsVisitor.html" title="class in io.github.eutro.jwasm">ImportsVisitor</a>&nbsp;iv)</span></div>
+<div class="block">Makes the given <a href="../ImportsVisitor.html" title="class in io.github.eutro.jwasm"><code>ImportsVisitor</code></a> visit all the imports of this node.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>iv</code> - The visitor to visit.</dd>
+</dl>
 </section>
 </li>
 <li>
