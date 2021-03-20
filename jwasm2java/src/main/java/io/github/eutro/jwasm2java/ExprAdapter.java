@@ -441,7 +441,6 @@ public class ExprAdapter {
             ctx.push(PAGE_SIZE);
             ctx.visitInsn(IDIV);
         })
-                // TODO maybe implement memory growth?
                 .match(MEMORY_GROW).terminal((Rule<AbstractInsnNode>) (ctx, insn) -> {
             // TODO maybe implement memory growth?
             ctx.pop();
@@ -483,6 +482,9 @@ public class ExprAdapter {
             ctx.storeLocal(s);
             Extern mem = ctx.externs.mems.get(0);
             mem.emitGet(ctx);
+            ctx.visitMethodInsn(INVOKEVIRTUAL, "java/nio/ByteBuffer", "duplicate",
+                    "()Ljava/nio/ByteBuffer;",
+                    false);
             ctx.swap();
             ctx.visitMethodInsn(INVOKEVIRTUAL, "java/nio/ByteBuffer", "position",
                     "(I)Ljava/nio/ByteBuffer;",
@@ -502,6 +504,9 @@ public class ExprAdapter {
 
             Extern mem = ctx.externs.mems.get(0);
             mem.emitGet(ctx);
+            ctx.visitMethodInsn(INVOKEVIRTUAL, "java/nio/ByteBuffer", "duplicate",
+                    "()Ljava/nio/ByteBuffer;",
+                    false);
             ctx.swap();
             ctx.visitMethodInsn(INVOKEVIRTUAL, "java/nio/ByteBuffer", "position",
                     "(I)Ljava/nio/ByteBuffer;",

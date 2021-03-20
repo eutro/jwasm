@@ -231,7 +231,7 @@ public class ModuleAdapter extends ModuleVisitor {
                 ctx.visitLdcInsn(mem.limits.min * PAGE_SIZE);
                 ctx.visitMethodInsn(INVOKESTATIC,
                         "java/nio/ByteBuffer",
-                        "allocate",
+                        "allocateDirect",
                         "(I)Ljava/nio/ByteBuffer;",
                         false);
                 ctx.visitFieldInsn(GETSTATIC,
@@ -331,6 +331,9 @@ public class ModuleAdapter extends ModuleVisitor {
                     if (data.memory != 0) throw new IllegalStateException();
                     Extern mem = externs.mems.get(0);
                     mem.emitGet(ctx);
+                    ctx.visitMethodInsn(INVOKEVIRTUAL, "java/nio/ByteBuffer", "duplicate",
+                            "()Ljava/nio/ByteBuffer;",
+                            false);
                     ExprAdapter.translateInto(data.offset, ctx);
                     ctx.visitMethodInsn(INVOKEVIRTUAL, "java/nio/ByteBuffer", "position",
                             "(I)Ljava/nio/ByteBuffer;",
