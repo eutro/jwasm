@@ -9,7 +9,7 @@ import java.util.Map;
 
 import static org.objectweb.asm.Opcodes.*;
 
-public class JumpTrackingVisitor extends AnalyzerAdapter {
+class JumpTrackingVisitor extends AnalyzerAdapter {
     private final Map<Label, FrameNode> jumps = new HashMap<>();
 
     protected JumpTrackingVisitor(String owner,

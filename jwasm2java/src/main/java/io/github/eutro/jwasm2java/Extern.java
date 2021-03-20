@@ -6,10 +6,7 @@ import org.objectweb.asm.tree.FieldNode;
 import static org.objectweb.asm.Opcodes.*;
 import static org.objectweb.asm.Opcodes.PUTFIELD;
 
-/**
- * An Extern for
- */
-public interface Extern {
+interface Extern {
     void emitGet(MethodVisitor mv);
 
     default boolean emitSet(MethodVisitor mv) {

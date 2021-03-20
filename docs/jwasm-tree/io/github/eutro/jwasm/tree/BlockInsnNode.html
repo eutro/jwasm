@@ -77,6 +77,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="type-name-label">BlockInsnNode</span>
 extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tree">AbstractInsnNode</a></pre>
+<div class="block">A node that represents a block instruction.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><code>ExprVisitor.visitBlockInsn(byte, int)</code></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -98,7 +103,11 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 <tr class="alt-color">
 <td class="col-first"><code>int</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#blockType">blockType</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-blocktype">type</a>
+ of the block.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -125,7 +134,9 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 <tr class="alt-color">
 <th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(byte,int)">BlockInsnNode</a></span>&#8203;(byte&nbsp;opcode,
 int&nbsp;blockType)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Construct a <a href="BlockInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>BlockInsnNode</code></a> with the given opcode and block type.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -154,6 +165,9 @@ int&nbsp;blockType)</code></th>
 <section class="detail" id="blockType">
 <h3>blockType</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="member-name">blockType</span></div>
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-blocktype">type</a>
+ of the block.</div>
 </section>
 </li>
 </ul>
@@ -169,6 +183,14 @@ int&nbsp;blockType)</code></th>
 <h3>BlockInsnNode</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="member-name">BlockInsnNode</span>&#8203;(<span class="parameters">byte&nbsp;opcode,
 int&nbsp;blockType)</span></div>
+<div class="block">Construct a <a href="BlockInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>BlockInsnNode</code></a> with the given opcode and block type.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>opcode</code> - The opcode of this instruction.</dd>
+<dd><code>blockType</code> - The
+                  <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-blocktype">type</a>
+                  of the block.</dd>
+</dl>
 </section>
 </li>
 </ul>

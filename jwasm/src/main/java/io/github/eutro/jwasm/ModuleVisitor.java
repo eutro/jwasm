@@ -71,11 +71,11 @@ public class ModuleVisitor extends BaseVisitor<ModuleVisitor> {
      * <a href="https://webassembly.github.io/spec/core/binary/modules.html#custom-section">custom section</a>
      * of the module.
      *
-     * @param name    The name of the custom section, for further identification.
-     * @param payload The raw contents of the custom section.
+     * @param name The name of the custom section, for further identification.
+     * @param data The raw contents of the custom section.
      */
-    public void visitCustom(@NotNull String name, byte @NotNull [] payload) {
-        if (dl != null) dl.visitCustom(name, payload);
+    public void visitCustom(@NotNull String name, byte @NotNull [] data) {
+        if (dl != null) dl.visitCustom(name, data);
     }
 
     /**

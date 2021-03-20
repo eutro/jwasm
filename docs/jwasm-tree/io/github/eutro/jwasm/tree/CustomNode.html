@@ -81,6 +81,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="type-name-label">CustomNode</span>
 extends java.lang.Object</pre>
+<div class="block">A node which represents a custom section of a module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><code>ModuleVisitor.visitCustom(String, byte[])</code></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -102,12 +107,16 @@ extends java.lang.Object</pre>
 <tr class="alt-color">
 <td class="col-first"><code>byte[]</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#data">data</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The raw contents of the custom section.</div>
+</td>
 </tr>
 <tr class="row-color">
 <td class="col-first"><code>java.lang.String</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#name">name</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The name of the custom section, for further identification.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -131,7 +140,9 @@ extends java.lang.Object</pre>
 <tr class="alt-color">
 <th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(java.lang.String,byte%5B%5D)">CustomNode</a></span>&#8203;(java.lang.String&nbsp;name,
 byte[]&nbsp;data)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Construct a <a href="CustomNode.html" title="class in io.github.eutro.jwasm.tree"><code>CustomNode</code></a> with the given name and data.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -157,7 +168,9 @@ byte[]&nbsp;data)</code></th>
 <tr class="alt-color" id="i0">
 <td class="col-first"><code>void</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#accept(io.github.eutro.jwasm.ModuleVisitor)">accept</a></span>&#8203;(io.github.eutro.jwasm.ModuleVisitor&nbsp;mv)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Make the given <code>ModuleVisitor</code> visit the section of this node.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -181,12 +194,14 @@ byte[]&nbsp;data)</code></th>
 <section class="detail" id="name">
 <h3>name</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">java.lang.String</span>&nbsp;<span class="member-name">name</span></div>
+<div class="block">The name of the custom section, for further identification.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="data">
 <h3>data</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte[]</span>&nbsp;<span class="member-name">data</span></div>
+<div class="block">The raw contents of the custom section.</div>
 </section>
 </li>
 </ul>
@@ -202,6 +217,12 @@ byte[]&nbsp;data)</code></th>
 <h3>CustomNode</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="member-name">CustomNode</span>&#8203;(<span class="parameters">java.lang.String&nbsp;name,
 byte[]&nbsp;data)</span></div>
+<div class="block">Construct a <a href="CustomNode.html" title="class in io.github.eutro.jwasm.tree"><code>CustomNode</code></a> with the given name and data.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>name</code> - The name of the custom section, for further identification.</dd>
+<dd><code>data</code> - The raw contents of the custom section.</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -216,6 +237,11 @@ byte[]&nbsp;data)</span></div>
 <section class="detail" id="accept(io.github.eutro.jwasm.ModuleVisitor)">
 <h3>accept</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="member-name">accept</span>&#8203;(<span class="parameters">io.github.eutro.jwasm.ModuleVisitor&nbsp;mv)</span></div>
+<div class="block">Make the given <code>ModuleVisitor</code> visit the section of this node.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>mv</code> - The visitor to visit.</dd>
+</dl>
 </section>
 </li>
 </ul>

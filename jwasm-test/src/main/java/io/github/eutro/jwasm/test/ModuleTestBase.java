@@ -6,6 +6,9 @@ import java.net.URL;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+/**
+ * A base class for tests that read a module from resources.
+ */
 public class ModuleTestBase {
     // there's nothing particularly special about these modules
     public static final String HELLO_WORLD = "wasm_hello_world_bg.wasm";

@@ -158,7 +158,9 @@ io.github.eutro.jwasm.Limits&nbsp;limits)</code></th>
 <tr class="alt-color" id="i0">
 <td class="col-first"><code>byte</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#importType()">importType</a></span>()</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Get the numerical value of the import type.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -212,9 +214,17 @@ io.github.eutro.jwasm.Limits&nbsp;limits)</span></div>
 <section class="detail" id="importType()">
 <h3>importType</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte</span>&nbsp;<span class="member-name">importType</span>()</div>
+<div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="AbstractImportNode.html#importType()">AbstractImportNode</a></code></span></div>
+<div class="block">Get the numerical value of the import type.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="AbstractImportNode.html#importType()">importType</a></code>&nbsp;in class&nbsp;<code><a href="AbstractImportNode.html" title="class in io.github.eutro.jwasm.tree">AbstractImportNode</a></code></dd>
+<dt>Returns:</dt>
+<dd>The type of the import, one of
+ <code>Opcodes.IMPORTS_FUNC</code>,
+ <code>Opcodes.IMPORTS_TABLE</code>,
+ <code>Opcodes.IMPORTS_MEM</code> or
+ <code>Opcodes.IMPORTS_GLOBAL</code></dd>
 </dl>
 </section>
 </li>

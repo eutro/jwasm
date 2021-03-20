@@ -10,20 +10,13 @@ import java.util.function.Consumer;
 import static io.github.eutro.jwasm.Opcodes.*;
 import static org.objectweb.asm.Opcodes.*;
 
-public class Util {
+class Util {
     public static InsnList makeList(AbstractInsnNode... nodes) {
         InsnList list = new InsnList();
         for (AbstractInsnNode node : nodes) {
             list.add(node);
         }
         return list;
-    }
-
-    public static InsnList concat(InsnList first, InsnList... rest) {
-        for (InsnList l : rest) {
-            first.add(l);
-        }
-        return first;
     }
 
     @NotNull

@@ -29,13 +29,13 @@ public class ModuleWriter extends ModuleVisitor implements ByteArrayConvertible 
     }
 
     @Override
-    public void visitCustom(@NotNull String name, byte @NotNull [] payload) {
+    public void visitCustom(@NotNull String name, byte @NotNull [] data) {
         out.put(Opcodes.SECTION_CUSTOM);
         byte[] nameBytes = name.getBytes(StandardCharsets.UTF_8);
-        out.putVarUInt(ByteOutputStream.DUMMY.putVarUInt(nameBytes.length) + nameBytes.length + payload.length);
+        out.putVarUInt(ByteOutputStream.DUMMY.putVarUInt(nameBytes.length) + nameBytes.length + data.length);
         out.putVarUInt(nameBytes.length);
         out.put(nameBytes);
-        out.put(payload);
+        out.put(data);
     }
 
     private <T extends VectorWriter> Consumer<T> putVectorSection(byte section) {

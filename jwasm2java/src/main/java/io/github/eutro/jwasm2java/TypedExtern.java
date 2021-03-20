@@ -2,7 +2,7 @@ package io.github.eutro.jwasm2java;
 
 import org.objectweb.asm.tree.FieldNode;
 
-public interface TypedExtern extends Extern {
+interface TypedExtern extends Extern {
     byte type();
 
     class ModuleTypedExtern extends Extern.ModuleFieldExtern implements TypedExtern {

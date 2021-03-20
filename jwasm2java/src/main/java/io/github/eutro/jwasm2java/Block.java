@@ -4,7 +4,7 @@ import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.tree.FrameNode;
 
-public abstract class Block {
+abstract class Block {
     public final int type;
 
     public Block(int type) {

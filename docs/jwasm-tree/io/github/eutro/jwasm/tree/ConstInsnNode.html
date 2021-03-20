@@ -77,6 +77,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="type-name-label">ConstInsnNode</span>
 extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tree">AbstractInsnNode</a></pre>
+<div class="block">A node that represents a const instruction.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><code>ExprVisitor.visitConstInsn(Object)</code></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -98,7 +103,12 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 <tr class="alt-color">
 <td class="col-first"><code>java.lang.Object</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#value">value</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The constant value of the instruction, which may be an
+ <code>Integer</code>, <code>Long</code>, <code>Float</code> or <code>Double</code>,
+ representing <code>i32</code>, <code>i64</code>, <code>f32</code> and <code>f64</code>
+ <code>const</code> instructions respectively.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -124,7 +134,9 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 <tbody>
 <tr class="alt-color">
 <th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(java.lang.Object)">ConstInsnNode</a></span>&#8203;(java.lang.Object&nbsp;value)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Construct a <a href="ConstInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>ConstInsnNode</code></a> with the given value.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -153,6 +165,10 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 <section class="detail" id="value">
 <h3>value</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">java.lang.Object</span>&nbsp;<span class="member-name">value</span></div>
+<div class="block">The constant value of the instruction, which may be an
+ <code>Integer</code>, <code>Long</code>, <code>Float</code> or <code>Double</code>,
+ representing <code>i32</code>, <code>i64</code>, <code>f32</code> and <code>f64</code>
+ <code>const</code> instructions respectively.</div>
 </section>
 </li>
 </ul>
@@ -167,6 +183,14 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 <section class="detail" id="&lt;init&gt;(java.lang.Object)">
 <h3>ConstInsnNode</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="member-name">ConstInsnNode</span>&#8203;(<span class="parameters">java.lang.Object&nbsp;value)</span></div>
+<div class="block">Construct a <a href="ConstInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>ConstInsnNode</code></a> with the given value.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>value</code> - The constant value of the instruction, which may be an
+              <code>Integer</code>, <code>Long</code>, <code>Float</code> or <code>Double</code>,
+              representing <code>i32</code>, <code>i64</code>, <code>f32</code> and <code>f64</code>
+              <code>const</code> instructions respectively.</dd>
+</dl>
 </section>
 </li>
 </ul>

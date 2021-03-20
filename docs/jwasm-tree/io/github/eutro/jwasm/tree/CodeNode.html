@@ -75,6 +75,12 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="type-name-label">CodeNode</span>
 extends java.lang.Object</pre>
+<div class="block">A node that represents a the code of a function.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><code>CodesVisitor.visitCode(byte[])</code>, 
+<a href="CodesNode.html" title="class in io.github.eutro.jwasm.tree"><code>CodesNode</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -96,12 +102,17 @@ extends java.lang.Object</pre>
 <tr class="alt-color">
 <td class="col-first"><code><a href="ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a></code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#expr">expr</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The body of the function.</div>
+</td>
 </tr>
 <tr class="row-color">
 <td class="col-first"><code>byte[]</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#locals">locals</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-valtype">valtypes</a>
+ of the local variables of the function.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -125,7 +136,9 @@ extends java.lang.Object</pre>
 <tr class="alt-color">
 <th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(byte%5B%5D,io.github.eutro.jwasm.tree.ExprNode)">CodeNode</a></span>&#8203;(byte[]&nbsp;locals,
 <a href="ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a>&nbsp;expr)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Construct a <a href="CodeNode.html" title="class in io.github.eutro.jwasm.tree"><code>CodeNode</code></a> with the given locals and expr.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -154,12 +167,15 @@ extends java.lang.Object</pre>
 <section class="detail" id="locals">
 <h3>locals</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">byte[]</span>&nbsp;<span class="member-name">locals</span></div>
+<div class="block">The <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-valtype">valtypes</a>
+ of the local variables of the function.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="expr">
 <h3>expr</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a></span>&nbsp;<span class="member-name">expr</span></div>
+<div class="block">The body of the function.</div>
 </section>
 </li>
 </ul>
@@ -175,6 +191,13 @@ extends java.lang.Object</pre>
 <h3>CodeNode</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="member-name">CodeNode</span>&#8203;(<span class="parameters">byte[]&nbsp;locals,
 <a href="ExprNode.html" title="class in io.github.eutro.jwasm.tree">ExprNode</a>&nbsp;expr)</span></div>
+<div class="block">Construct a <a href="CodeNode.html" title="class in io.github.eutro.jwasm.tree"><code>CodeNode</code></a> with the given locals and expr.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>locals</code> - The <a href="https://webassembly.github.io/spec/core/binary/types.html#binary-valtype">valtypes</a>
+               of the local variables of the function.</dd>
+<dd><code>expr</code> - The body of the function.</dd>
+</dl>
 </section>
 </li>
 </ul>

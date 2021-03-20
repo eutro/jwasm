@@ -136,8 +136,8 @@ public class ModuleNode extends ModuleVisitor {
     }
 
     @Override
-    public void visitCustom(@NotNull String name, byte @NotNull [] payload) {
-        getCustoms(section).add(new CustomNode(name, payload));
+    public void visitCustom(@NotNull String name, byte @NotNull [] data) {
+        getCustoms(section).add(new CustomNode(name, data));
     }
 
     @Override

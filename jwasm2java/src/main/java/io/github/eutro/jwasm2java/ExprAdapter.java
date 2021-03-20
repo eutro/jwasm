@@ -21,7 +21,7 @@ import static io.github.eutro.jwasm.Opcodes.*;
 import static io.github.eutro.jwasm2java.Util.*;
 import static org.objectweb.asm.Opcodes.*;
 
-public class ExprAdapter {
+class ExprAdapter {
     public static void translateInto(ExprNode expr, Context ctx) {
         if (expr.instructions == null) return;
         ListIterator<AbstractInsnNode> li = expr.instructions.listIterator();

@@ -194,7 +194,7 @@ extends <a href="BaseVisitor.html" title="class in io.github.eutro.jwasm">BaseVi
 <tr class="row-color" id="i1">
 <td class="col-first"><code>void</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#visitCustom(java.lang.String,byte%5B%5D)">visitCustom</a></span>&#8203;(@NotNull java.lang.String&nbsp;name,
-byte @NotNull []&nbsp;payload)</code></th>
+byte @NotNull []&nbsp;data)</code></th>
 <td class="col-last">
 <div class="block">Visit a
  <a href="https://webassembly.github.io/spec/core/binary/modules.html#custom-section">custom section</a>
@@ -371,14 +371,14 @@ byte @NotNull []&nbsp;payload)</code></th>
 <h3>visitCustom</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="member-name">visitCustom</span>&#8203;(<span class="parameters">@NotNull
 @NotNull java.lang.String&nbsp;name,
-byte @NotNull []&nbsp;payload)</span></div>
+byte @NotNull []&nbsp;data)</span></div>
 <div class="block">Visit a
  <a href="https://webassembly.github.io/spec/core/binary/modules.html#custom-section">custom section</a>
  of the module.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>name</code> - The name of the custom section, for further identification.</dd>
-<dd><code>payload</code> - The raw contents of the custom section.</dd>
+<dd><code>data</code> - The raw contents of the custom section.</dd>
 </dl>
 </section>
 </li>

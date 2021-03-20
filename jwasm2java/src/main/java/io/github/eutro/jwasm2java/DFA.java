@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.function.Supplier;
 
-public class DFA<State, Terminal, Sym> {
+class DFA<State, Terminal, Sym> {
     private final State root;
     private final Advancer<State, Sym> advancer;
     private final TerminalGetter<State, Terminal> terminalGetter;

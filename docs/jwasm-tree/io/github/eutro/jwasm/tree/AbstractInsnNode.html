@@ -79,6 +79,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public abstract class <span class="type-name-label">AbstractInsnNode</span>
 extends java.lang.Object</pre>
+<div class="block">A node that represents a bytecode instruction.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><code>ExprVisitor</code></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -100,7 +105,9 @@ extends java.lang.Object</pre>
 <tr class="alt-color">
 <td class="col-first"><code>byte</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#opcode">opcode</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The opcode of this instruction.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -125,7 +132,9 @@ extends java.lang.Object</pre>
 <tr class="alt-color">
 <td class="col-first"><code>protected </code></td>
 <th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(byte)">AbstractInsnNode</a></span>&#8203;(byte&nbsp;opcode)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Construct an <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>AbstractInsnNode</code></a> with the given opcode.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -154,6 +163,7 @@ extends java.lang.Object</pre>
 <section class="detail" id="opcode">
 <h3>opcode</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type">byte</span>&nbsp;<span class="member-name">opcode</span></div>
+<div class="block">The opcode of this instruction.</div>
 </section>
 </li>
 </ul>
@@ -168,6 +178,11 @@ extends java.lang.Object</pre>
 <section class="detail" id="&lt;init&gt;(byte)">
 <h3>AbstractInsnNode</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="member-name">AbstractInsnNode</span>&#8203;(<span class="parameters">byte&nbsp;opcode)</span></div>
+<div class="block">Construct an <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>AbstractInsnNode</code></a> with the given opcode.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>opcode</code> - The opcode of the instruciton.</dd>
+</dl>
 </section>
 </li>
 </ul>

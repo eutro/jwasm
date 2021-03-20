@@ -11,7 +11,13 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CustomSection {
+    /**
+     * @return The name of the custom section.
+     */
     String name();
 
+    /**
+     * @return The contents of the custom section.
+     */
     byte[] data();
 }

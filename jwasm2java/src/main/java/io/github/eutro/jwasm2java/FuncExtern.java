@@ -8,7 +8,7 @@ import org.objectweb.asm.tree.MethodNode;
 
 import static org.objectweb.asm.Opcodes.*;
 
-public interface FuncExtern extends Extern {
+interface FuncExtern extends Extern {
     void emitInvoke(Context mv);
 
     class ModuleFuncExtern implements FuncExtern {

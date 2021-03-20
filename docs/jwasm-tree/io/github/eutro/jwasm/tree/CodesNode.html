@@ -90,6 +90,12 @@ loadScripts(document, 'script');</script>
 <pre>public class <span class="type-name-label">CodesNode</span>
 extends io.github.eutro.jwasm.CodesVisitor
 implements java.lang.Iterable&lt;<a href="CodeNode.html" title="class in io.github.eutro.jwasm.tree">CodeNode</a>&gt;</pre>
+<div class="block">A node that represents a vector of function bodies.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><code>ModuleVisitor.visitCode()</code>, 
+<a href="CodeNode.html" title="class in io.github.eutro.jwasm.tree"><code>CodeNode</code></a></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -111,7 +117,9 @@ implements java.lang.Iterable&lt;<a href="CodeNode.html" title="class in io.gith
 <tr class="alt-color">
 <td class="col-first"><code>@Nullable java.util.List&lt;<a href="CodeNode.html" title="class in io.github.eutro.jwasm.tree">CodeNode</a>&gt;</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#codes">codes</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">A list of <a href="CodeNode.html" title="class in io.github.eutro.jwasm.tree"><code>CodeNode</code></a>s, or <code>null</code> if there aren't any.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -163,7 +171,9 @@ implements java.lang.Iterable&lt;<a href="CodeNode.html" title="class in io.gith
 <tr class="alt-color" id="i0">
 <td class="col-first"><code>void</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#accept(io.github.eutro.jwasm.CodesVisitor)">accept</a></span>&#8203;(io.github.eutro.jwasm.CodesVisitor&nbsp;cv)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Make the given <code>CodesVisitor</code> visit the codes of this node.</div>
+</td>
 </tr>
 <tr class="row-color" id="i1">
 <td class="col-first"><code>@NotNull java.util.Iterator&lt;<a href="CodeNode.html" title="class in io.github.eutro.jwasm.tree">CodeNode</a>&gt;</code></td>
@@ -204,6 +214,7 @@ implements java.lang.Iterable&lt;<a href="CodeNode.html" title="class in io.gith
 <h3>codes</h3>
 <div class="member-signature"><span class="annotations">@Nullable
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type">@Nullable java.util.List&lt;<a href="CodeNode.html" title="class in io.github.eutro.jwasm.tree">CodeNode</a>&gt;</span>&nbsp;<span class="member-name">codes</span></div>
+<div class="block">A list of <a href="CodeNode.html" title="class in io.github.eutro.jwasm.tree"><code>CodeNode</code></a>s, or <code>null</code> if there aren't any.</div>
 </section>
 </li>
 </ul>
@@ -232,6 +243,11 @@ implements java.lang.Iterable&lt;<a href="CodeNode.html" title="class in io.gith
 <section class="detail" id="accept(io.github.eutro.jwasm.CodesVisitor)">
 <h3>accept</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="member-name">accept</span>&#8203;(<span class="parameters">io.github.eutro.jwasm.CodesVisitor&nbsp;cv)</span></div>
+<div class="block">Make the given <code>CodesVisitor</code> visit the codes of this node.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>cv</code> - The visitor to visit.</dd>
+</dl>
 </section>
 </li>
 <li>

@@ -85,6 +85,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public abstract class <span class="type-name-label">AbstractImportNode</span>
 extends java.lang.Object</pre>
+<div class="block">A note that represents an import of a module.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><code>ImportsVisitor</code></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -106,12 +111,16 @@ extends java.lang.Object</pre>
 <tr class="alt-color">
 <td class="col-first"><code>java.lang.String</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#module">module</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The module being imported from.</div>
+</td>
 </tr>
 <tr class="row-color">
 <td class="col-first"><code>java.lang.String</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#name">name</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The name of the imported value.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -127,15 +136,19 @@ extends java.lang.Object</pre>
 <caption><span>Constructors</span></caption>
 <thead>
 <tr>
-<th class="col-first" scope="col">Constructor</th>
+<th class="col-first" scope="col">Modifier</th>
+<th class="col-second" scope="col">Constructor</th>
 <th class="col-last" scope="col">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="alt-color">
+<td class="col-first"><code>protected </code></td>
 <th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(java.lang.String,java.lang.String)">AbstractImportNode</a></span>&#8203;(java.lang.String&nbsp;module,
 java.lang.String&nbsp;name)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Construct an <a href="AbstractImportNode.html" title="class in io.github.eutro.jwasm.tree"><code>AbstractImportNode</code></a> with the given module and name.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -161,7 +174,9 @@ java.lang.String&nbsp;name)</code></th>
 <tr class="alt-color" id="i0">
 <td class="col-first"><code>abstract byte</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#importType()">importType</a></span>()</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Get the numerical value of the import type.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -185,12 +200,14 @@ java.lang.String&nbsp;name)</code></th>
 <section class="detail" id="module">
 <h3>module</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">java.lang.String</span>&nbsp;<span class="member-name">module</span></div>
+<div class="block">The module being imported from.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="name">
 <h3>name</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">java.lang.String</span>&nbsp;<span class="member-name">name</span></div>
+<div class="block">The name of the imported value.</div>
 </section>
 </li>
 </ul>
@@ -204,8 +221,14 @@ java.lang.String&nbsp;name)</code></th>
 <li>
 <section class="detail" id="&lt;init&gt;(java.lang.String,java.lang.String)">
 <h3>AbstractImportNode</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="member-name">AbstractImportNode</span>&#8203;(<span class="parameters">java.lang.String&nbsp;module,
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="member-name">AbstractImportNode</span>&#8203;(<span class="parameters">java.lang.String&nbsp;module,
 java.lang.String&nbsp;name)</span></div>
+<div class="block">Construct an <a href="AbstractImportNode.html" title="class in io.github.eutro.jwasm.tree"><code>AbstractImportNode</code></a> with the given module and name.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>module</code> - The module being imported from.</dd>
+<dd><code>name</code> - The name of the imported value.</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -220,6 +243,15 @@ java.lang.String&nbsp;name)</span></div>
 <section class="detail" id="importType()">
 <h3>importType</h3>
 <div class="member-signature"><span class="modifiers">public abstract</span>&nbsp;<span class="return-type">byte</span>&nbsp;<span class="member-name">importType</span>()</div>
+<div class="block">Get the numerical value of the import type.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The type of the import, one of
+ <code>Opcodes.IMPORTS_FUNC</code>,
+ <code>Opcodes.IMPORTS_TABLE</code>,
+ <code>Opcodes.IMPORTS_MEM</code> or
+ <code>Opcodes.IMPORTS_GLOBAL</code></dd>
+</dl>
 </section>
 </li>
 </ul>

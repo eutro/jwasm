@@ -77,6 +77,11 @@ loadScripts(document, 'script');</script>
 <hr>
 <pre>public class <span class="type-name-label">BreakInsnNode</span>
 extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tree">AbstractInsnNode</a></pre>
+<div class="block">A node that represents a break instruction.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd><code>ExprVisitor.visitBreakInsn(byte, int)</code></dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -98,7 +103,11 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 <tr class="alt-color">
 <td class="col-first"><code>int</code></td>
 <th class="col-second" scope="row"><code><span class="member-name-link"><a href="#label">label</a></span></code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">index</a>
+ of the label.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -125,7 +134,9 @@ extends <a href="AbstractInsnNode.html" title="class in io.github.eutro.jwasm.tr
 <tr class="alt-color">
 <th class="col-constructor-name" scope="row"><code><span class="member-name-link"><a href="#%3Cinit%3E(byte,int)">BreakInsnNode</a></span>&#8203;(byte&nbsp;opcode,
 int&nbsp;label)</code></th>
-<td class="col-last">&nbsp;</td>
+<td class="col-last">
+<div class="block">Construct a <a href="BreakInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>BreakInsnNode</code></a> with the given opcode and label.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -154,6 +165,9 @@ int&nbsp;label)</code></th>
 <section class="detail" id="label">
 <h3>label</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="member-name">label</span></div>
+<div class="block">The
+ <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">index</a>
+ of the label.</div>
 </section>
 </li>
 </ul>
@@ -169,6 +183,14 @@ int&nbsp;label)</code></th>
 <h3>BreakInsnNode</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="member-name">BreakInsnNode</span>&#8203;(<span class="parameters">byte&nbsp;opcode,
 int&nbsp;label)</span></div>
+<div class="block">Construct a <a href="BreakInsnNode.html" title="class in io.github.eutro.jwasm.tree"><code>BreakInsnNode</code></a> with the given opcode and label.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>opcode</code> - The opcode of the instruction.</dd>
+<dd><code>label</code> - The
+               <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">index</a>
+               of the label.</dd>
+</dl>
 </section>
 </li>
 </ul>
