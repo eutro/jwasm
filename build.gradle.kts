@@ -67,6 +67,12 @@ tasks.javadoc {
     val javadocTasks = javadocModules.map { project(it).tasks.javadoc.get() }
     source = files(*javadocTasks.flatMap { it.source }.toTypedArray()).asFileTree
     classpath = files(*javadocTasks.flatMap { it.classpath }.toTypedArray())
+    (options as StandardJavadocDocletOptions).run {
+        locale("en")
+        links(
+            "https://docs.oracle.com/javase/8/docs/api",
+        )
+    }
 }
 
 defaultTasks("build", "javadoc")
