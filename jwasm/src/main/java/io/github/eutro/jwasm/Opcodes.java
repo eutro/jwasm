@@ -5,7 +5,7 @@ package io.github.eutro.jwasm;
  */
 public final class Opcodes {
     // region Preamble
-    public static final int MAGIC = 0X6D736100; // "\0asm"
+    public static final int MAGIC = 0x6D736100; // "\0asm"
     public static final int VERSION = 0x00000001;
     // endregion
 
