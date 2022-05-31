@@ -274,6 +274,12 @@ public class ExprValidator extends ExprVisitor implements Validator {
                 break;
 
             case I64_EQZ:
+
+            case I32_WRAP_I64:
+                popV(I64);
+                pushV(I32);
+                break;
+
             case I64_CLZ:
             case I64_CTZ:
             case I64_POPCNT:
@@ -342,11 +348,6 @@ public class ExprValidator extends ExprVisitor implements Validator {
             case F64_COPYSIGN:
                 popVs(F64, F64);
                 pushV(F64);
-                break;
-
-            case I32_WRAP_I64:
-                popV(I64);
-                pushV(I32);
                 break;
             case I32_TRUNC_F32_S:
             case I32_TRUNC_F32_U:
