@@ -1,5 +1,6 @@
 package io.github.eutro.jwasm.test;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -20,6 +21,6 @@ public class ModuleTestBase {
     protected InputStream openResource(String resource) throws IOException {
         URL url = ModuleTestBase.class.getClassLoader().getResource(resource);
         assertNotNull(url, "Couldn't find " + resource);
-        return url.openStream();
+        return new BufferedInputStream(url.openStream());
     }
 }

@@ -1,5 +1,7 @@
 package io.github.eutro.jwasm;
 
+import javax.xml.crypto.Data;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -517,7 +519,15 @@ public interface ByteInputStream<E extends Exception> {
          */
         @Override
         public int get(byte[] buf, int offset, int len) throws IOException {
-            return is.read(buf, offset, len);
+            int i = 0;
+            while (true) {
+                int read = is.read(buf, offset, len);
+                if (read == -1) return i;
+                i += read;
+                if (read == len) return i;
+                offset += read;
+                len -= read;
+            }
         }
 
         /**

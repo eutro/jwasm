@@ -5,6 +5,7 @@ import io.github.eutro.jwasm.ByteOutputStream;
 import org.junit.jupiter.api.Test;
 
 import java.nio.ByteBuffer;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -28,6 +29,16 @@ public class ByteStreamTest {
     }
 
     @Test
+    void put_get_varUIntMany() {
+        new Random().longs(10000).forEach(l -> {
+            ByteOutputStream.BaosByteOutputStream out = new ByteOutputStream.BaosByteOutputStream();
+            out.putVarUInt(l);
+            ByteInputStream.ByteBufferByteInputStream in = new ByteInputStream.ByteBufferByteInputStream(ByteBuffer.wrap(out.toByteArray()));
+            assertEquals(l, in.getVarUIntX(64));
+        });
+    }
+
+    @Test
     void put_get_varSInt() {
         ByteOutputStream.BaosByteOutputStream out = new ByteOutputStream.BaosByteOutputStream();
         out.putVarSInt(Long.MAX_VALUE);
@@ -36,5 +47,15 @@ public class ByteStreamTest {
         assertEquals(Long.MAX_VALUE, in.getVarSInt64());
         assertEquals(Long.MIN_VALUE, in.getVarSInt64());
         in.expectEmpty();
+    }
+
+    @Test
+    void put_get_varSIntMany() {
+        new Random().longs(10000).forEach(l -> {
+            ByteOutputStream.BaosByteOutputStream out = new ByteOutputStream.BaosByteOutputStream();
+            out.putVarSInt(l);
+            ByteInputStream.ByteBufferByteInputStream in = new ByteInputStream.ByteBufferByteInputStream(ByteBuffer.wrap(out.toByteArray()));
+            assertEquals(l, in.getVarSInt64());
+        });
     }
 }

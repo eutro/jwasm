@@ -38,4 +38,18 @@ public class ModuleReaderTest extends ModuleTestBase {
             ModuleReader.fromInputStream(is).accept(new DeepModuleVisitor());
         }
     }
+
+    @Test
+    void aoc_skipping_sections() throws IOException {
+        try (InputStream is = openResource(AOC_SOLNS)) {
+            ModuleReader.fromInputStream(is).accept(new ModuleVisitor());
+        }
+    }
+
+    @Test
+    void aoc_deep() throws IOException {
+        try (InputStream is = openResource(AOC_SOLNS)) {
+            ModuleReader.fromInputStream(is).accept(new DeepModuleVisitor());
+        }
+    }
 }
