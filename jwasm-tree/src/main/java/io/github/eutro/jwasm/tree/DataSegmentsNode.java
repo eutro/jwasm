@@ -1,5 +1,6 @@
 package io.github.eutro.jwasm.tree;
 
+import io.github.eutro.jwasm.CodesVisitor;
 import io.github.eutro.jwasm.DataSegmentsVisitor;
 import io.github.eutro.jwasm.DataVisitor;
 import io.github.eutro.jwasm.ModuleVisitor;
@@ -26,6 +27,21 @@ public class DataSegmentsNode extends DataSegmentsVisitor implements Iterable<Da
     public @Nullable List<DataNode> datas;
 
     /**
+     * Construct a visitor with no delegate.
+     */
+    public DataSegmentsNode() {
+    }
+
+    /**
+     * Construct a visitor with a delegate.
+     *
+     * @param dl The visitor to delegate all method calls to, or {@code null}.
+     */
+    public DataSegmentsNode(@Nullable DataSegmentsVisitor dl) {
+        super(dl);
+    }
+
+    /**
      * Make the given {@link DataSegmentsVisitor} visit all the data segments of this node.
      *
      * @param dv The visitor to visit.
@@ -43,7 +59,7 @@ public class DataSegmentsNode extends DataSegmentsVisitor implements Iterable<Da
     @Override
     public DataVisitor visitData() {
         if (datas == null) datas = new ArrayList<>();
-        DataNode dn = new DataNode(null);
+        DataNode dn = new DataNode(super.visitData());
         datas.add(dn);
         return dn;
     }

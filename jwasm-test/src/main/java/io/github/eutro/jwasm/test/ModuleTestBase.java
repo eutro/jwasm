@@ -13,6 +13,8 @@ public class ModuleTestBase {
     // there's nothing particularly special about these modules
     public static final String HELLO_WORLD = "wasm_hello_world_bg.wasm";
     public static final String GAME_OF_LIFE = "wasm_game_of_life_bg.wasm";
+    public static final String RAWG_ASMS = "reading_and_writing_graphics_assemblyscript.wasm";
+    public static final String RAWG_RUST = "reading_and_writing_graphics_rust.wasm";
 
     protected InputStream openResource(String resource) throws IOException {
         URL url = ModuleTestBase.class.getClassLoader().getResource(resource);

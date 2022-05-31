@@ -26,6 +26,21 @@ public class CodesNode extends CodesVisitor implements Iterable<CodeNode> {
     public @Nullable List<CodeNode> codes;
 
     /**
+     * Construct a visitor with no delegate.
+     */
+    public CodesNode() {
+    }
+
+    /**
+     * Construct a visitor with a delegate.
+     *
+     * @param dl The visitor to delegate all method calls to, or {@code null}.
+     */
+    public CodesNode(@Nullable CodesVisitor dl) {
+        super(dl);
+    }
+
+    /**
      * Make the given {@link CodesVisitor} visit the codes of this node.
      *
      * @param cv The visitor to visit.
@@ -42,6 +57,7 @@ public class CodesNode extends CodesVisitor implements Iterable<CodeNode> {
 
     @Override
     public @Nullable ExprVisitor visitCode(byte @NotNull [] locals) {
+        super.visitCode(locals);
         if (codes == null) codes = new ArrayList<>();
         ExprNode en = new ExprNode();
         codes.add(new CodeNode(locals, en));

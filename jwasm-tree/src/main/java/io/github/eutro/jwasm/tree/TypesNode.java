@@ -1,5 +1,6 @@
 package io.github.eutro.jwasm.tree;
 
+import io.github.eutro.jwasm.CodesVisitor;
 import io.github.eutro.jwasm.ModuleVisitor;
 import io.github.eutro.jwasm.TypesVisitor;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +25,21 @@ public class TypesNode extends TypesVisitor implements Iterable<TypeNode> {
     public @Nullable List<TypeNode> types;
 
     /**
+     * Construct a visitor with no delegate.
+     */
+    public TypesNode() {
+    }
+
+    /**
+     * Construct a visitor with a delegate.
+     *
+     * @param dl The visitor to delegate all method calls to, or {@code null}.
+     */
+    public TypesNode(@Nullable TypesVisitor dl) {
+        super(dl);
+    }
+
+    /**
      * Make the given {@link TypesVisitor} visit all the types of this node.
      *
      * @param tv The visitor to visit.
@@ -39,6 +55,7 @@ public class TypesNode extends TypesVisitor implements Iterable<TypeNode> {
 
     @Override
     public void visitFuncType(byte @NotNull [] params, byte @NotNull [] returns) {
+        super.visitFuncType(params, returns);
         if (types == null) types = new ArrayList<>();
         types.add(new TypeNode(params, returns));
     }

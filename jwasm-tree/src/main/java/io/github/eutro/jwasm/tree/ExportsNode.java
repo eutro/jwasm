@@ -1,5 +1,6 @@
 package io.github.eutro.jwasm.tree;
 
+import io.github.eutro.jwasm.CodesVisitor;
 import io.github.eutro.jwasm.ExportsVisitor;
 import io.github.eutro.jwasm.ModuleVisitor;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +25,21 @@ public class ExportsNode extends ExportsVisitor implements Iterable<ExportNode> 
     public @Nullable List<ExportNode> exports;
 
     /**
+     * Construct a visitor with no delegate.
+     */
+    public ExportsNode() {
+    }
+
+    /**
+     * Construct a visitor with a delegate.
+     *
+     * @param dl The visitor to delegate all method calls to, or {@code null}.
+     */
+    public ExportsNode(@Nullable ExportsVisitor dl) {
+        super(dl);
+    }
+
+    /**
      * Make the given {@link ExportsVisitor} visit all the exports of this node.
      *
      * @param ev The visitor to visit.
@@ -39,6 +55,7 @@ public class ExportsNode extends ExportsVisitor implements Iterable<ExportNode> 
 
     @Override
     public void visitExport(@NotNull String name, byte type, int index) {
+        super.visitExport(name, type, index);
         if (exports == null) exports = new ArrayList<>();
         exports.add(new ExportNode(name, type, index));
     }

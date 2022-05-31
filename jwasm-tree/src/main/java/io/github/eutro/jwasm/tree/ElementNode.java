@@ -1,9 +1,11 @@
 package io.github.eutro.jwasm.tree;
 
+import io.github.eutro.jwasm.CodesVisitor;
 import io.github.eutro.jwasm.ElementSegmentsVisitor;
 import io.github.eutro.jwasm.ElementVisitor;
 import io.github.eutro.jwasm.ExprVisitor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,6 +67,21 @@ public class ElementNode extends ElementVisitor implements Iterable<ExprNode> {
     public List<ExprNode> init;
 
     /**
+     * Construct a visitor with no delegate.
+     */
+    public ElementNode() {
+    }
+
+    /**
+     * Construct a visitor with a delegate.
+     *
+     * @param dl The visitor to delegate all method calls to, or {@code null}.
+     */
+    public ElementNode(@Nullable ElementVisitor dl) {
+        super(dl);
+    }
+
+    /**
      * Make the given {@link ElementVisitor} visit this element.
      *
      * @param eev The visitor to visit.
@@ -99,29 +116,32 @@ public class ElementNode extends ElementVisitor implements Iterable<ExprNode> {
 
     @Override
     public void visitNonActiveMode(boolean passive) {
+        super.visitNonActiveMode(passive);
         this.passive = passive;
     }
 
     @Override
     public ExprVisitor visitActiveMode(int table) {
         this.table = table;
-        return offset = new ExprNode();
+        return offset = new ExprNode(super.visitActiveMode(table));
     }
 
     @Override
     public void visitType(byte type) {
+        super.visitType(type);
         this.type = type;
     }
 
     @Override
     public void visitElemIndeces(int[] indeces) {
+        super.visitElemIndeces(indeces);
         this.indeces = indeces;
     }
 
     @Override
     public ExprVisitor visitInit() {
         if (init == null) init = new ArrayList<>();
-        ExprNode en = new ExprNode();
+        ExprNode en = new ExprNode(super.visitInit());
         init.add(en);
         return en;
     }

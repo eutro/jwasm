@@ -14,7 +14,7 @@ public class BaseVisitor<T extends BaseVisitor<T>> {
     /**
      * The visitor to delegate all method calls to, or {@code null}.
      */
-    protected @Nullable T dl;
+    public @Nullable T dl;
 
     /**
      * Construct a visitor with no delegate.

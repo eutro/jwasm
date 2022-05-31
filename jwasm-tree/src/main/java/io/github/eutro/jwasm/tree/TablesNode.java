@@ -1,5 +1,6 @@
 package io.github.eutro.jwasm.tree;
 
+import io.github.eutro.jwasm.CodesVisitor;
 import io.github.eutro.jwasm.Limits;
 import io.github.eutro.jwasm.ModuleVisitor;
 import io.github.eutro.jwasm.TablesVisitor;
@@ -25,6 +26,21 @@ public class TablesNode extends TablesVisitor implements Iterable<TableNode> {
     public @Nullable List<TableNode> tables;
 
     /**
+     * Construct a visitor with no delegate.
+     */
+    public TablesNode() {
+    }
+
+    /**
+     * Construct a visitor with a delegate.
+     *
+     * @param dl The visitor to delegate all method calls to, or {@code null}.
+     */
+    public TablesNode(@Nullable TablesVisitor dl) {
+        super(dl);
+    }
+
+    /**
      * Make the given {@link TablesVisitor} visit all the tables of this node.
      *
      * @param tv The visitor to visit.
@@ -40,6 +56,7 @@ public class TablesNode extends TablesVisitor implements Iterable<TableNode> {
 
     @Override
     public void visitTable(int min, Integer max, byte type) {
+        super.visitTable(min, max, type);
         if (tables == null) tables = new ArrayList<>();
         tables.add(new TableNode(new Limits(min, max), type));
     }

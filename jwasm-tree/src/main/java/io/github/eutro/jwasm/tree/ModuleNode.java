@@ -121,6 +121,21 @@ public class ModuleNode extends ModuleVisitor {
     private byte section = SECTION_CUSTOM;
 
     /**
+     * Construct a visitor with no delegate.
+     */
+    public ModuleNode() {
+    }
+
+    /**
+     * Construct a visitor with a delegate.
+     *
+     * @param dl The visitor to delegate all method calls to, or {@code null}.
+     */
+    public ModuleNode(@Nullable ModuleVisitor dl) {
+        super(dl);
+    }
+
+    /**
      * Make the given {@link ModuleVisitor} visit the header and all the sections of this node.
      * <p>
      * The order in which custom sections are visited is as described on the {@link #customs customs field}.
@@ -238,58 +253,61 @@ public class ModuleNode extends ModuleVisitor {
 
     @Override
     public void visitHeader(int version) {
+        super.visitHeader(version);
         this.version = version;
     }
 
     @Override
     public void visitCustom(@NotNull String name, byte @NotNull [] data) {
+        super.visitCustom(name, data);
         getCustoms(section).add(new CustomNode(name, data));
     }
 
     @Override
     public @Nullable TypesVisitor visitTypes() {
         section = SECTION_TYPE;
-        return types = new TypesNode();
+        return types = new TypesNode(super.visitTypes());
     }
 
     @Override
     public @Nullable ImportsVisitor visitImports() {
         section = SECTION_IMPORT;
-        return imports = new ImportsNode();
+        return imports = new ImportsNode(super.visitImports());
     }
 
     @Override
     public @Nullable FunctionsVisitor visitFuncs() {
         section = SECTION_FUNCTION;
-        return funcs = new FunctionsNode();
+        return funcs = new FunctionsNode(super.visitFuncs());
     }
 
     @Override
     public @Nullable TablesVisitor visitTables() {
         section = SECTION_TABLE;
-        return tables = new TablesNode();
+        return tables = new TablesNode(super.visitTables());
     }
 
     @Override
     public @Nullable MemoriesVisitor visitMems() {
         section = SECTION_MEMORY;
-        return mems = new MemoriesNode();
+        return mems = new MemoriesNode(super.visitMems());
     }
 
     @Override
     public @Nullable GlobalsVisitor visitGlobals() {
         section = SECTION_GLOBAL;
-        return globals = new GlobalsNode();
+        return globals = new GlobalsNode(super.visitGlobals());
     }
 
     @Override
     public @Nullable ExportsVisitor visitExports() {
         section = SECTION_EXPORT;
-        return exports = new ExportsNode();
+        return exports = new ExportsNode(super.visitExports());
     }
 
     @Override
     public void visitStart(int func) {
+        super.visitStart(func);
         section = SECTION_START;
         start = func;
     }
@@ -297,11 +315,12 @@ public class ModuleNode extends ModuleVisitor {
     @Override
     public @Nullable ElementSegmentsVisitor visitElems() {
         section = SECTION_ELEMENT;
-        return elems = new ElementSegmentsNode();
+        return elems = new ElementSegmentsNode(super.visitElems());
     }
 
     @Override
     public void visitDataCount(int count) {
+        super.visitDataCount(count);
         section = SECTION_DATA_COUNT;
         this.dataCount = count;
     }
@@ -309,12 +328,12 @@ public class ModuleNode extends ModuleVisitor {
     @Override
     public @Nullable CodesVisitor visitCode() {
         section = SECTION_CODE;
-        return codes = new CodesNode();
+        return codes = new CodesNode(super.visitCode());
     }
 
     @Override
     public @Nullable DataSegmentsVisitor visitDatas() {
         section = SECTION_DATA;
-        return datas = new DataSegmentsNode();
+        return datas = new DataSegmentsNode(super.visitDatas());
     }
 }

@@ -1,5 +1,6 @@
 package io.github.eutro.jwasm.tree;
 
+import io.github.eutro.jwasm.CodesVisitor;
 import io.github.eutro.jwasm.ExprVisitor;
 import io.github.eutro.jwasm.GlobalsVisitor;
 import io.github.eutro.jwasm.ModuleVisitor;
@@ -25,6 +26,21 @@ public class GlobalsNode extends GlobalsVisitor implements Iterable<GlobalNode> 
     public @Nullable List<GlobalNode> globals;
 
     /**
+     * Construct a visitor with no delegate.
+     */
+    public GlobalsNode() {
+    }
+
+    /**
+     * Construct a visitor with a delegate.
+     *
+     * @param dl The visitor to delegate all method calls to, or {@code null}.
+     */
+    public GlobalsNode(@Nullable GlobalsVisitor dl) {
+        super(dl);
+    }
+
+    /**
      * Make the given {@link GlobalsVisitor} visit all the globals of this node.
      *
      * @param gv The visitor to visit.
@@ -41,7 +57,7 @@ public class GlobalsNode extends GlobalsVisitor implements Iterable<GlobalNode> 
     @Override
     public ExprVisitor visitGlobal(byte mut, byte type) {
         if (globals == null) globals = new ArrayList<>();
-        ExprNode ev = new ExprNode();
+        ExprNode ev = new ExprNode(super.visitGlobal(mut, type));
         globals.add(new GlobalNode(new GlobalTypeNode(mut, type), ev));
         return ev;
     }

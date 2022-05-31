@@ -1,5 +1,6 @@
 package io.github.eutro.jwasm.tree;
 
+import io.github.eutro.jwasm.CodesVisitor;
 import io.github.eutro.jwasm.Limits;
 import io.github.eutro.jwasm.MemoriesVisitor;
 import io.github.eutro.jwasm.ModuleVisitor;
@@ -26,6 +27,21 @@ public class MemoriesNode extends MemoriesVisitor implements Iterable<MemoryNode
     public @Nullable List<MemoryNode> memories;
 
     /**
+     * Construct a visitor with no delegate.
+     */
+    public MemoriesNode() {
+    }
+
+    /**
+     * Construct a visitor with a delegate.
+     *
+     * @param dl The visitor to delegate all method calls to, or {@code null}.
+     */
+    public MemoriesNode(@Nullable MemoriesVisitor dl) {
+        super(dl);
+    }
+
+    /**
      * Make the given {@link MemoriesVisitor} visit all the memories of this node.
      *
      * @param mmv The visitor to visit.
@@ -41,6 +57,7 @@ public class MemoriesNode extends MemoriesVisitor implements Iterable<MemoryNode
 
     @Override
     public void visitMemory(int min, Integer max) {
+        super.visitMemory(min, max);
         if (memories == null) memories = new ArrayList<>();
         memories.add(new MemoryNode(new Limits(min, max)));
     }

@@ -1,5 +1,6 @@
 package io.github.eutro.jwasm.tree;
 
+import io.github.eutro.jwasm.CodesVisitor;
 import io.github.eutro.jwasm.ElementSegmentsVisitor;
 import io.github.eutro.jwasm.ElementVisitor;
 import io.github.eutro.jwasm.ModuleVisitor;
@@ -26,6 +27,21 @@ public class ElementSegmentsNode extends ElementSegmentsVisitor implements Itera
     public @Nullable List<ElementNode> elems;
 
     /**
+     * Construct a visitor with no delegate.
+     */
+    public ElementSegmentsNode() {
+    }
+
+    /**
+     * Construct a visitor with a delegate.
+     *
+     * @param dl The visitor to delegate all method calls to, or {@code null}.
+     */
+    public ElementSegmentsNode(@Nullable ElementSegmentsVisitor dl) {
+        super(dl);
+    }
+
+    /**
      * Make the given {@link ElementSegmentsVisitor} visit all the element segments of this node.
      *
      * @param ev The visitor to visit.
@@ -43,7 +59,7 @@ public class ElementSegmentsNode extends ElementSegmentsVisitor implements Itera
     @Override
     public ElementVisitor visitElem() {
         if (elems == null) elems = new ArrayList<>();
-        ElementNode en = new ElementNode();
+        ElementNode en = new ElementNode(super.visitElem());
         elems.add(en);
         return en;
     }

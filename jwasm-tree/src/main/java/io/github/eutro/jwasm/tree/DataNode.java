@@ -1,5 +1,6 @@
 package io.github.eutro.jwasm.tree;
 
+import io.github.eutro.jwasm.CodesVisitor;
 import io.github.eutro.jwasm.DataSegmentsVisitor;
 import io.github.eutro.jwasm.DataVisitor;
 import io.github.eutro.jwasm.ExprVisitor;
@@ -69,6 +70,21 @@ public class DataNode extends DataVisitor {
     }
 
     /**
+     * Construct a visitor with no delegate.
+     */
+    public DataNode() {
+    }
+
+    /**
+     * Construct a visitor with a delegate.
+     *
+     * @param dl The visitor to delegate all method calls to, or {@code null}.
+     */
+    public DataNode(@Nullable DataVisitor dl) {
+        super(dl);
+    }
+
+    /**
      * Make the given {@link DataVisitor} visit this data segment.
      *
      * @param dv The visitor to visit.
@@ -83,12 +99,14 @@ public class DataNode extends DataVisitor {
 
     @Override
     public @Nullable ExprVisitor visitActive(int memory) {
+        super.visitActive(memory);
         this.memory = memory;
         return offset = new ExprNode();
     }
 
     @Override
     public void visitInit(byte[] init) {
+        super.visitInit(init);
         this.init = init;
     }
 }

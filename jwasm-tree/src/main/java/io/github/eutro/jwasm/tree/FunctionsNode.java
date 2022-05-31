@@ -1,5 +1,6 @@
 package io.github.eutro.jwasm.tree;
 
+import io.github.eutro.jwasm.CodesVisitor;
 import io.github.eutro.jwasm.FunctionsVisitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,6 +24,21 @@ public class FunctionsNode extends FunctionsVisitor implements Iterable<FuncNode
     public @Nullable List<FuncNode> funcs;
 
     /**
+     * Construct a visitor with no delegate.
+     */
+    public FunctionsNode() {
+    }
+
+    /**
+     * Construct a visitor with a delegate.
+     *
+     * @param dl The visitor to delegate all method calls to, or {@code null}.
+     */
+    public FunctionsNode(@Nullable FunctionsVisitor dl) {
+        super(dl);
+    }
+
+    /**
      * Make the given {@link FunctionsVisitor} visit all the function types of this node.
      *
      * @param fv The visitor to visit.
@@ -38,6 +54,7 @@ public class FunctionsNode extends FunctionsVisitor implements Iterable<FuncNode
 
     @Override
     public void visitFunc(int type) {
+        super.visitFunc(type);
         if (funcs == null) funcs = new ArrayList<>();
         funcs.add(new FuncNode(type));
     }

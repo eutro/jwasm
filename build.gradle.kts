@@ -54,13 +54,19 @@ subprojects {
     }
 }
 
+project(":jwasm-analysis") {
+    dependencies {
+        implementation(project(":jwasm-tree"))
+    }
+}
+
 project(":jwasm-test") {
     dependencies {
         implementation("org.junit.jupiter:junit-jupiter-api:5.6.2")
     }
 }
 
-val javadocModules = listOf(":jwasm", ":jwasm-tree")
+val javadocModules = listOf(":jwasm", ":jwasm-tree", ":jwasm-analysis")
 
 tasks.javadoc {
     setDestinationDir(file("docs"))
