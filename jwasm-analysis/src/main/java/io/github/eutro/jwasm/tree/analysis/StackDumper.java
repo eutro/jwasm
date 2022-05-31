@@ -1,5 +1,6 @@
 package io.github.eutro.jwasm.tree.analysis;
 
+import io.github.eutro.jwasm.BlockType;
 import io.github.eutro.jwasm.ExprVisitor;
 import org.intellij.lang.annotations.PrintFormat;
 import org.jetbrains.annotations.Nullable;
@@ -23,7 +24,7 @@ public class StackDumper extends ModuleValidator {
             {
                 ExprValidator.CtrlFrame frame = ev.ctrlsRef(0);
                 ps.printf("Expr -> %s {\n", typeArray(frame.endTypes));
-                ps.printf("Locals: %s\n", typeArray(new ByteList(ev.locals)));;
+                ps.printf("Locals: %s\n", typeArray(new ByteList(ev.locals)));
             }
 
             private void logStack() {
@@ -337,7 +338,7 @@ public class StackDumper extends ModuleValidator {
             }
 
             @Override
-            public void visitBlockInsn(byte opcode, int blockType) {
+            public void visitBlockInsn(byte opcode, BlockType blockType) {
                 super.visitBlockInsn(opcode, blockType);
                 ExprValidator.CtrlFrame frame = ev.ctrlsRef(0);
                 switch (opcode) {

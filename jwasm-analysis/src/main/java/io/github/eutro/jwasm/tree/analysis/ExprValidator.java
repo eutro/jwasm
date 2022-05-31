@@ -1,5 +1,6 @@
 package io.github.eutro.jwasm.tree.analysis;
 
+import io.github.eutro.jwasm.BlockType;
 import io.github.eutro.jwasm.ExprVisitor;
 import io.github.eutro.jwasm.ValidationException;
 import io.github.eutro.jwasm.tree.*;
@@ -691,33 +692,33 @@ public class ExprValidator extends ExprVisitor implements Validator {
     }
 
     @Override
-    public void visitBlockInsn(byte opcode, int blockType) {
+    public void visitBlockInsn(byte opcode, BlockType blockType) {
         super.visitBlockInsn(opcode, blockType);
         List<Byte> inputs, outputs;
-        switch (blockType) {
-            case EMPTY_TYPE:
-                inputs = Collections.emptyList();
-                outputs = Collections.emptyList();
-                break;
-            case I32:
-            case I64:
-            case F32:
-            case F64:
-            case FUNCREF:
-            case EXTERNREF:
-                inputs = Collections.emptyList();
-                outputs = Collections.singletonList((byte) blockType);
-                break;
-            default:
-                if (blockType >= 0) {
-                    if (validator.types != null && validator.types.types != null && blockType < validator.types.types.size()) {
-                        TypeNode funcTy = validator.types.types.get(blockType);
-                        inputs = new ByteList(funcTy.params);
-                        outputs = new ByteList(funcTy.returns);
-                        break;
-                    }
-                }
-                throw new ValidationException(String.format("Block type 0x%02x does not exist.", blockType), null);
+        if (blockType.isValtype()) {
+            switch (blockType.get()) {
+                case EMPTY_TYPE:
+                    inputs = Collections.emptyList();
+                    outputs = Collections.emptyList();
+                    break;
+                case I32:
+                case I64:
+                case F32:
+                case F64:
+                case FUNCREF:
+                case EXTERNREF:
+                    inputs = Collections.emptyList();
+                    outputs = Collections.singletonList((byte) blockType.get());
+                    break;
+                default:
+                    throw new ValidationException(String.format("Block type 0x%02x does not exist.", blockType.get()), null);
+            }
+        } else {
+            assertMsg(validator.types != null && validator.types.types != null && blockType.get() < validator.types.types.size(),
+                    "Block type %d does not exist", blockType.get());
+            TypeNode funcTy = validator.types.types.get(blockType.get());
+            inputs = new ByteList(funcTy.params);
+            outputs = new ByteList(funcTy.returns);
         }
         switch (opcode) {
             case BLOCK:

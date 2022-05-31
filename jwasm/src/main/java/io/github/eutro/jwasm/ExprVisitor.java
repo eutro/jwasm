@@ -205,7 +205,7 @@ public class ExprVisitor extends BaseVisitor<ExprVisitor> {
      *                  <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-blocktype">type</a>
      *                  of the block.
      */
-    public void visitBlockInsn(byte opcode, int blockType) {
+    public void visitBlockInsn(byte opcode, BlockType blockType) {
         if (dl != null) dl.visitBlockInsn(opcode, blockType);
     }
 

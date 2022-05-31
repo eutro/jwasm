@@ -259,13 +259,13 @@ public interface ByteInputStream<E extends Exception> {
     }
 
     /**
-     * Get a WebAssembly {@code blocktype</code> from the stream, which may be 0x40, a <code>valtype} or
-     * a positive signed 33 bit integer.
+     * Get a WebAssembly {@code blocktype} from the stream, which may be 0x40, a {@code valtype} or
+     * a positive signed 33 bit integer type index.
      *
      * @return The blocktype that was read.
      * @throws E If a read error occured.
      */
-    default int getBlockType() throws E {
+    default BlockType getBlockType() throws E {
         byte first = expect();
         switch (first) {
             case EMPTY_TYPE:
@@ -275,12 +275,12 @@ public interface ByteInputStream<E extends Exception> {
             case F64:
             case FUNCREF:
             case EXTERNREF:
-                return first;
+                return BlockType.valtype(first);
             default:
-                if ((first & 0x80) == 0) return first;
+                if ((first & 0x80) == 0) return BlockType.functype(first);
                 long x = getVarSIntX0(5, first & 0x7F, 1);
                 if (x < 0) throw new ValidationException("Negative type index");
-                return (int) x;
+                return BlockType.functype((int) x);
         }
     }
 

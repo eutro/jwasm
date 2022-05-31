@@ -151,20 +151,12 @@ public class ExprWriter extends ExprVisitor implements ByteArrayConvertible {
     }
 
     @Override
-    public void visitBlockInsn(byte opcode, int blockType) {
+    public void visitBlockInsn(byte opcode, BlockType blockType) {
         out.put(opcode);
-        switch (blockType) {
-            case Opcodes.EMPTY_TYPE:
-            case Opcodes.I32:
-            case Opcodes.I64:
-            case Opcodes.F32:
-            case Opcodes.F64:
-            case Opcodes.FUNCREF:
-            case Opcodes.EXTERNREF:
-                out.put((byte) blockType);
-                break;
-            default:
-                out.putVarSInt(Integer.toUnsignedLong(blockType));
+        if (blockType.isValtype()) {
+            out.put((byte) blockType.get());
+        } else {
+            out.putVarSInt(Integer.toUnsignedLong(blockType.get()));
         }
     }
 

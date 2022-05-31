@@ -1,6 +1,6 @@
 package io.github.eutro.jwasm.tree;
 
-import io.github.eutro.jwasm.CodesVisitor;
+import io.github.eutro.jwasm.BlockType;
 import io.github.eutro.jwasm.ExprVisitor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -126,7 +126,7 @@ public class ExprNode extends ExprVisitor implements Iterable<AbstractInsnNode> 
     }
 
     @Override
-    public void visitBlockInsn(byte opcode, int blockType) {
+    public void visitBlockInsn(byte opcode, BlockType blockType) {
         super.visitBlockInsn(opcode, blockType);
         insns().addLast(new BlockInsnNode(opcode, blockType));
     }

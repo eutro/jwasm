@@ -1,5 +1,6 @@
 package io.github.eutro.jwasm.tree.analysis;
 
+import io.github.eutro.jwasm.BlockType;
 import io.github.eutro.jwasm.ExprVisitor;
 import io.github.eutro.jwasm.Opcodes;
 import io.github.eutro.jwasm.ValidationException;
@@ -87,7 +88,7 @@ public class ConstantExprValidator extends ExprVisitor implements Validator {
     }
 
     @Override
-    public void visitBlockInsn(byte opcode, int blockType) {
+    public void visitBlockInsn(byte opcode, BlockType blockType) {
         notConstant();
     }
 
