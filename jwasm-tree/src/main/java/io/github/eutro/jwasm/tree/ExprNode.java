@@ -41,10 +41,7 @@ public class ExprNode extends ExprVisitor implements Iterable<AbstractInsnNode> 
      */
     public void accept(ExprVisitor ev) {
         if (instructions != null) {
-            int depth = 0;
             for (AbstractInsnNode next : instructions) {
-                if (next instanceof BlockInsnNode) depth++;
-                else if (next instanceof EndInsnNode && --depth < 0) break;
                 next.accept(ev);
             }
         }

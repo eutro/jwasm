@@ -94,6 +94,7 @@ public class DataNode extends DataVisitor {
             ExprVisitor ev = dv.visitActive(memory);
             if (ev != null) offset.accept(ev);
         }
+        dv.visitInit(init);
         dv.visitEnd();
     }
 
