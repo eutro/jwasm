@@ -46,7 +46,7 @@ public class CallIndirectInsnNode extends AbstractInsnNode {
      * @see ExprVisitor#visitCallIndirectInsn(int, int)
      */
     @Override
-    void accept(ExprVisitor ev) {
+    public void accept(ExprVisitor ev) {
         ev.visitCallIndirectInsn(table, type);
     }
 }

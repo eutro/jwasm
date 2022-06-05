@@ -32,7 +32,7 @@ public class GlobalImportNode extends AbstractImportNode {
     }
 
     @Override
-    void accept(ImportsVisitor iv) {
+    public void accept(ImportsVisitor iv) {
         iv.visitGlobalImport(module, name, type.mut, type.type);
     }
 }

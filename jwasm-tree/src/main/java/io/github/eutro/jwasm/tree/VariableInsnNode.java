@@ -35,7 +35,7 @@ public class VariableInsnNode extends AbstractInsnNode {
      * @see ExprVisitor#visitVariableInsn(byte, int)
      */
     @Override
-    void accept(ExprVisitor ev) {
+    public void accept(ExprVisitor ev) {
         ev.visitVariableInsn(opcode, variable);
     }
 }

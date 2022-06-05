@@ -33,7 +33,7 @@ public class MemImportNode extends AbstractImportNode {
     }
 
     @Override
-    void accept(ImportsVisitor iv) {
+    public void accept(ImportsVisitor iv) {
         iv.visitMemImport(module, name, limits.min, limits.max);
     }
 }

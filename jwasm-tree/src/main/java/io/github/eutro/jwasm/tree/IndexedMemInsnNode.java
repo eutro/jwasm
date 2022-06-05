@@ -32,11 +32,11 @@ public class IndexedMemInsnNode extends PrefixInsnNode {
     /**
      * {@inheritDoc}
      *
-     * @param ev
+     * @param ev The visitor to visit.
      * @see ExprVisitor#visitIndexedMemInsn(int, int)
      */
     @Override
-    void accept(ExprVisitor ev) {
+    public void accept(ExprVisitor ev) {
         ev.visitIndexedMemInsn(intOpcode, index);
     }
 }

@@ -26,7 +26,7 @@ public class EndInsnNode extends AbstractInsnNode {
      * @see ExprVisitor#visitEndInsn()
      */
     @Override
-    void accept(ExprVisitor ev) {
+    public void accept(ExprVisitor ev) {
         ev.visitEndInsn();
     }
 }

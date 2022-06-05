@@ -35,7 +35,7 @@ public class BreakInsnNode extends AbstractInsnNode {
      * @see ExprVisitor#visitBreakInsn(byte, int)
      */
     @Override
-    void accept(ExprVisitor ev) {
+    public void accept(ExprVisitor ev) {
         ev.visitBreakInsn(opcode, label);
     }
 }

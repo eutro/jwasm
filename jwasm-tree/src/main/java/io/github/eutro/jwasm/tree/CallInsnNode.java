@@ -35,7 +35,7 @@ public class CallInsnNode extends AbstractInsnNode {
      * @see ExprVisitor#visitCallInsn(int)
      */
     @Override
-    void accept(ExprVisitor ev) {
+    public void accept(ExprVisitor ev) {
         ev.visitCallInsn(function);
     }
 }

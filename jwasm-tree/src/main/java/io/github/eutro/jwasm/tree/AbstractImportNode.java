@@ -49,5 +49,5 @@ public abstract class AbstractImportNode {
      *
      * @param iv The visitor to visit.
      */
-    abstract void accept(ImportsVisitor iv);
+    public abstract void accept(ImportsVisitor iv);
 }

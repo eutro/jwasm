@@ -42,7 +42,7 @@ public class TableImportNode extends AbstractImportNode {
     }
 
     @Override
-    void accept(ImportsVisitor iv) {
+    public void accept(ImportsVisitor iv) {
         iv.visitTableImport(module, name, limits.min, limits.max, type);
     }
 }

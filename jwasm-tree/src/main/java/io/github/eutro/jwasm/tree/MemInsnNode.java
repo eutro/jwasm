@@ -38,7 +38,7 @@ public class MemInsnNode extends AbstractInsnNode {
      * @see ExprVisitor#visitMemInsn(byte, int, int)
      */
     @Override
-    void accept(ExprVisitor ev) {
+    public void accept(ExprVisitor ev) {
         ev.visitMemInsn(opcode, align, offset);
     }
 }

@@ -36,7 +36,7 @@ public class BlockInsnNode extends AbstractInsnNode {
      * @see ExprVisitor#visitBlockInsn(byte, io.github.eutro.jwasm.BlockType)
      */
     @Override
-    void accept(ExprVisitor ev) {
+    public void accept(ExprVisitor ev) {
         ev.visitBlockInsn(opcode, blockType);
     }
 }

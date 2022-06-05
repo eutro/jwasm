@@ -35,7 +35,7 @@ public class FuncRefInsnNode extends AbstractInsnNode {
      * @see ExprVisitor#visitFuncRefInsn(int)
      */
     @Override
-    void accept(ExprVisitor ev) {
+    public void accept(ExprVisitor ev) {
         ev.visitFuncRefInsn(function);
     }
 }

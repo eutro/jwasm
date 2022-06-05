@@ -28,5 +28,5 @@ public abstract class AbstractInsnNode {
      *
      * @param ev The visitor to visit.
      */
-    abstract void accept(ExprVisitor ev);
+    public abstract void accept(ExprVisitor ev);
 }

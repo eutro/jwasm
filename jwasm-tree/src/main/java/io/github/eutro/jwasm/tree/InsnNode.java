@@ -24,7 +24,7 @@ public class InsnNode extends AbstractInsnNode {
      * @see ExprVisitor#visitInsn(byte)
      */
     @Override
-    void accept(ExprVisitor ev) {
+    public void accept(ExprVisitor ev) {
         ev.visitInsn(opcode);
     }
 }

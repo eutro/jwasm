@@ -36,7 +36,7 @@ public class FuncImportNode extends AbstractImportNode {
     }
 
     @Override
-    void accept(ImportsVisitor iv) {
+    public void accept(ImportsVisitor iv) {
         iv.visitFuncImport(module, name, type);
     }
 }

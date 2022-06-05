@@ -35,7 +35,7 @@ public class SelectInsnNode extends AbstractInsnNode {
      * @see ExprVisitor#visitSelectInsn(byte[])
      */
     @Override
-    void accept(ExprVisitor ev) {
+    public void accept(ExprVisitor ev) {
         ev.visitSelectInsn(type);
     }
 }

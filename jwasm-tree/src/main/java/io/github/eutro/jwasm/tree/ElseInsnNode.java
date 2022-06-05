@@ -23,7 +23,7 @@ public class ElseInsnNode extends AbstractInsnNode {
      * @see ExprVisitor#visitElseInsn()
      */
     @Override
-    void accept(ExprVisitor ev) {
+    public void accept(ExprVisitor ev) {
         ev.visitElseInsn();
     }
 }

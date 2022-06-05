@@ -35,7 +35,7 @@ public class PrefixTableInsnNode extends PrefixInsnNode {
      * @see ExprVisitor#visitPrefixTableInsn(int, int)
      */
     @Override
-    void accept(ExprVisitor ev) {
+    public void accept(ExprVisitor ev) {
         ev.visitPrefixTableInsn(intOpcode, table);
     }
 }

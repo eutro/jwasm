@@ -33,7 +33,7 @@ public class NullInsnNode extends AbstractInsnNode {
      * @see ExprVisitor#visitNullInsn(byte)
      */
     @Override
-    void accept(ExprVisitor ev) {
+    public void accept(ExprVisitor ev) {
         ev.visitNullInsn(type);
     }
 }

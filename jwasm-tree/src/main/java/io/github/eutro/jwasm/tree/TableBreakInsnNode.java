@@ -44,7 +44,7 @@ public class TableBreakInsnNode extends AbstractInsnNode {
      * @see ExprVisitor#visitTableBreakInsn(int[], int)
      */
     @Override
-    void accept(ExprVisitor ev) {
+    public void accept(ExprVisitor ev) {
         ev.visitTableBreakInsn(labels, defaultLabel);
     }
 }

@@ -35,7 +35,7 @@ public class TableInsnNode extends AbstractInsnNode {
      * @see ExprVisitor#visitTableInsn(byte, int)
      */
     @Override
-    void accept(ExprVisitor ev) {
+    public void accept(ExprVisitor ev) {
         ev.visitTableInsn(opcode, table);
     }
 }
