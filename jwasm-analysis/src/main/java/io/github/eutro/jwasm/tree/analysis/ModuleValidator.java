@@ -17,9 +17,10 @@ import static io.github.eutro.jwasm.tree.analysis.ExprValidator.isRef;
 import static io.github.eutro.jwasm.tree.analysis.ExprValidator.isValType;
 
 /**
- * An {@link ModuleVisitor} that verifies whether the module is well-formed.
+ * An {@link ModuleVisitor} that verifies whether the module is
+ * <a href="https://webassembly.github.io/spec/core/valid/index.html">well-formed</a>.
  */
-public class ModuleValidator extends ModuleNode implements Validator {
+public class ModuleValidator extends ModuleNode {
     public List<FuncNode> referencableFuncs = new ArrayList<>();
 
     public ModuleValidator() {
@@ -30,6 +31,14 @@ public class ModuleValidator extends ModuleNode implements Validator {
         super(dl);
     }
 
+    /**
+     * Wrap the given {@link ExprValidator} by some subclass-dependent {@link ExprVisitor}.
+     * <p>
+     * This can be used to augment the behaviour of the {@link ExprValidator} in subclasses.
+     *
+     * @param ev The {@link ExprValidator} to wrap.
+     * @return The wrapped {@link ExprVisitor}.
+     */
     protected ExprVisitor wrapExprVisitor(ExprValidator ev) {
         return ev;
     }

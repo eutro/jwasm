@@ -19,7 +19,7 @@ import static io.github.eutro.jwasm.tree.analysis.ModuleValidator.assertMsg;
  * Based on the validation algorithm published
  * <a href="https://webassembly.github.io/spec/core/appendix/algorithm.html#algo-valid">here</a>.
  */
-public class ExprValidator extends ExprVisitor implements Validator {
+public class ExprValidator extends ExprVisitor {
     public static class CtrlFrame {
         public int opcode;
         public List<Byte> startTypes, endTypes;

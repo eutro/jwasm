@@ -9,7 +9,11 @@ import org.jetbrains.annotations.Nullable;
 
 import static io.github.eutro.jwasm.tree.analysis.ModuleValidator.assertMsg;
 
-public class ConstantExprValidator extends ExprVisitor implements Validator {
+/**
+ * An {@link ExprVisitor} that asserts that the expression is a
+ * <a href="https://webassembly.github.io/spec/core/valid/instructions.html#constant-expressions">constant</a>.
+ */
+public class ConstantExprValidator extends ExprVisitor {
     private final ModuleValidator validator;
 
     public ConstantExprValidator(ModuleValidator mn, @Nullable ExprVisitor dl) {
@@ -57,7 +61,7 @@ public class ConstantExprValidator extends ExprVisitor implements Validator {
             notConstant();
         }
         super.visitVariableInsn(opcode, variable);
-        assert(validator != null && validator.globals != null && validator.globals.globals != null);
+        assert (validator != null && validator.globals != null && validator.globals.globals != null);
         GlobalNode global = validator.globals.globals.get(variable);
         assertMsg(global.type.mut == Opcodes.MUT_CONST, "global %d must be const", variable);
     }

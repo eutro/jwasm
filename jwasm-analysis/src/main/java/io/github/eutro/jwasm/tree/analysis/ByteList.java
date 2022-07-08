@@ -1,13 +1,23 @@
 package io.github.eutro.jwasm.tree.analysis;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.AbstractList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * A {@link List} implementation which wraps a primitive byte array.
+ */
 public class ByteList extends AbstractList<Byte> implements List<Byte> {
-    private final byte[] values;
+    private final byte @NotNull [] values;
 
-    public ByteList(byte[] values) {
+    /**
+     * Construct a wrapper over the given primitive byte array.
+     *
+     * @param values The primitive byte array to wrap.
+     */
+    public ByteList(byte @NotNull [] values) {
         this.values = values;
     }
 
