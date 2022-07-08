@@ -73,21 +73,6 @@
 <div class="contentContainer">
 <ul class="blockList">
 <li class="blockList">
-<table class="typeSummary" border="0" cellpadding="3" cellspacing="0" summary="Interface Summary table, listing interfaces, and an explanation">
-<caption><span>Interface Summary</span><span class="tabEnd">&nbsp;</span></caption>
-<tr>
-<th class="colFirst" scope="col">Interface</th>
-<th class="colLast" scope="col">Description</th>
-</tr>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/Validator.html" title="interface in io.github.eutro.jwasm.tree.analysis">Validator</a></td>
-<td class="colLast">&nbsp;</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li class="blockList">
 <table class="typeSummary" border="0" cellpadding="3" cellspacing="0" summary="Class Summary table, listing classes, and an explanation">
 <caption><span>Class Summary</span><span class="tabEnd">&nbsp;</span></caption>
 <tr>
@@ -97,11 +82,16 @@
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ByteList.html" title="class in io.github.eutro.jwasm.tree.analysis">ByteList</a></td>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">A <a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util"><code>List</code></a> implementation which wraps a primitive byte array.</div>
+</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ConstantExprValidator.html" title="class in io.github.eutro.jwasm.tree.analysis">ConstantExprValidator</a></td>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">An <a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html" title="class in io.github.eutro.jwasm"><code>ExprVisitor</code></a> that asserts that the expression is a
+ <a href="https://webassembly.github.io/spec/core/valid/instructions.html#constant-expressions">constant</a>.</div>
+</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ExprValidator.html" title="class in io.github.eutro.jwasm.tree.analysis">ExprValidator</a></td>
@@ -116,12 +106,15 @@
 <tr class="altColor">
 <td class="colFirst"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ModuleValidator.html" title="class in io.github.eutro.jwasm.tree.analysis">ModuleValidator</a></td>
 <td class="colLast">
-<div class="block">An <a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html" title="class in io.github.eutro.jwasm"><code>ModuleVisitor</code></a> that verifies whether the module is well-formed.</div>
+<div class="block">An <a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html" title="class in io.github.eutro.jwasm"><code>ModuleVisitor</code></a> that verifies whether the module is
+ <a href="https://webassembly.github.io/spec/core/valid/index.html">well-formed</a>.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/StackDumper.html" title="class in io.github.eutro.jwasm.tree.analysis">StackDumper</a></td>
-<td class="colLast">&nbsp;</td>
+<td class="colLast">
+<div class="block">A <a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ModuleValidator.html" title="class in io.github.eutro.jwasm.tree.analysis"><code>ModuleValidator</code></a> which also prints the stack shape of every expression in the module.</div>
+</td>
 </tr>
 </tbody>
 </table>

@@ -367,9 +367,13 @@
 <div class="block">A section of a stream, as returned by <a href="io/github/eutro/jwasm/ByteInputStream.html#sectionStream-int-"><code>ByteInputStream.sectionStream(int)</code></a>.</div>
 </dd>
 <dt><a href="io/github/eutro/jwasm/tree/analysis/ByteList.html" title="class in io.github.eutro.jwasm.tree.analysis"><span class="typeNameLink">ByteList</span></a> - Class in <a href="io/github/eutro/jwasm/tree/analysis/package-summary.html">io.github.eutro.jwasm.tree.analysis</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A <a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util"><code>List</code></a> implementation which wraps a primitive byte array.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/github/eutro/jwasm/tree/analysis/ByteList.html#ByteList-byte:A-">ByteList(byte[])</a></span> - Constructor for class io.github.eutro.jwasm.tree.analysis.<a href="io/github/eutro/jwasm/tree/analysis/ByteList.html" title="class in io.github.eutro.jwasm.tree.analysis">ByteList</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct a wrapper over the given primitive byte array.</div>
+</dd>
 <dt><a href="io/github/eutro/jwasm/ByteOutputStream.html" title="interface in io.github.eutro.jwasm"><span class="typeNameLink">ByteOutputStream</span></a>&lt;<a href="io/github/eutro/jwasm/ByteOutputStream.html" title="type parameter in ByteOutputStream">E</a> extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html?is-external=true" title="class or interface in java.lang">Exception</a>&gt; - Interface in <a href="io/github/eutro/jwasm/package-summary.html">io.github.eutro.jwasm</a></dt>
 <dd>
 <div class="block">An interface for writing WebAssembly bytecode, with methods for writing common WebAssembly types,
@@ -468,7 +472,10 @@
 <div class="block">Constructs a writer with an optional <a href="io/github/eutro/jwasm/CodesWriter.html#onEnd"><code>end callback</code></a>.</div>
 </dd>
 <dt><a href="io/github/eutro/jwasm/tree/analysis/ConstantExprValidator.html" title="class in io.github.eutro.jwasm.tree.analysis"><span class="typeNameLink">ConstantExprValidator</span></a> - Class in <a href="io/github/eutro/jwasm/tree/analysis/package-summary.html">io.github.eutro.jwasm.tree.analysis</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">An <a href="io/github/eutro/jwasm/ExprVisitor.html" title="class in io.github.eutro.jwasm"><code>ExprVisitor</code></a> that asserts that the expression is a
+ <a href="https://webassembly.github.io/spec/core/valid/instructions.html#constant-expressions">constant</a>.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/github/eutro/jwasm/tree/analysis/ConstantExprValidator.html#ConstantExprValidator-io.github.eutro.jwasm.tree.analysis.ModuleValidator-io.github.eutro.jwasm.ExprVisitor-">ConstantExprValidator(ModuleValidator, ExprVisitor)</a></span> - Constructor for class io.github.eutro.jwasm.tree.analysis.<a href="io/github/eutro/jwasm/tree/analysis/ConstantExprValidator.html" title="class in io.github.eutro.jwasm.tree.analysis">ConstantExprValidator</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="io/github/eutro/jwasm/tree/ConstInsnNode.html" title="class in io.github.eutro.jwasm.tree"><span class="typeNameLink">ConstInsnNode</span></a> - Class in <a href="io/github/eutro/jwasm/tree/package-summary.html">io.github.eutro.jwasm.tree</a></dt>
@@ -1950,7 +1957,8 @@
 </dd>
 <dt><a href="io/github/eutro/jwasm/tree/analysis/ModuleValidator.html" title="class in io.github.eutro.jwasm.tree.analysis"><span class="typeNameLink">ModuleValidator</span></a> - Class in <a href="io/github/eutro/jwasm/tree/analysis/package-summary.html">io.github.eutro.jwasm.tree.analysis</a></dt>
 <dd>
-<div class="block">An <a href="io/github/eutro/jwasm/ModuleVisitor.html" title="class in io.github.eutro.jwasm"><code>ModuleVisitor</code></a> that verifies whether the module is well-formed.</div>
+<div class="block">An <a href="io/github/eutro/jwasm/ModuleVisitor.html" title="class in io.github.eutro.jwasm"><code>ModuleVisitor</code></a> that verifies whether the module is
+ <a href="https://webassembly.github.io/spec/core/valid/index.html">well-formed</a>.</div>
 </dd>
 <dt><span class="memberNameLink"><a href="io/github/eutro/jwasm/tree/analysis/ModuleValidator.html#ModuleValidator--">ModuleValidator()</a></span> - Constructor for class io.github.eutro.jwasm.tree.analysis.<a href="io/github/eutro/jwasm/tree/analysis/ModuleValidator.html" title="class in io.github.eutro.jwasm.tree.analysis">ModuleValidator</a></dt>
 <dd>&nbsp;</dd>
@@ -2357,9 +2365,13 @@
 <div class="block">Skip all the remaining bytes in the stream.</div>
 </dd>
 <dt><a href="io/github/eutro/jwasm/tree/analysis/StackDumper.html" title="class in io.github.eutro.jwasm.tree.analysis"><span class="typeNameLink">StackDumper</span></a> - Class in <a href="io/github/eutro/jwasm/tree/analysis/package-summary.html">io.github.eutro.jwasm.tree.analysis</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A <a href="io/github/eutro/jwasm/tree/analysis/ModuleValidator.html" title="class in io.github.eutro.jwasm.tree.analysis"><code>ModuleValidator</code></a> which also prints the stack shape of every expression in the module.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/github/eutro/jwasm/tree/analysis/StackDumper.html#StackDumper-java.io.PrintStream-">StackDumper(PrintStream)</a></span> - Constructor for class io.github.eutro.jwasm.tree.analysis.<a href="io/github/eutro/jwasm/tree/analysis/StackDumper.html" title="class in io.github.eutro.jwasm.tree.analysis">StackDumper</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Construct a <a href="io/github/eutro/jwasm/tree/analysis/StackDumper.html" title="class in io.github.eutro.jwasm.tree.analysis"><code>StackDumper</code></a> which prints to the given <a href="https://docs.oracle.com/javase/8/docs/api/java/io/PrintStream.html?is-external=true" title="class or interface in java.io"><code>PrintStream</code></a>.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/github/eutro/jwasm/tree/ModuleNode.html#start">start</a></span> - Variable in class io.github.eutro.jwasm.tree.<a href="io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></dt>
 <dd>
 <div class="block">The start of this module.</div>
@@ -2667,8 +2679,6 @@
 <dt><span class="memberNameLink"><a href="io/github/eutro/jwasm/ValidationException.html#ValidationException-java.lang.Throwable-">ValidationException(Throwable)</a></span> - Constructor for exception io.github.eutro.jwasm.<a href="io/github/eutro/jwasm/ValidationException.html" title="class in io.github.eutro.jwasm">ValidationException</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/github/eutro/jwasm/tree/analysis/ExprValidator.html#validator">validator</a></span> - Variable in class io.github.eutro.jwasm.tree.analysis.<a href="io/github/eutro/jwasm/tree/analysis/ExprValidator.html" title="class in io.github.eutro.jwasm.tree.analysis">ExprValidator</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="io/github/eutro/jwasm/tree/analysis/Validator.html" title="interface in io.github.eutro.jwasm.tree.analysis"><span class="typeNameLink">Validator</span></a> - Interface in <a href="io/github/eutro/jwasm/tree/analysis/package-summary.html">io.github.eutro.jwasm.tree.analysis</a></dt>
 <dd>&nbsp;</dd>
 <dt><span class="memberNameLink"><a href="io/github/eutro/jwasm/tree/analysis/ExprValidator.html#vals">vals</a></span> - Variable in class io.github.eutro.jwasm.tree.analysis.<a href="io/github/eutro/jwasm/tree/analysis/ExprValidator.html" title="class in io.github.eutro.jwasm.tree.analysis">ExprValidator</a></dt>
 <dd>&nbsp;</dd>
@@ -3343,7 +3353,9 @@ the order they are declared.</div>
 <h2 class="title">W</h2>
 <dl>
 <dt><span class="memberNameLink"><a href="io/github/eutro/jwasm/tree/analysis/ModuleValidator.html#wrapExprVisitor-io.github.eutro.jwasm.tree.analysis.ExprValidator-">wrapExprVisitor(ExprValidator)</a></span> - Method in class io.github.eutro.jwasm.tree.analysis.<a href="io/github/eutro/jwasm/tree/analysis/ModuleValidator.html" title="class in io.github.eutro.jwasm.tree.analysis">ModuleValidator</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Wrap the given <a href="io/github/eutro/jwasm/tree/analysis/ExprValidator.html" title="class in io.github.eutro.jwasm.tree.analysis"><code>ExprValidator</code></a> by some subclass-dependent <a href="io/github/eutro/jwasm/ExprVisitor.html" title="class in io.github.eutro.jwasm"><code>ExprVisitor</code></a>.</div>
+</dd>
 <dt><span class="memberNameLink"><a href="io/github/eutro/jwasm/tree/analysis/StackDumper.html#wrapExprVisitor-io.github.eutro.jwasm.tree.analysis.ExprValidator-">wrapExprVisitor(ExprValidator)</a></span> - Method in class io.github.eutro.jwasm.tree.analysis.<a href="io/github/eutro/jwasm/tree/analysis/StackDumper.html" title="class in io.github.eutro.jwasm.tree.analysis">StackDumper</a></dt>
 <dd>&nbsp;</dd>
 </dl>
