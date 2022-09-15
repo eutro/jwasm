@@ -1,4 +1,4 @@
-package io.github.eutro.jwasm.tree.analysis;
+package io.github.eutro.jwasm;
 
 import org.jetbrains.annotations.NotNull;
 
