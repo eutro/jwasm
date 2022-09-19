@@ -1,6 +1,5 @@
 package io.github.eutro.jwasm.tree;
 
-import io.github.eutro.jwasm.CodesVisitor;
 import io.github.eutro.jwasm.ElementSegmentsVisitor;
 import io.github.eutro.jwasm.ElementVisitor;
 import io.github.eutro.jwasm.ExprVisitor;
@@ -51,18 +50,18 @@ public class ElementNode extends ElementVisitor implements Iterable<ExprNode> {
 
     /**
      * The vector of function
-     * <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-funcidx">indeces</a>
+     * <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-funcidx">indices</a>
      * to reference in the init exprs,
      * or {@code null} if the {@link #init init expressions} are explicitly declared.
      *
      * @see #init
      */
-    public int[] indeces;
+    public int[] indices;
 
     /**
-     * The vector of {@code init} exprs, or {@code null} if the {@link #indeces function indeces} should be used.
+     * The vector of {@code init} exprs, or {@code null} if the {@link #indices function indices} should be used.
      *
-     * @see #indeces
+     * @see #indices
      */
     public List<ExprNode> init;
 
@@ -94,8 +93,8 @@ public class ElementNode extends ElementVisitor implements Iterable<ExprNode> {
             if (ev != null) offset.accept(ev);
         }
         eev.visitType(type);
-        if (indeces != null) {
-            eev.visitElemIndeces(indeces);
+        if (indices != null) {
+            eev.visitElemIndices(indices);
         } else if (init != null) {
             for (ExprNode en : init) {
                 ExprVisitor ev = eev.visitInit();
@@ -111,7 +110,7 @@ public class ElementNode extends ElementVisitor implements Iterable<ExprNode> {
      * @return The number of expressions in this element segment.
      */
     public int size() {
-        return init == null ? indeces.length : init.size();
+        return init == null ? indices.length : init.size();
     }
 
     @Override
@@ -133,9 +132,9 @@ public class ElementNode extends ElementVisitor implements Iterable<ExprNode> {
     }
 
     @Override
-    public void visitElemIndeces(int[] indeces) {
-        super.visitElemIndeces(indeces);
-        this.indeces = indeces;
+    public void visitElemIndices(int[] indices) {
+        super.visitElemIndices(indices);
+        this.indices = indices;
     }
 
     @Override
@@ -148,7 +147,7 @@ public class ElementNode extends ElementVisitor implements Iterable<ExprNode> {
 
     /**
      * Returns an iterator over the init expressions in this element segment,
-     * whether they be {@link #indeces implicitly derived from function indeces}
+     * whether they be {@link #indices implicitly derived from function indices}
      * or {@link #init explicitly declared}.
      *
      * @return An iterator over the init expressions in this element segment.
@@ -156,7 +155,7 @@ public class ElementNode extends ElementVisitor implements Iterable<ExprNode> {
     @NotNull
     @Override
     public Iterator<ExprNode> iterator() {
-        return init == null ? Arrays.stream(indeces).mapToObj(f -> {
+        return init == null ? Arrays.stream(indices).mapToObj(f -> {
             ExprNode en = new ExprNode();
             en.visitFuncRefInsn(f);
             en.visitEndInsn();

@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class GlobalNode {
     /**
-     * The the type of the global.
+     * The type of the global.
      */
     public @NotNull GlobalTypeNode type;
 
@@ -24,7 +24,7 @@ public class GlobalNode {
     /**
      * Construct a {@link GlobalNode} with the given type and init expression.
      *
-     * @param type The the type of the global.
+     * @param type The type of the global.
      * @param init The init expression of the global.
      */
     public GlobalNode(@NotNull GlobalTypeNode type, @NotNull ExprNode init) {

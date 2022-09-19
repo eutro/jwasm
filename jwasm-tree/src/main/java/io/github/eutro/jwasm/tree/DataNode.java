@@ -1,6 +1,5 @@
 package io.github.eutro.jwasm.tree;
 
-import io.github.eutro.jwasm.CodesVisitor;
 import io.github.eutro.jwasm.DataSegmentsVisitor;
 import io.github.eutro.jwasm.DataVisitor;
 import io.github.eutro.jwasm.ExprVisitor;

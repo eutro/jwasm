@@ -13,7 +13,7 @@ public interface ByteOutputStream<E extends Exception> {
 
     /**
      * A dummy {@link ByteOutputStream} whose writes do nothing.
-     *
+     * <p>
      * Can be used to predict how many bytes a given write will take.
      */
     ByteOutputStream<RuntimeException> DUMMY = new Dummy();
@@ -39,7 +39,7 @@ public interface ByteOutputStream<E extends Exception> {
     }
 
     /**
-     * Write an unsigned 32 bit integer to the stream, in little endian byte order.
+     * Write an unsigned 32-bit integer to the stream, in little endian byte order.
      *
      * @param v The integer to write.
      * @throws E If a write error occurs.

@@ -1,6 +1,5 @@
 package io.github.eutro.jwasm.tree;
 
-import io.github.eutro.jwasm.CodesVisitor;
 import io.github.eutro.jwasm.Limits;
 import io.github.eutro.jwasm.MemoriesVisitor;
 import io.github.eutro.jwasm.ModuleVisitor;

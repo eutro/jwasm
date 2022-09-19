@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
  * <p>
  * ( {@code visitNonActiveMode} | {@code visitActiveMode} )
  * {@code visitType}
- * ( {@code visitElemIneces} | ( {@code visitInit} )*)
+ * ( {@code visitElemIndices} | ( {@code visitInit} )*)
  * {@code visitEnd}
  */
 public class ElementVisitor extends BaseVisitor<ElementVisitor> {
@@ -67,22 +67,22 @@ public class ElementVisitor extends BaseVisitor<ElementVisitor> {
     }
 
     /**
-     * Visit a vector of function indeces to reference in the init exprs.
+     * Visit a vector of function indices to reference in the init exprs.
      * <p>
      * This should be called instead of {@link #visitInit()}, not in conjunction with it.
      *
-     * @param indeces The vector of function
-     *                <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-funcidx">indeces</a>
+     * @param indices The vector of function
+     *                <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-funcidx">indices</a>
      *                to reference in the init exprs.
      */
-    public void visitElemIndeces(int[] indeces) {
-        if (dl != null) dl.visitElemIndeces(indeces);
+    public void visitElemIndices(int[] indices) {
+        if (dl != null) dl.visitElemIndices(indices);
     }
 
     /**
      * Visit a single expr in the vector of {@code init} exprs.
      * <p>
-     * This should be called instead of {@link #visitElemIndeces(int[])}, not in conjunction with it.
+     * This should be called instead of {@link #visitElemIndices(int[])}, not in conjunction with it.
      *
      * @return An {@link ExprVisitor} to visit with the contents of the {@code init} expr,
      * or {@code null} if this visitor is not interested in the contents of the {@code init} expr.

@@ -246,7 +246,7 @@ public class ExprVisitor extends BaseVisitor<ExprVisitor> {
      * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>.
      *
      * @param labels       The table of label
-     *                     <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">indeces</a>.
+     *                     <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">indices</a>.
      * @param defaultLabel The
      *                     <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">index</a>
      *                     of the default label.

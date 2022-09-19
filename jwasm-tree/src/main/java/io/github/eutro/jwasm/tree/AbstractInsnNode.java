@@ -17,7 +17,7 @@ public abstract class AbstractInsnNode {
     /**
      * Construct an {@link AbstractInsnNode} with the given opcode.
      *
-     * @param opcode The opcode of the instruciton.
+     * @param opcode The opcode of the instruction.
      */
     protected AbstractInsnNode(byte opcode) {
         this.opcode = opcode;

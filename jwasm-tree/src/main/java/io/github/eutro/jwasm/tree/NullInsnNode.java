@@ -4,7 +4,7 @@ import io.github.eutro.jwasm.ExprVisitor;
 import io.github.eutro.jwasm.Opcodes;
 
 /**
- * A node that represents a ref.null instruction.
+ * A node that represents a {@code ref.null} instruction.
  *
  * @see ExprVisitor#visitNullInsn(byte)
  */

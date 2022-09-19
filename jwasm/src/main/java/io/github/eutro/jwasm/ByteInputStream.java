@@ -1,7 +1,5 @@
 package io.github.eutro.jwasm;
 
-import javax.xml.crypto.Data;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -22,7 +20,7 @@ public interface ByteInputStream<E extends Exception> {
      * Get a single unsigned byte from the stream.
      *
      * @return An unsigned byte b ({@code 0x00 &lt;= b &lt;= 0xFF}), or -1 if the end of the stream has been reached.
-     * @throws E If a read error occured.
+     * @throws E If a read error occurred.
      */
     int get() throws E;
 
@@ -35,7 +33,7 @@ public interface ByteInputStream<E extends Exception> {
      * @param offset The offset in buf to start writing at.
      * @param len    The length of bytes to copy at most.
      * @return The number of bytes gotten, or -1 if the end of stream had been reached.
-     * @throws E                         If a read error occured.
+     * @throws E                         If a read error occurred.
      * @throws IndexOutOfBoundsException If {@code offset</code> is negative, or <code>len + offset}
      *                                   exceeds {@code buf.length}.
      */
@@ -61,7 +59,7 @@ public interface ByteInputStream<E extends Exception> {
      *
      * @param count The number of bytes to skip.
      * @return How many bytes were skipped.
-     * @throws E If a read error occured.
+     * @throws E If a read error occurred.
      */
     default int skip(int count) throws E {
         for (int i = 0; i < count; i++) {
@@ -75,7 +73,7 @@ public interface ByteInputStream<E extends Exception> {
      * <p>
      * Defaults to calling {@link #skip(int)} with {@link Integer#MAX_VALUE}.
      *
-     * @throws E If a read error occured.
+     * @throws E If a read error occurred.
      */
     default void skipAll() throws E {
         skip(Integer.MAX_VALUE);
@@ -85,7 +83,7 @@ public interface ByteInputStream<E extends Exception> {
      * Get a byte from the stream, throwing a {@link ValidationException} if the end of the stream was reached.
      *
      * @return The byte that was read.
-     * @throws E                   If a read error occured.
+     * @throws E                   If a read error occurred.
      * @throws ValidationException If the end of the stream was reached.
      */
     default byte expect() throws E {
@@ -97,7 +95,7 @@ public interface ByteInputStream<E extends Exception> {
     /**
      * Expect the stream to be empty, throwing a {@link ValidationException} if it is not.
      *
-     * @throws E                   If a read error occured.
+     * @throws E                   If a read error occurred.
      * @throws ValidationException If the end of the had not been reached.
      */
     default void expectEmpty() throws E {
@@ -107,11 +105,11 @@ public interface ByteInputStream<E extends Exception> {
     }
 
     /**
-     * Gets a 32 bit unsigned integer from the stream, in little endian byte order, throwing an exception
+     * Gets a 32-bit unsigned integer from the stream, in little endian byte order, throwing an exception
      * if there aren't enough bytes in the stream.
      *
      * @return The unsigned integer interpreted from the next 4 bytes in the stream.
-     * @throws E                   If a read error occured.
+     * @throws E                   If a read error occurred.
      * @throws ValidationException If there are less than 4 bytes left in the stream.
      */
     default int getUInt32() throws E {
@@ -130,7 +128,7 @@ public interface ByteInputStream<E extends Exception> {
      * if there aren't enough bytes in the stream.
      *
      * @return The floating point value interpreted from the next 4 bytes in the stream.
-     * @throws E                   If a read error occured.
+     * @throws E                   If a read error occurred.
      * @throws ValidationException If there are less than 4 bytes left in the stream.
      */
     default float getFloat32() throws E {
@@ -142,7 +140,7 @@ public interface ByteInputStream<E extends Exception> {
      * if there aren't enough bytes in the stream.
      *
      * @return The floating point value interpreted from the next 8 bytes in the stream.
-     * @throws E                   If a read error occured.
+     * @throws E                   If a read error occurred.
      * @throws ValidationException If there are less than 8 bytes left in the stream.
      */
     default double getFloat64() throws E {
@@ -151,12 +149,12 @@ public interface ByteInputStream<E extends Exception> {
 
     /**
      * Gets an LEB128 encoded unsigned integer from the stream, throwing an exception if the stream ends before
-     * the full integer is read, or if the number excedes 5 bytes.
+     * the full integer is read, or if the number exceeds 5 bytes.
      *
      * @return The integer that was read.
-     * @throws E                   If a read error occured.
+     * @throws E                   If a read error occurred.
      * @throws ValidationException If the stream ends before the number is fully read.
-     * @throws ValidationException If the number excedes 5 bytes.
+     * @throws ValidationException If the number exceeds 5 bytes.
      */
     default int getVarUInt32() throws E {
         return (int) getVarUIntX(5);
@@ -164,13 +162,13 @@ public interface ByteInputStream<E extends Exception> {
 
     /**
      * Gets an LEB128 encoded unsigned integer from the stream, throwing an exception if the stream ends before
-     * the full integer is read, or if the number excedes {@code bytes} bytes.
+     * the full integer is read, or if the number exceeds {@code bytes} bytes.
      *
      * @param bytes The maximum number of bytes to read.
      * @return The integer that was read.
-     * @throws E                   If a read error occured.
+     * @throws E                   If a read error occurred.
      * @throws ValidationException If the stream ends before the number is fully read.
-     * @throws ValidationException If the number excedes {@code bytes} bytes.
+     * @throws ValidationException If the number exceeds {@code bytes} bytes.
      */
     default long getVarUIntX(int bytes) throws E {
         long v = 0;
@@ -180,17 +178,17 @@ public interface ByteInputStream<E extends Exception> {
             v |= (long) (b & 0x7F) << (count * 7);
             if ((b & 0x80) == 0) return v;
         }
-        throw new ValidationException(String.format("varuint: 0x%02x... exceded %d bytes", v, bytes));
+        throw new ValidationException(String.format("varuint: 0x%02x... exceeded %d bytes", v, bytes));
     }
 
     /**
      * Gets an LEB128 encoded signed integer from the stream, throwing an exception if the stream ends before
-     * the full integer is read, or if the number excedes 5 bytes.
+     * the full integer is read, or if the number exceeds 5 bytes.
      *
      * @return The integer that was read.
-     * @throws E                   If a read error occured.
+     * @throws E                   If a read error occurred.
      * @throws ValidationException If the stream ends before the number is fully read.
-     * @throws ValidationException If the number excedes 5 bytes.
+     * @throws ValidationException If the number exceeds 5 bytes.
      */
     default int getVarSInt32() throws E {
         return (int) getVarSIntX(5);
@@ -198,12 +196,12 @@ public interface ByteInputStream<E extends Exception> {
 
     /**
      * Gets an LEB128 encoded signed integer from the stream, throwing an exception if the stream ends before
-     * the full integer is read, or if the number excedes 10 bytes.
+     * the full integer is read, or if the number exceeds 10 bytes.
      *
      * @return The integer that was read.
-     * @throws E                   If a read error occured.
+     * @throws E                   If a read error occurred.
      * @throws ValidationException If the stream ends before the number is fully read.
-     * @throws ValidationException If the number excedes 10 bytes.
+     * @throws ValidationException If the number exceeds 10 bytes.
      */
     default long getVarSInt64() throws E {
         return getVarSIntX(10);
@@ -211,13 +209,13 @@ public interface ByteInputStream<E extends Exception> {
 
     /**
      * Gets an LEB128 encoded signed integer from the stream, throwing an exception if the stream ends before
-     * the full integer is read, or if the number excedes {@code bytes} bytes.
+     * the full integer is read, or if the number exceeds {@code bytes} bytes.
      *
      * @param bytes The maximum number of bytes to read.
      * @return The integer that was read.
-     * @throws E                   If a read error occured.
+     * @throws E                   If a read error occurred.
      * @throws ValidationException If the stream ends before the number is fully read.
-     * @throws ValidationException If the number excedes {@code bytes} bytes.
+     * @throws ValidationException If the number exceeds {@code bytes} bytes.
      */
     default long getVarSIntX(int bytes) throws E {
         return getVarSIntX0(bytes, 0, 0);
@@ -227,7 +225,7 @@ public interface ByteInputStream<E extends Exception> {
     /**
      * Gets the rest of an LEB128 encoded signed integer from the stream,
      * throwing an exception if the stream ends before the full integer is read,
-     * or if the number excedes {@code bytes} bytes.
+     * or if the number exceeds {@code bytes} bytes.
      * <p>
      * This may be used if part of the number is already read before this is called.
      *
@@ -235,9 +233,9 @@ public interface ByteInputStream<E extends Exception> {
      * @param v     The LEB128 encoded signed integer that has been read so far.
      * @param count How many bytes have already been read.
      * @return The integer that was read.
-     * @throws E                   If a read error occured.
+     * @throws E                   If a read error occurred.
      * @throws ValidationException If the stream ends before the number is fully read.
-     * @throws ValidationException If the number excedes {@code bytes} bytes.
+     * @throws ValidationException If the number exceeds {@code bytes} bytes.
      */
     default long getVarSIntX0(int bytes, long v, int count) throws E {
         byte b;
@@ -250,7 +248,7 @@ public interface ByteInputStream<E extends Exception> {
                 signBits <<= 7;
                 if ((b & 0x80) == 0) break loop;
             }
-            throw new ValidationException(String.format("varsint: 0x%02x... exceded %d bytes", v, bytes));
+            throw new ValidationException(String.format("varsint: 0x%02x... exceeded %d bytes", v, bytes));
         }
         if (((signBits >> 1) & v) != 0) {
             v |= signBits;
@@ -263,7 +261,7 @@ public interface ByteInputStream<E extends Exception> {
      * a positive signed 33 bit integer type index.
      *
      * @return The blocktype that was read.
-     * @throws E If a read error occured.
+     * @throws E If a read error occurred.
      */
     default BlockType getBlockType() throws E {
         byte first = expect();
@@ -290,7 +288,7 @@ public interface ByteInputStream<E extends Exception> {
      * This reads a {@link #getVarSInt32() size} followed immediately by {@code size} bytes.
      *
      * @return The byte array that was read.
-     * @throws E                   If a read error occured.
+     * @throws E                   If a read error occurred.
      * @throws ValidationException If there aren't {@code size} bytes to read
      *                             after {@code size} itself is read.
      */
@@ -307,7 +305,7 @@ public interface ByteInputStream<E extends Exception> {
      * This reads a {@link #getByteArray() byte array} and interprets it as a string of UTF-8 characters.
      *
      * @return The string that was read.
-     * @throws E                   If a read error occured.
+     * @throws E                   If a read error occurred.
      * @throws ValidationException If the bytes aren't valid UTF-8.
      */
     default String getName() throws E {
@@ -321,7 +319,7 @@ public interface ByteInputStream<E extends Exception> {
     /**
      * Read a WebAssembly {@code limit} from the stream, which is a minimum and an optional maximum.
      *
-     * @throws E                   If a read error occured.
+     * @throws E                   If a read error occurred.
      * @throws ValidationException If the limit type wasn't recognised.
      * @return A {@link Limits} value read from the stream.
      */
@@ -341,7 +339,7 @@ public interface ByteInputStream<E extends Exception> {
      * Get a view of this stream from which {@link #getVarUInt32()} bytes of this stream can be read.
      *
      * @return The new stream.
-     * @throws E If a read error occured.
+     * @throws E If a read error occurred.
      * @see #sectionStream(int)
      */
     default ByteInputStream<E> sectionStream() throws E {
@@ -379,7 +377,7 @@ public interface ByteInputStream<E extends Exception> {
         private final int length;
 
         /**
-         * How many bytes have been read throught this stream.
+         * How many bytes have been read through this stream.
          */
         private int gotten = 0;
 

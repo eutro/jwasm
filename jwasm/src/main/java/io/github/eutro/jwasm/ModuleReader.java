@@ -329,12 +329,12 @@ public class ModuleReader<E extends Exception> {
                             if (elv != null) elv.visitType(Opcodes.FUNCREF);
                         }
 
-                        int funcIndeces = sbb.getVarUInt32();
-                        int[] indeces = new int[funcIndeces];
-                        for (int j = 0; j < funcIndeces; j++) {
-                            indeces[j] = sbb.getVarUInt32();
+                        int funcIndices = sbb.getVarUInt32();
+                        int[] indices = new int[funcIndices];
+                        for (int j = 0; j < funcIndices; j++) {
+                            indices[j] = sbb.getVarUInt32();
                         }
-                        if (elv != null) elv.visitElemIndeces(indeces);
+                        if (elv != null) elv.visitElemIndices(indices);
                     }
                     if (elv != null) elv.visitEnd();
                 }
@@ -474,11 +474,11 @@ public class ModuleReader<E extends Exception> {
                     break;
                 case Opcodes.BR_TABLE: {
                     int indexCount = bb.getVarUInt32();
-                    int[] indeces = new int[indexCount];
+                    int[] indices = new int[indexCount];
                     for (int i = 0; i < indexCount; i++) {
-                        indeces[i] = bb.getVarUInt32();
+                        indices[i] = bb.getVarUInt32();
                     }
-                    ev.visitTableBreakInsn(indeces, bb.getVarUInt32());
+                    ev.visitTableBreakInsn(indices, bb.getVarUInt32());
                     break;
                 }
                 case Opcodes.CALL:

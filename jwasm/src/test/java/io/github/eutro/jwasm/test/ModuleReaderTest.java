@@ -7,8 +7,6 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 public class ModuleReaderTest extends ModuleTestBase {
 
     @Test

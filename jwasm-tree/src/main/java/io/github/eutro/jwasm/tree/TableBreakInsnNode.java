@@ -11,7 +11,7 @@ import io.github.eutro.jwasm.Opcodes;
 public class TableBreakInsnNode extends AbstractInsnNode {
     /**
      * The table of label
-     * <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">indeces</a>.
+     * <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">indices</a>.
      */
     public int[] labels;
 
@@ -26,7 +26,7 @@ public class TableBreakInsnNode extends AbstractInsnNode {
      * Construct a {@link TableBreakInsnNode} with the given labels and default label.
      *
      * @param labels       The table of label
-     *                     <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">indeces</a>.
+     *                     <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">indices</a>.
      * @param defaultLabel The
      *                     <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-labelidx">index</a>
      *                     of the default label.

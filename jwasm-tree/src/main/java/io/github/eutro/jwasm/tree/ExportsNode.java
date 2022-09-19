@@ -1,6 +1,5 @@
 package io.github.eutro.jwasm.tree;
 
-import io.github.eutro.jwasm.CodesVisitor;
 import io.github.eutro.jwasm.ExportsVisitor;
 import io.github.eutro.jwasm.ModuleVisitor;
 import org.jetbrains.annotations.NotNull;

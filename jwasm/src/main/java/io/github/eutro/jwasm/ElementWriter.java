@@ -20,7 +20,7 @@ public class ElementWriter extends ElementVisitor implements ByteArrayConvertibl
     private byte type;
     private int exprCount;
     private ByteOutputStream.BaosByteOutputStream exprs;
-    private int[] elemIndeces;
+    private int[] elemIndices;
 
     /**
      * Constructs a writer with no {@link #onEnd end callback}.
@@ -53,8 +53,8 @@ public class ElementWriter extends ElementVisitor implements ByteArrayConvertibl
             out.put(exprs.toByteArray());
         } else {
             if ((elemType & 0b011) != 0) out.put(ELEMKIND);
-            out.putVarUInt(elemIndeces.length);
-            for (int index : elemIndeces) {
+            out.putVarUInt(elemIndices.length);
+            for (int index : elemIndices) {
                 out.putVarUInt(index);
             }
         }
@@ -89,8 +89,8 @@ public class ElementWriter extends ElementVisitor implements ByteArrayConvertibl
     }
 
     @Override
-    public void visitElemIndeces(int[] indeces) {
-        this.elemIndeces = indeces;
+    public void visitElemIndices(int[] indices) {
+        this.elemIndices = indices;
     }
 
     @Override
