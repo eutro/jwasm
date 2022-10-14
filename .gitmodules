@@ -1,0 +1,3 @@
+[submodule "jwasm-sexp/testsuite"]
+	path = jwasm-sexp/testsuite
+	url = git@github.com:WebAssembly/testsuite.git
