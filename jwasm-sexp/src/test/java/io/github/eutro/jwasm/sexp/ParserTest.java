@@ -23,17 +23,23 @@ public class ParserTest {
 
             List<ModuleNode> modules = new ArrayList<>();
             assertDoesNotThrow(() -> {
+                int i = 0;
                 for (Object stmt : script) {
                     if (stmt instanceof List<?>) {
-                        List<?> list = (List<?>) stmt;
-                        if ("module".equals(list.get(0))) {
-                            if (list.contains("binary")) {
-                                modules.add(Parser.parseBinaryModule(stmt));
-                            } else {
-                                modules.add(Parser.parseModule(stmt));
+                        try {
+                            List<?> list = (List<?>) stmt;
+                            if ("module".equals(list.get(0))) {
+                                if (list.contains("binary")) {
+                                    modules.add(Parser.parseBinaryModule(stmt));
+                                } else {
+                                    modules.add(Parser.parseModule(stmt));
+                                }
                             }
+                        } catch (RuntimeException e) {
+                            throw new RuntimeException("error in statement " + i, e);
                         }
                     }
+                    i++;
                 }
             });
             System.out.println(modules);

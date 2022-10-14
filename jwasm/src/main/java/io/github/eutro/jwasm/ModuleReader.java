@@ -295,7 +295,7 @@ public class ModuleReader<E extends Exception> {
                 int elemCount = sbb.getVarUInt32();
                 for (int i = 0; i < elemCount; i++) {
                     ElementVisitor elv = ev.visitElem();
-                    byte elemType = sbb.expect();
+                    int elemType = sbb.getVarUInt32();
 
                     if (elemType >= 0x08 || elemType < 0) {
                         throw new ValidationException(String.format("Unrecognised element type 0x%02x", elemType));
@@ -418,7 +418,7 @@ public class ModuleReader<E extends Exception> {
                 int dataCount = sbb.getVarUInt32();
                 for (int i = 0; i < dataCount; i++) {
                     DataVisitor ddv = dv.visitData();
-                    byte dataType = sbb.expect();
+                    int dataType = sbb.getVarUInt32();
                     if (dataType >= 0x04 || dataType < 0) {
                         throw new ValidationException(String.format("Unrecognised data section type 0x%02x", dataType));
                     }

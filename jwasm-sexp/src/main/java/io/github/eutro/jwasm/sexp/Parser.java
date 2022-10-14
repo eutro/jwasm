@@ -66,7 +66,16 @@ public class Parser {
         });
     }
 
-    public static ModuleNode parseBinaryModule(Object obj) {
+    /**
+     * Parse a {@link ModuleNode} from a module written as (module id? binary ...), which may appear in WAST scripts.
+     * <p>
+     * Much like {@link #parseModule(Object)}, this does <i>not</i> validate the modules.
+     *
+     * @param obj The read s-expression representation of the module.
+     * @return The parsed {@link ModuleNode}.
+     * @throws ParseException If obj is not a syntactically valid module.
+     */
+    public static ModuleNode parseBinaryModule(Object obj) throws ParseException {
         return mark(obj, () -> {
             ListParser lp = new ListParser(expectList(obj));
             expectEq("module", lp.expect());
@@ -131,7 +140,7 @@ public class Parser {
         DEFAULT,
     }
 
-    private static class ListParser {
+    static class ListParser {
         final List<?> list;
         final ListIterator<?> iter;
 
