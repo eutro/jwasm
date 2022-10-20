@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
@@ -83,8 +82,10 @@ public class ModuleReader<E extends Exception> {
      */
     public void accept(ModuleVisitor mv) throws E {
         ByteInputStream<E> bb = source.get();
-        if (bb.getUInt32() != Opcodes.MAGIC) throw new ValidationException("Wrong magic");
-        if (bb.getUInt32() != Opcodes.VERSION) throw new ValidationException("Wrong version");
+        if (bb.getUInt32() != Opcodes.MAGIC) throw new ValidationException("Wrong magic",
+                new RuntimeException("magic header not detected"));
+        if (bb.getUInt32() != Opcodes.VERSION) throw new ValidationException("Wrong version",
+                new RuntimeException("unknown binary version"));
         mv.visitHeader(Opcodes.VERSION);
 
         int section = bb.get();
@@ -102,7 +103,9 @@ public class ModuleReader<E extends Exception> {
                 int typeCount = sbb.getVarUInt32();
                 for (int i = 0; i < typeCount; i++) {
                     if (sbb.expect() != Opcodes.TYPES_FUNCTION) {
-                        throw new ValidationException(String.format("functype didn't begin with 0x%02x", Opcodes.TYPES_FUNCTION));
+                        throw new ValidationException(String.format("Malformed functype 0x%02x", Opcodes.TYPES_FUNCTION),
+                                new RuntimeException("malformed functype")
+                        );
                     }
                     byte[] params = sbb.getByteArray();
                     byte[] returns = sbb.getByteArray();
@@ -441,7 +444,8 @@ public class ModuleReader<E extends Exception> {
 
         section = acceptCustoms(mv, bb, section);
 
-        if (section != -1) throw new ValidationException(String.format("Unexpected section: 0x%02x", section));
+        if (section != -1) throw new ValidationException(String.format("Unexpected section: 0x%02x", section),
+                new RuntimeException("malformed section id"));
         mv.visitEnd();
     }
 
@@ -603,9 +607,13 @@ public class ModuleReader<E extends Exception> {
             int length = bb.getVarUInt32();
             sbb = bb.sectionStream(length);
 
-            byte[] stringBytes = sbb.getByteArray();
-            String name = new String(stringBytes, StandardCharsets.UTF_8);
+            byte[] stringBytes = bb.getByteArray();
+            String name = ByteInputStream.decodeName(stringBytes);
             int payloadLength = length - stringBytes.length - ByteOutputStream.DUMMY.putVarUInt(stringBytes.length);
+            if (payloadLength < 0) {
+                throw new ValidationException("Expected more bytes",
+                        new RuntimeException("unexpected end"));
+            }
             byte[] payload = new byte[payloadLength];
             sbb.get(payload, 0, payload.length);
             mv.visitCustom(name, payload);

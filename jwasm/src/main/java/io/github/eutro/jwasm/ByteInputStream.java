@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 
 import static io.github.eutro.jwasm.Opcodes.*;
@@ -88,7 +89,8 @@ public interface ByteInputStream<E extends Exception> {
      */
     default byte expect() throws E {
         int v = get();
-        if (v == -1) throw new ValidationException("Unexpected end of input");
+        if (v == -1) throw new ValidationException("Unexpected end of input",
+                new RuntimeException("unexpected end"));
         return (byte) v;
     }
 
@@ -178,7 +180,8 @@ public interface ByteInputStream<E extends Exception> {
             v |= (long) (b & 0x7F) << (count * 7);
             if ((b & 0x80) == 0) return v;
         }
-        throw new ValidationException(String.format("varuint: 0x%02x... exceeded %d bytes", v, bytes));
+        throw new ValidationException(String.format("VarUInt: 0x%02x... exceeded %d bytes", v, bytes),
+                new RuntimeException("integer representation too long"));
     }
 
     /**
@@ -248,7 +251,8 @@ public interface ByteInputStream<E extends Exception> {
                 signBits <<= 7;
                 if ((b & 0x80) == 0) break loop;
             }
-            throw new ValidationException(String.format("varsint: 0x%02x... exceeded %d bytes", v, bytes));
+            throw new ValidationException(String.format("VarSInt: 0x%02x... exceeded %d bytes", v, bytes),
+                    new RuntimeException("integer representation too long"));
         }
         if (((signBits >> 1) & v) != 0) {
             v |= signBits;
@@ -309,10 +313,22 @@ public interface ByteInputStream<E extends Exception> {
      * @throws ValidationException If the bytes aren't valid UTF-8.
      */
     default String getName() throws E {
+        return decodeName(getByteArray());
+    }
+
+    static String decodeName(byte[] bytes) {
         try {
-            return StandardCharsets.UTF_8.newDecoder().decode(ByteBuffer.wrap(getByteArray())).toString();
+            return StandardCharsets.UTF_8
+                    .newDecoder()
+                    .onMalformedInput(CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(CodingErrorAction.REPORT)
+                    .decode(ByteBuffer.wrap(bytes))
+                    .toString();
         } catch (CharacterCodingException e) {
-            throw new ValidationException("Invalid UTF-8 bytes in name", e);
+            ValidationException ve = new ValidationException("Invalid UTF-8 bytes in name",
+                    new RuntimeException("malformed UTF-8 encoding"));
+            ve.addSuppressed(e);
+            throw ve;
         }
     }
 

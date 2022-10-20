@@ -1,5 +1,6 @@
 dependencies {
     implementation(project(":jwasm"))
+    implementation(project(":jwasm-attrs"))
     implementation(project(":jwasm-tree"))
 }
 

@@ -3,17 +3,15 @@ package io.github.eutro.jwasm.sexp;
 import io.github.eutro.jwasm.BlockType;
 import io.github.eutro.jwasm.Limits;
 import io.github.eutro.jwasm.ModuleReader;
+import io.github.eutro.jwasm.ValidationException;
 import io.github.eutro.jwasm.sexp.Reader.MemArgPart;
+import io.github.eutro.jwasm.sexp.internal.ListParser;
 import io.github.eutro.jwasm.tree.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.CharacterCodingException;
-import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.*;
@@ -22,7 +20,14 @@ import static io.github.eutro.jwasm.Opcodes.*;
 import static io.github.eutro.jwasm.sexp.Parser.Entry.e;
 import static io.github.eutro.jwasm.sexp.Parser.IdCtx.Field.*;
 import static io.github.eutro.jwasm.sexp.Parser.IdVal.pure;
+import static io.github.eutro.jwasm.sexp.internal.ListParser.*;
 
+/**
+ * A class with static methods for parsing {@link ModuleNode}s from parsed s-expressions.
+ *
+ * @see Reader
+ * @see Unparser
+ */
 public class Parser {
     /**
      * Parse a {@link ModuleNode} from a parsed s-expression as obtained from {@link Reader#readAll(CharSequence)}.
@@ -99,6 +104,47 @@ public class Parser {
         });
     }
 
+    /**
+     * Parse a {@link ModuleNode} from a module written as (module id? quote ...), which may appear in WAST scripts.
+     * <p>
+     * Much like {@link #parseModule(Object)}, this does <i>not</i> validate the modules.
+     *
+     * @param obj The read s-expression representation of the module.
+     * @return The parsed {@link ModuleNode}.
+     * @throws ParseException If obj is not a syntactically valid module.
+     */
+    public static ModuleNode parseQuoteModule(Object obj) throws ParseException {
+        return mark(obj, () -> {
+            ListParser lp = new ListParser(expectList(obj));
+            expectEq("module", lp.expect());
+            lp.maybeParseId();
+
+            expectEq("quote", lp.expect());
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            while (lp.iter.hasNext()) {
+                byte[] bytes = expectClass(byte[].class, lp.iter.next());
+                baos.write(bytes, 0, bytes.length);
+            }
+            String text = new String(baos.toByteArray(), StandardCharsets.UTF_8);
+
+            Object module;
+            List<Object> read = Reader.readAll(text);
+            if (read.size() == 1
+                    && read.get(0) instanceof List
+                    && ((List<?>) read.get(0)).contains("module")) {
+                module = read.get(0);
+            } else {
+                List<Object> moduleList = new ArrayList<>();
+                moduleList.add("module");
+                moduleList.addAll(read);
+                module = moduleList;
+            }
+
+            return parseModule(module);
+        });
+    }
+
     private static Integer truncToU32(BigInteger it) {
         try {
             long lv = it.longValueExact();
@@ -107,7 +153,8 @@ public class Parser {
             }
             return (int) lv;
         } catch (ArithmeticException e) {
-            throw new ParseException("value out of range for u32", it);
+            throw new ParseException("Value out of range for u32", it,
+                    new RuntimeException("i32 constant out of range"));
         }
     }
 
@@ -140,104 +187,17 @@ public class Parser {
         DEFAULT,
     }
 
-    static class ListParser {
-        final List<?> list;
-        final ListIterator<?> iter;
-
-        ListParser(List<?> list) {
-            this(list, list.listIterator());
-        }
-
-        ListParser(List<?> list, int i) {
-            this(list, list.listIterator(i));
-        }
-
-        ListParser(List<?> list, ListIterator<?> iter) {
-            this.list = list;
-            this.iter = iter;
-        }
-
-        public Object expect() {
-            if (!iter.hasNext()) throw new ParseException("expected more terms", list);
-            return iter.next();
-        }
-
-        public Optional<Object> maybeParse(Predicate<Object> pred) {
-            if (!iter.hasNext()) return Optional.empty();
-            Object next = iter.next();
-            if (pred.test(next)) return Optional.of(next);
-            iter.previous();
-            return Optional.empty();
-        }
-
-        public Optional<String> maybeParseId() {
-            return maybeParse(Parser::isId)
-                    .map(String.class::cast);
-        }
-
-        public void expectEnd() {
-            if (iter.hasNext()) {
-                throw new ParseException("too many terms", list);
-            }
-        }
-
-        public Optional<Object> peek() {
-            if (!iter.hasNext()) return Optional.empty();
-            Object val = iter.next();
-            iter.previous();
-            return Optional.of(val);
-        }
-    }
-
-    private static boolean isId(Object it) {
-        return it instanceof String && ((String) it).startsWith("$");
-    }
-
     private static boolean couldBeId(Object it) {
         return it instanceof BigInteger || isId(it);
-    }
-
-    private static <T> T mark(Object obj, Supplier<T> f) {
-        try {
-            return f.get();
-        } catch (ParseException e) {
-            if (e.in != obj) {
-                throw new ParseException(e, obj);
-            } else {
-                throw e;
-            }
-        } catch (RuntimeException e) {
-            throw new ParseException("an error occurred", obj, e);
-        }
-    }
-
-    private static List<?> expectList(Object obj) {
-        if (!(obj instanceof List)) {
-            throw new ParseException("expected list", obj);
-        }
-        return (List<?>) obj;
-    }
-
-    private static <T> T expectClass(Class<T> clazz, Object obj) {
-        if (!clazz.isInstance(obj)) {
-            throw new ParseException("expected " + clazz.getSimpleName(), obj);
-        }
-        return clazz.cast(obj);
-    }
-
-    private static void expectEq(Object expected, Object val) {
-        if (!Objects.equals(expected, val)) {
-            throw new ParseException("expected " + expected, val);
-        }
     }
 
     static class IdCtx {
         public enum Field {
             DATA,
             ELEM,
-            FUNC,
+            FUNCTION,
             GLOBAL,
-            MEM,
+            MEMORY,
             TABLE,
             TYPE,
 
@@ -270,7 +230,8 @@ public class Parser {
         }
 
         public void addIdx(Field field, @Nullable String name) {
-            f(field).addOrThrow(name, () -> new ParseException("duplicate " + field + " id", name));
+            f(field).addOrThrow(name, () -> new ParseException("Duplicate " + field + " id", name,
+                    new RuntimeException("duplicate " + field)));
         }
 
         public IdCtx deriveLocals() {
@@ -387,7 +348,8 @@ public class Parser {
             case "externref": return EXTERNREF;
             // @formatter:on
         }
-        throw new ParseException("expected valtype", obj);
+        throw new ParseException("Expected valtype", obj,
+                new RuntimeException("unexpected token"));
     }
 
     interface IdVal<T> {
@@ -413,7 +375,7 @@ public class Parser {
     private static String parseId(Object obj) {
         String str = expectClass(String.class, obj);
         if (!str.startsWith("$")) {
-            throw new ParseException("expected identifier", obj);
+            throw new ParseException("Expected identifier", obj);
         }
         return str;
     }
@@ -429,7 +391,8 @@ public class Parser {
             if (!maybeParamOrResult.isPresent()) break;
             List<?> list = (List<?>) maybeParamOrResult.get();
             if ("param".equals(list.get(0))) {
-                if (!isParams) throw new ParseException("param following results", list);
+                if (!isParams) throw new ParseException("param following results", list,
+                        new RuntimeException("unexpected token"));
                 ListParser pLp = new ListParser(list, 1);
                 boolean hasId = false;
                 if (list.size() == 3) {
@@ -511,8 +474,8 @@ public class Parser {
 
     private static void parseImportField(List<ModuleField> fields, List<?> list) {
         ListParser lp = new ListParser(list, 1);
-        String modNm = parseName(lp.expect());
-        String nm = parseName(lp.expect());
+        String modNm = parseUtf8(lp.expect());
+        String nm = parseUtf8(lp.expect());
         List<?> desc = expectList(lp.expect());
         lp.expectEnd();
 
@@ -524,7 +487,7 @@ public class Parser {
                 TypeUse tu = parseTypeUse(dLp);
                 dLp.expectEnd();
                 fields.add(new ImportField(
-                        FUNC,
+                        FUNCTION,
                         maybeId.orElse(null),
                         module -> module.funcs,
                         desc,
@@ -548,7 +511,7 @@ public class Parser {
                 MemoryNode memTy = parseMemType(dLp);
                 dLp.expectEnd();
                 fields.add(new ImportField(
-                        MEM,
+                        MEMORY,
                         maybeId.orElse(null),
                         module -> module.mems,
                         desc,
@@ -573,21 +536,6 @@ public class Parser {
         }
     }
 
-    private static String parseName(Object obj) {
-        byte[] bytes = expectClass(byte[].class, obj);
-        CharBuffer buf;
-        try {
-            buf = StandardCharsets.UTF_8
-                    .newDecoder()
-                    .onMalformedInput(CodingErrorAction.REPORT)
-                    .onUnmappableCharacter(CodingErrorAction.REPORT)
-                    .decode(ByteBuffer.wrap(bytes));
-        } catch (CharacterCodingException e) {
-            throw new ParseException("error decoding string", e);
-        }
-        return buf.toString();
-    }
-
     private static class TypeUse implements IdVal<Integer> {
         final IdVal<Integer> underlying;
         @Nullable
@@ -608,7 +556,13 @@ public class Parser {
                 }
             }
 
-            return underlying.resolve(module, idcx);
+            int resolved = underlying.resolve(module, idcx);
+            if (module.types == null || module.types.types == null || module.types.types.size() <= resolved) {
+                throw new ValidationException("Type index out of bounds: " + resolved,
+                        new RuntimeException("unknown type"));
+            }
+
+            return resolved;
         }
     }
 
@@ -683,7 +637,8 @@ public class Parser {
             return (m, idcx) -> {
                 IndexedList<@Nullable String> il = idcx.fields.get(field);
                 if (!il.hasIndex(id)) {
-                    throw new ParseException(field + " id does not exist", o);
+                    throw new ParseException("Unknown " + field, o,
+                            new RuntimeException("unknown " + field));
                 }
                 return il.getIndex(id);
             };
@@ -713,8 +668,8 @@ public class Parser {
             ListParser eiLp = new ListParser((List<?>) maybeExportOrImport.get());
             switch (expectClass(String.class, eiLp.expect())) {
                 case "import": {
-                    String moduleName = parseName(eiLp.expect());
-                    String name = parseName(eiLp.expect());
+                    String moduleName = parseUtf8(eiLp.expect());
+                    String name = parseUtf8(eiLp.expect());
 
                     IdVal<AbstractImportNode> theImport = parseImport.get()
                             .fmap(f -> f.apply(moduleName, name));
@@ -724,7 +679,7 @@ public class Parser {
                     return;
                 }
                 case "export":
-                    exportNames.add(parseName(eiLp.expect()));
+                    exportNames.add(parseUtf8(eiLp.expect()));
                     eiLp.expectEnd();
                     break;
                 default:
@@ -755,7 +710,7 @@ public class Parser {
         Optional<String> maybeId = lp.maybeParseId();
 
         wrapExportImportAbbrevs(
-                FUNC,
+                FUNCTION,
                 EXPORTS_FUNC,
                 module -> module.funcs,
                 maybeId.orElse(null),
@@ -794,7 +749,7 @@ public class Parser {
                     fields.add(new ModuleField() {
                         @Override
                         public void idc(IdCtx idcx) {
-                            idcx.addIdx(FUNC, maybeId.orElse(null));
+                            idcx.addIdx(FUNCTION, maybeId.orElse(null));
                         }
 
                         @Override
@@ -844,7 +799,7 @@ public class Parser {
 
                             List<AbstractInsnNode> realInstrs = instrs.resolve(module, localIdcx);
                             ExprNode expr = new ExprNode();
-                            expr.instructions = new LinkedList<>(realInstrs);
+                            expr.instructions = new ArrayList<>(realInstrs);
                             expr.instructions.add(new EndInsnNode());
                             module.codes.codes.add(new CodeNode(locals, expr));
                         }
@@ -881,13 +836,13 @@ public class Parser {
             };
         });
         OPCODES.put("return", lp -> pure(new InsnNode(RETURN)));
-        OPCODES.put("call", lp -> parseIdx(FUNC, lp.expect()).fmap(CallInsnNode::new));
+        OPCODES.put("call", lp -> parseIdx(FUNCTION, lp.expect()).fmap(CallInsnNode::new));
         OPCODES.put("call_indirect", lp -> maybeParseIdx(TABLE, lp)
                 .ap(parseTypeUse(lp), CallIndirectInsnNode::new));
 
         OPCODES.put("ref.null", lp -> pure(new NullInsnNode(parseHeapType(lp))));
         OPCODES.put("ref.is_null", lp -> pure(new InsnNode(REF_IS_NULL)));
-        OPCODES.put("ref.func", lp -> parseIdx(FUNC, lp.expect()).fmap(FuncRefInsnNode::new));
+        OPCODES.put("ref.func", lp -> parseIdx(FUNCTION, lp.expect()).fmap(FuncRefInsnNode::new));
 
         OPCODES.put("drop", lp -> pure(new InsnNode(DROP)));
         OPCODES.put("select", lp -> pure(new SelectInsnNode(parseResults(lp))));
@@ -898,8 +853,8 @@ public class Parser {
         OPCODES.put("global.get", lp -> parseIdx(GLOBAL, lp.expect()).fmap(idx -> new VariableInsnNode(GLOBAL_GET, idx)));
         OPCODES.put("global.set", lp -> parseIdx(GLOBAL, lp.expect()).fmap(idx -> new VariableInsnNode(GLOBAL_SET, idx)));
 
-        OPCODES.put("table.get", lp -> maybeParseIdx(TABLE, lp).fmap(idx -> new PrefixTableInsnNode(TABLE_GET, idx)));
-        OPCODES.put("table.set", lp -> maybeParseIdx(TABLE, lp).fmap(idx -> new PrefixTableInsnNode(TABLE_SET, idx)));
+        OPCODES.put("table.get", lp -> maybeParseIdx(TABLE, lp).fmap(idx -> new TableInsnNode(TABLE_GET, idx)));
+        OPCODES.put("table.set", lp -> maybeParseIdx(TABLE, lp).fmap(idx -> new TableInsnNode(TABLE_SET, idx)));
         OPCODES.put("table.size", lp -> maybeParseIdx(TABLE, lp).fmap(idx -> new PrefixTableInsnNode(TABLE_SIZE, idx)));
         OPCODES.put("table.grow", lp -> maybeParseIdx(TABLE, lp).fmap(idx -> new PrefixTableInsnNode(TABLE_GROW, idx)));
         OPCODES.put("table.fill", lp -> maybeParseIdx(TABLE, lp).fmap(idx -> new PrefixTableInsnNode(TABLE_FILL, idx)));
@@ -1141,10 +1096,14 @@ public class Parser {
                 .orElse(0);
         int align = lp.maybeParse(it -> it instanceof MemArgPart && ((MemArgPart) it).type == MemArgPart.Type.ALIGN)
                 .map(extractValue.andThen(Parser::truncToU32))
+                .map(a -> {
+                    if (a == 0 || (a & (a - 1)) != 0) {
+                        throw new ParseException("align not a power of two", lp.iter.previous(),
+                                new RuntimeException("alignment"));
+                    }
+                    return Integer.numberOfTrailingZeros(a);
+                })
                 .orElse(n);
-        if ((n & (n - 1)) != 0) {
-            throw new ParseException("align not a power of two", lp.iter.previous());
-        }
         return new MemInsnNode(opcode, align, offset);
     }
 
@@ -1219,7 +1178,8 @@ public class Parser {
 
             TypeUse tu = parseTypeUse(lp);
             if (tu.locals != null && !tu.locals.index.isEmpty()) {
-                throw new ParseException("binding locals in a blocktype is illegal", lp.list);
+                throw new ParseException("Binding locals in a blocktype is illegal", lp.list,
+                        new RuntimeException("unexpected token"));
             }
             blockTy = tu.fmap(idx -> new BlockType(BlockType.Kind.FUNCTYPE, idx));
         }
@@ -1228,7 +1188,8 @@ public class Parser {
 
     private static IdVal<AbstractInsnNode> parsePlainInstr(ListParser lp) {
         String op = expectClass(String.class, lp.expect());
-        if (!OPCODES.containsKey(op)) throw new ParseException("unrecognised instruction", op);
+        if (!OPCODES.containsKey(op)) throw new ParseException("unrecognised instruction", op,
+                new RuntimeException("unknown operator"));
         return OPCODES.get(op).parse(lp);
     }
 
@@ -1397,7 +1358,7 @@ public class Parser {
         IdVal<List<AbstractInsnNode>> instrs = parseInstrs(lp);
         return (mod, idcx) -> {
             ExprNode en = new ExprNode();
-            en.instructions = new LinkedList<>(instrs.resolve(mod, idcx));
+            en.instructions = new ArrayList<>(instrs.resolve(mod, idcx));
             en.instructions.add(new EndInsnNode());
             return en;
         };
@@ -1435,15 +1396,15 @@ public class Parser {
                         if (eLp.peek().map(Parser::couldBeId).orElse(true)) {
                             List<IdVal<Integer>> inits = new ArrayList<>();
                             while (eLp.iter.hasNext()) {
-                                inits.add(parseIdx(FUNC, eLp.iter.next()));
+                                inits.add(parseIdx(FUNCTION, eLp.iter.next()));
                             }
                             n = inits.size();
                             en = (mod, idcx) -> {
                                 ElementNode node = new ElementNode();
-                                node.indeces = new int[inits.size()];
+                                node.indices = new int[inits.size()];
                                 int i = 0;
                                 for (IdVal<Integer> init : inits) {
-                                    node.indeces[i++] = init.resolve(mod, idcx);
+                                    node.indices[i++] = init.resolve(mod, idcx);
                                 }
                                 return node;
                             };
@@ -1478,9 +1439,10 @@ public class Parser {
                                 ElementNode node = en.resolve(module, idcx);
 
                                 node.table = idcx.f(TABLE).size() - 1;
+                                node.type = refTy;
 
                                 node.offset = new ExprNode();
-                                node.offset.instructions = new LinkedList<>(Arrays.asList(
+                                node.offset.instructions = new ArrayList<>(Arrays.asList(
                                         new ConstInsnNode(0),
                                         new EndInsnNode()
                                 ));
@@ -1527,7 +1489,7 @@ public class Parser {
         Optional<String> maybeId = lp.maybeParseId();
 
         wrapExportImportAbbrevs(
-                MEM,
+                MEMORY,
                 EXPORTS_MEM,
                 module -> module.mems,
                 maybeId.orElse(null),
@@ -1556,9 +1518,9 @@ public class Parser {
                             public void mod(IdCtx idcx, ModuleNode module) {
                                 if (module.datas == null) module.datas = new DataSegmentsNode();
                                 if (module.datas.datas == null) module.datas.datas = new ArrayList<>();
-                                int idx = idcx.f(MEM).size() - 1;
+                                int idx = idcx.f(MEMORY).size() - 1;
                                 ExprNode offset = new ExprNode();
-                                offset.instructions = new LinkedList<>(Arrays.asList(
+                                offset.instructions = new ArrayList<>(Arrays.asList(
                                         new ConstInsnNode(0),
                                         new EndInsnNode()
                                 ));
@@ -1571,7 +1533,7 @@ public class Parser {
                     fields.add(new ModuleField() {
                         @Override
                         public void idc(IdCtx idcx) {
-                            idcx.addIdx(MEM, maybeId.orElse(null));
+                            idcx.addIdx(MEMORY, maybeId.orElse(null));
                         }
 
                         @Override
@@ -1642,7 +1604,7 @@ public class Parser {
 
     private static void parseExportField(List<ModuleField> fields, List<?> list) {
         ListParser lp = new ListParser(list, 1);
-        String nm = parseName(lp.expect());
+        String nm = parseUtf8(lp.expect());
         List<?> desc = expectList(lp.expect());
         lp.expectEnd();
 
@@ -1651,9 +1613,9 @@ public class Parser {
         byte type;
         switch (expectClass(String.class, dLp.expect())) {
             // @formatter:off
-            case "func": field = FUNC; type = EXPORTS_FUNC; break;
+            case "func": field = FUNCTION; type = EXPORTS_FUNC; break;
             case "table": field = TABLE; type = EXPORTS_TABLE; break;
-            case "memory": field = MEM; type = EXPORTS_MEM; break;
+            case "memory": field = MEMORY; type = EXPORTS_MEM; break;
             case "global": field = GLOBAL; type = EXPORTS_GLOBAL; break;
             // @formatter:on
             default:
@@ -1677,7 +1639,7 @@ public class Parser {
 
     private static void parseStartField(List<ModuleField> fields, List<?> list) {
         ListParser lp = new ListParser(list, 1);
-        IdVal<Integer> x = parseIdx(FUNC, lp.expect());
+        IdVal<Integer> x = parseIdx(FUNCTION, lp.expect());
         lp.expectEnd();
         fields.add(new ModuleField() {
             @Override
@@ -1687,7 +1649,8 @@ public class Parser {
             @Override
             public void mod(IdCtx idcx, ModuleNode module) {
                 if (module.start != null) {
-                    throw new ParseException("duplicate start field", list);
+                    throw new ParseException("Duplicate start field", list,
+                            new RuntimeException("multiple start sections"));
                 }
                 module.start = x.resolve(module, idcx);
             }
@@ -1736,14 +1699,14 @@ public class Parser {
                 lp.peek().map(Parser::couldBeId).orElse(true))) {
             List<IdVal<Integer>> funcs = new ArrayList<>();
             while (lp.iter.hasNext()) {
-                funcs.add(parseIdx(FUNC, lp.iter.next()));
+                funcs.add(parseIdx(FUNCTION, lp.iter.next()));
             }
             en = en.bind(node -> (mod, idcx) -> {
                 node.type = FUNCREF;
-                node.indeces = new int[funcs.size()];
+                node.indices = new int[funcs.size()];
                 int i = 0;
                 for (IdVal<Integer> func : funcs) {
-                    node.indeces[i++] = func.resolve(mod, idcx);
+                    node.indices[i++] = func.resolve(mod, idcx);
                 }
                 return node;
             });
@@ -1791,7 +1754,7 @@ public class Parser {
 
             IdVal<Integer> memory;
             if (muLp.maybeParse("memory"::equals).isPresent()) {
-                memory = parseIdx(MEM, muLp.expect());
+                memory = parseIdx(MEMORY, muLp.expect());
                 muLp.expectEnd();
                 muLp = new ListParser(expectList(lp.expect()));
             } else {
@@ -1847,7 +1810,7 @@ public class Parser {
             lp.expectEnd();
             expr = (mod, idcx) -> {
                 ExprNode node = new ExprNode();
-                singleInsn.resolveInsns(node.instructions = new LinkedList<>(), mod, idcx);
+                singleInsn.resolveInsns(node.instructions = new ArrayList<>(), mod, idcx);
                 node.instructions.add(new EndInsnNode());
                 return node;
             };
@@ -1885,8 +1848,9 @@ public class Parser {
         public void mod(IdCtx idcx, ModuleNode module) {
             if (getLocalObjects.apply(module) != null) {
                 throw new ParseException(
-                        "imports must precede local " + field + "s",
-                        in
+                        "Imports must precede local " + field + "s",
+                        in,
+                        new RuntimeException("import after " + field)
                 );
             }
             if (module.imports == null) module.imports = new ImportsNode();

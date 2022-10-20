@@ -1,6 +1,7 @@
 package io.github.eutro.jwasm.sexp;
 
-import io.github.eutro.jwasm.sexp.Reader.Token;
+import io.github.eutro.jwasm.ByteInputStream;
+import io.github.eutro.jwasm.sexp.internal.Token;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
@@ -10,15 +11,23 @@ import java.io.File;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.charset.*;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CoderResult;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Random;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static io.github.eutro.jwasm.sexp.Reader.Token.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static io.github.eutro.jwasm.sexp.internal.Token.Type;
+import static io.github.eutro.jwasm.sexp.internal.Token.writeUTF8CodePoint;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ReaderTest {
     @Test
@@ -30,7 +39,8 @@ class ReaderTest {
                         new Token(Type.T_KEYWORD, "cd"),
                         new Token(Type.T_BR_CLOSE, ")")
                 ),
-                Reader.tokenise("(ab cd)")
+                Reader.tokenise(new ByteInputStream.ByteBufferByteInputStream(
+                        ByteBuffer.wrap("(ab cd)".getBytes(StandardCharsets.UTF_8))))
         );
     }
 
@@ -121,7 +131,7 @@ class ReaderTest {
                 continue; // thanks
             }
 
-            Reader.writeUTF8CodePoint(tested, codePoint);
+            writeUTF8CodePoint(tested, codePoint);
 
             expectedBuf.flip();
             byte[] expectedBytes = new byte[expectedBuf.remaining()];

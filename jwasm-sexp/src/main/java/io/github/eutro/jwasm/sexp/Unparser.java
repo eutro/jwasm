@@ -4,11 +4,20 @@ import io.github.eutro.jwasm.BlockType;
 import io.github.eutro.jwasm.ExprVisitor;
 import io.github.eutro.jwasm.Limits;
 import io.github.eutro.jwasm.Opcodes;
+import io.github.eutro.jwasm.attrs.InsnAttributes;
 import io.github.eutro.jwasm.tree.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+/**
+ * A class for converting a parsed {@link ModuleNode} into a Wat parsed s-expression.
+ *
+ * @see Parser
+ * @see Writer
+ */
 public class Unparser {
     public static Object unparse(ModuleNode node) {
         List<Object> moduleList = new ArrayList<>();
@@ -22,15 +31,19 @@ public class Unparser {
                 List<Object> funcList = new ArrayList<>();
                 funcList.add("func");
 
-                List<Object> params = new ArrayList<>();
-                params.add("param");
-                funcList.add(params);
-                unparseTypes(params, type.params);
+                if (type.params.length != 0) {
+                    List<Object> params = new ArrayList<>();
+                    params.add("param");
+                    funcList.add(params);
+                    unparseTypes(params, type.params);
+                }
 
-                List<Object> results = new ArrayList<>();
-                results.add("result");
-                funcList.add(results);
-                unparseTypes(results, type.returns);
+                if (type.returns.length != 0) {
+                    List<Object> results = new ArrayList<>();
+                    results.add("result");
+                    funcList.add(results);
+                    unparseTypes(results, type.returns);
+                }
 
                 typeList.add(funcList);
                 moduleList.add(typeList);
@@ -38,7 +51,46 @@ public class Unparser {
         }
 
         if (node.imports != null) {
-            throw new UnsupportedOperationException();
+            for (AbstractImportNode theImport : node.imports) {
+                List<Object> importList = new ArrayList<>();
+                importList.add("import");
+                importList.add(theImport.module.getBytes(StandardCharsets.UTF_8));
+                importList.add(theImport.name.getBytes(StandardCharsets.UTF_8));
+
+                List<Object> descList = new ArrayList<>();
+                switch (theImport.importType()) {
+                    case Opcodes.IMPORTS_FUNC: {
+                        descList.add("func");
+                        FuncImportNode fNode = (FuncImportNode) theImport;
+                        descList.add(Arrays.asList("type", BigInteger.valueOf(fNode.type)));
+                        break;
+                    }
+                    case Opcodes.IMPORTS_TABLE: {
+                        descList.add("table");
+                        TableImportNode tNode = (TableImportNode) theImport;
+                        descList.addAll(unparseLimits(tNode.limits));
+                        descList.add(unparseType(tNode.type));
+                        break;
+                    }
+                    case Opcodes.IMPORTS_MEM: {
+                        descList.add("memory");
+                        MemImportNode mNode = (MemImportNode) theImport;
+                        descList.addAll(unparseLimits(mNode.limits));
+                        break;
+                    }
+                    case Opcodes.IMPORTS_GLOBAL: {
+                        descList.add("global");
+                        GlobalImportNode gNode = (GlobalImportNode) theImport;
+                        descList.add(unparseGlobalType(gNode.type));
+                        break;
+                    }
+                    default:
+                        throw new IllegalStateException();
+                }
+
+                importList.add(descList);
+                moduleList.add(importList);
+            }
         }
 
         if (node.tables != null) {
@@ -61,11 +113,38 @@ public class Unparser {
         }
 
         if (node.globals != null) {
-            throw new UnsupportedOperationException();
+            for (GlobalNode global : node.globals) {
+                List<Object> globalList = new ArrayList<>();
+                globalList.add("global");
+                globalList.add(unparseGlobalType(global.type));
+                unparseExpr(globalList, global.init);
+
+                moduleList.add(globalList);
+            }
         }
 
         if (node.exports != null) {
-            throw new UnsupportedOperationException();
+            for (ExportNode export : node.exports) {
+                List<Object> exportList = new ArrayList<>();
+                exportList.add("export");
+                exportList.add(export.name.getBytes(StandardCharsets.UTF_8));
+
+                List<Object> descList = new ArrayList<>();
+                switch (export.type) {
+                    // @formatter:off
+                    case Opcodes.EXPORTS_FUNC: descList.add("func"); break;
+                    case Opcodes.EXPORTS_TABLE: descList.add("table"); break;
+                    case Opcodes.EXPORTS_MEM: descList.add("memory"); break;
+                    case Opcodes.EXPORTS_GLOBAL: descList.add("global"); break;
+                    // @formatter:on
+                    default:
+                        throw new IllegalStateException();
+                }
+                descList.add(export.index);
+
+                exportList.add(descList);
+                moduleList.add(exportList);
+            }
         }
 
         if (node.start != null) {
@@ -73,10 +152,48 @@ public class Unparser {
         }
 
         if (node.elems != null) {
-            throw new UnsupportedOperationException();
+            for (ElementNode elem : node.elems) {
+                List<Object> elemList = new ArrayList<>();
+                elemList.add("elem");
+
+                if (elem.offset == null) {
+                    if (!elem.passive) {
+                        // declarative
+                        elemList.add("declare");
+                    } // passive otherwise
+                } else {
+                    // active
+                    elemList.add(Arrays.asList("table", BigInteger.valueOf(elem.table)));
+                    List<Object> offsetList = new ArrayList<>();
+                    offsetList.add("offset");
+                    unparseExpr(offsetList, elem.offset);
+                    elemList.add(offsetList);
+                }
+
+                if (elem.init == null) {
+                    elemList.add("func");
+                    for (int index : elem.indices) {
+                        elemList.add(BigInteger.valueOf(index));
+                    }
+                } else {
+                    elemList.add(unparseType(elem.type));
+                    for (ExprNode init : elem.init) {
+                        List<Object> itemList = new ArrayList<>();
+                        unparseExpr(itemList, init);
+
+                        if (itemList.size() > 1) {
+                            itemList.add(0, "item"); // single insn abbrev otherwise
+                        }
+
+                        elemList.add(itemList);
+                    }
+                }
+
+                moduleList.add(elemList);
+            }
         }
 
-        if (node.codes != null) {
+        if (node.codes != null && node.codes.codes != null && !node.codes.codes.isEmpty()) {
             assert node.funcs != null;
 
             Iterator<FuncNode> fi = node.funcs.iterator();
@@ -106,10 +223,30 @@ public class Unparser {
         }
 
         if (node.datas != null) {
-            throw new UnsupportedOperationException();
+            for (DataNode data : node.datas) {
+                List<Object> dataList = new ArrayList<>();
+                dataList.add("data");
+                if (data.offset != null) {
+                    dataList.add(Arrays.asList("memory", BigInteger.valueOf(data.memory)));
+
+                    List<Object> offsetList = new ArrayList<>();
+                    offsetList.add("offset");
+                    unparseExpr(offsetList, data.offset);
+                    dataList.add(offsetList);
+                }
+                dataList.add(data.init);
+
+                moduleList.add(dataList);
+            }
         }
 
         return moduleList;
+    }
+
+    @NotNull
+    private static Object unparseGlobalType(GlobalTypeNode type) {
+        String refTy = unparseType(type.type);
+        return type.mut == Opcodes.MUT_CONST ? refTy : Arrays.asList("mut", refTy);
     }
 
     private static void unparseExpr(List<Object> t, ExprNode expr) {
@@ -117,19 +254,19 @@ public class Unparser {
         ExprVisitor ev = new ExprVisitor() {
             @Override
             public void visitInsn(byte opcode) {
-                super.visitInsn(opcode);
+                t.add(InsnAttributes.lookup(opcode).getMnemonic());
             }
 
             @Override
             public void visitPrefixInsn(int opcode) {
-                super.visitPrefixInsn(opcode);
+                t.add(InsnAttributes.lookupPrefix(opcode).getMnemonic());
             }
 
             @Override
             public void visitConstInsn(Object v) {
                 if (v instanceof Integer) t.add(Arrays.asList("i32.const", BigInteger.valueOf((int) v)));
                 else if (v instanceof Long) t.add(Arrays.asList("i64.const", BigInteger.valueOf((long) v)));
-                else if (v instanceof Float) t.add(Arrays.asList("f32.const", (double) v));
+                else if (v instanceof Float) t.add(Arrays.asList("f32.const", (double) (float) v));
                 else if (v instanceof Double) t.add(Arrays.asList("f64.const", (double) v));
                 else throw new IllegalArgumentException();
             }
@@ -146,37 +283,50 @@ public class Unparser {
 
             @Override
             public void visitSelectInsn(byte[] type) {
-                super.visitSelectInsn(type);
+                List<Object> selectList = new ArrayList<>();
+                selectList.add("select");
+                unparseTypes(selectList, type);
+                t.add(selectList);
             }
 
             @Override
             public void visitVariableInsn(byte opcode, int variable) {
-                super.visitVariableInsn(opcode, variable);
+                t.add(Arrays.asList(InsnAttributes.lookup(opcode).getMnemonic(), BigInteger.valueOf(variable)));
             }
 
             @Override
             public void visitTableInsn(byte opcode, int table) {
-                super.visitTableInsn(opcode, table);
+                t.add(Arrays.asList(InsnAttributes.lookup(opcode).getMnemonic(), BigInteger.valueOf(table)));
             }
 
             @Override
             public void visitPrefixTableInsn(int opcode, int table) {
-                super.visitPrefixTableInsn(opcode, table);
+                t.add(Arrays.asList(InsnAttributes.lookupPrefix(opcode).getMnemonic(),
+                        BigInteger.valueOf(table)));
             }
 
             @Override
             public void visitPrefixBinaryTableInsn(int opcode, int firstIndex, int secondIndex) {
-                super.visitPrefixBinaryTableInsn(opcode, firstIndex, secondIndex);
+                t.add(Arrays.asList(InsnAttributes.lookupPrefix(opcode).getMnemonic(),
+                        BigInteger.valueOf(firstIndex),
+                        BigInteger.valueOf(secondIndex)));
             }
 
             @Override
             public void visitMemInsn(byte opcode, int align, int offset) {
-                super.visitMemInsn(opcode, align, offset);
+                List<Object> insnList = new ArrayList<>();
+                insnList.add(InsnAttributes.lookup(opcode).getMnemonic());
+                if (offset != 0) {
+                    insnList.add(new Reader.MemArgPart(Reader.MemArgPart.Type.OFFSET, BigInteger.valueOf(offset)));
+                }
+                insnList.add(new Reader.MemArgPart(Reader.MemArgPart.Type.ALIGN, BigInteger.valueOf(align)));
+                t.add(insnList);
             }
 
             @Override
             public void visitIndexedMemInsn(int opcode, int index) {
-                super.visitIndexedMemInsn(opcode, index);
+                t.add(Arrays.asList(InsnAttributes.lookupPrefix(opcode).getMnemonic(),
+                        BigInteger.valueOf(index)));
             }
 
             @Override
@@ -235,15 +385,17 @@ public class Unparser {
                 t.add(Arrays.asList("call_indirect", BigInteger.valueOf(table), BigInteger.valueOf(type)));
             }
         };
+
         for (Iterator<AbstractInsnNode> iter = expr.instructions.iterator(); iter.hasNext(); ) {
             AbstractInsnNode insn = iter.next();
             if (insn instanceof EndInsnNode && !iter.hasNext()) {
                 return; // omit last 'end'
             }
+
             int prevSize = t.size();
             insn.accept(ev);
             if (prevSize == t.size()) {
-                t.add(Arrays.asList("???", insn));
+                throw new IllegalStateException();
             }
         }
     }
@@ -269,7 +421,7 @@ public class Unparser {
             case Opcodes.EXTERNREF:
                 return "externref";
             default:
-                throw new IllegalArgumentException();
+                throw new IllegalArgumentException(String.format("type 0x%02x", type));
         }
     }
 
