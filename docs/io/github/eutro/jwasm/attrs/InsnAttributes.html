@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":9,"i1":10,"i2":10,"i3":9,"i4":9,"i5":9,"i6":9};
+var methods = {"i0":9,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":9,"i7":9,"i8":9,"i9":9};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -140,18 +140,30 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/github/eutro/jwasm/attrs/InsnAttributes.html#getOpcode--">getOpcode</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i3" class="rowColor">
+<td class="colFirst"><code>@Nullable <a href="../../../../../io/github/eutro/jwasm/attrs/StackType.html" title="class in io.github.eutro.jwasm.attrs">StackType</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/github/eutro/jwasm/attrs/InsnAttributes.html#getType--">getType</a></span>()</code>&nbsp;</td>
+</tr>
+<tr id="i4" class="altColor">
+<td class="colFirst"><code><a href="../../../../../io/github/eutro/jwasm/attrs/VectorShape.html" title="enum in io.github.eutro.jwasm.attrs">VectorShape</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/github/eutro/jwasm/attrs/InsnAttributes.html#getVectorShape--">getVectorShape</a></span>()</code>&nbsp;</td>
+</tr>
+<tr id="i5" class="rowColor">
+<td class="colFirst"><code><a href="../../../../../io/github/eutro/jwasm/attrs/VisitTarget.html" title="enum in io.github.eutro.jwasm.attrs">VisitTarget</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/github/eutro/jwasm/attrs/InsnAttributes.html#getVisitTarget--">getVisitTarget</a></span>()</code>&nbsp;</td>
+</tr>
+<tr id="i6" class="altColor">
 <td class="colFirst"><code>static <a href="../../../../../io/github/eutro/jwasm/attrs/InsnAttributes.html" title="class in io.github.eutro.jwasm.attrs">InsnAttributes</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/github/eutro/jwasm/attrs/InsnAttributes.html#lookup-byte-">lookup</a></span>(byte&nbsp;opcode)</code>&nbsp;</td>
 </tr>
-<tr id="i4" class="altColor">
+<tr id="i7" class="rowColor">
 <td class="colFirst"><code>static <a href="../../../../../io/github/eutro/jwasm/attrs/InsnAttributes.html" title="class in io.github.eutro.jwasm.attrs">InsnAttributes</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/github/eutro/jwasm/attrs/InsnAttributes.html#lookup-io.github.eutro.jwasm.attrs.Opcode-">lookup</a></span>(<a href="../../../../../io/github/eutro/jwasm/attrs/Opcode.html" title="class in io.github.eutro.jwasm.attrs">Opcode</a>&nbsp;opcode)</code>&nbsp;</td>
 </tr>
-<tr id="i5" class="rowColor">
+<tr id="i8" class="altColor">
 <td class="colFirst"><code>static <a href="../../../../../io/github/eutro/jwasm/attrs/InsnAttributes.html" title="class in io.github.eutro.jwasm.attrs">InsnAttributes</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/github/eutro/jwasm/attrs/InsnAttributes.html#lookup-java.lang.String-">lookup</a></span>(<a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;mnemonic)</code>&nbsp;</td>
 </tr>
-<tr id="i6" class="altColor">
+<tr id="i9" class="rowColor">
 <td class="colFirst"><code>static <a href="../../../../../io/github/eutro/jwasm/attrs/InsnAttributes.html" title="class in io.github.eutro.jwasm.attrs">InsnAttributes</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../io/github/eutro/jwasm/attrs/InsnAttributes.html#lookupPrefix-int-">lookupPrefix</a></span>(int&nbsp;intOpcode)</code>&nbsp;</td>
 </tr>
@@ -234,10 +246,38 @@ extends <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html
 <a name="getOpcode--">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>getOpcode</h4>
 <pre>public&nbsp;<a href="../../../../../io/github/eutro/jwasm/attrs/Opcode.html" title="class in io.github.eutro.jwasm.attrs">Opcode</a>&nbsp;getOpcode()</pre>
+</li>
+</ul>
+<a name="getVisitTarget--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getVisitTarget</h4>
+<pre>public&nbsp;<a href="../../../../../io/github/eutro/jwasm/attrs/VisitTarget.html" title="enum in io.github.eutro.jwasm.attrs">VisitTarget</a>&nbsp;getVisitTarget()</pre>
+</li>
+</ul>
+<a name="getType--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getType</h4>
+<pre>@Nullable
+public&nbsp;@Nullable <a href="../../../../../io/github/eutro/jwasm/attrs/StackType.html" title="class in io.github.eutro.jwasm.attrs">StackType</a>&nbsp;getType()</pre>
+</li>
+</ul>
+<a name="getVectorShape--">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>getVectorShape</h4>
+<pre>public&nbsp;<a href="../../../../../io/github/eutro/jwasm/attrs/VectorShape.html" title="enum in io.github.eutro.jwasm.attrs">VectorShape</a>&nbsp;getVectorShape()</pre>
 </li>
 </ul>
 </li>

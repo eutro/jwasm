@@ -133,13 +133,17 @@ public class ListParser {
     }
 
     private static long parseIX(Object obj, int x) {
-        BigInteger bigInt = expectClass(BigInteger.class, obj);
+        BigInteger bigInt = expectBigInt(obj);
         if (bigInt.compareTo(BigInteger.ONE.shiftLeft(x - 1).negate()) < 0
                 || bigInt.compareTo(BigInteger.ONE.shiftLeft(x).subtract(BigInteger.ONE)) > 0) {
             throw new Parser.ParseException("i" + x + " constant out of range", bigInt,
                     new RuntimeException("constant out of range"));
         }
         return bigInt.longValue();
+    }
+
+    public static BigInteger expectBigInt(Object obj) {
+        return expectClass(Reader.ParsedNumber.class, obj).toBigInt();
     }
 
     public static int parseI32(Object obj) {
@@ -156,14 +160,8 @@ public class ListParser {
 
     public static float parseF32(Object val, boolean acceptScriptNan) {
         float f;
-        if (val instanceof Reader.BigFloat) {
-            f = ((Reader.BigFloat) val).toFloat(acceptScriptNan);
-        } else if (val instanceof BigInteger) {
-            f = ((BigInteger) val).floatValue();
-            if (Float.isInfinite(f)) {
-                throw new Parser.ParseException("f32 constant out of range", val,
-                        new RuntimeException("constant out of range"));
-            }
+        if (val instanceof Reader.ParsedNumber) {
+            f = ((Reader.ParsedNumber) val).toFloat(acceptScriptNan);
         } else {
             throw new Parser.ParseException("Expected float", val,
                     val instanceof String ? new RuntimeException("unknown operator") : null);
@@ -177,14 +175,8 @@ public class ListParser {
 
     public static double parseF64(Object val, boolean acceptScriptNan) {
         double f;
-        if (val instanceof Reader.BigFloat) {
-            f = ((Reader.BigFloat) val).toDouble(acceptScriptNan);
-        } else if (val instanceof BigInteger) {
-            f = ((BigInteger) val).doubleValue();
-            if (Double.isInfinite(f)) {
-                throw new Parser.ParseException("f64 constant out of range", val,
-                        new RuntimeException("constant out of range"));
-            }
+        if (val instanceof Reader.ParsedNumber) {
+            f = ((Reader.ParsedNumber) val).toDouble(acceptScriptNan);
         } else {
             throw new Parser.ParseException("Expected double", val,
                     val instanceof String ? new RuntimeException("unknown operator") : null);

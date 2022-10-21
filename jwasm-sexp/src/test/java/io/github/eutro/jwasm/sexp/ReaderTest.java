@@ -73,7 +73,7 @@ class ReaderTest {
                 Collections.singletonList(0xa0ff + (double) 0xf141a59aL / 0x100000000L),
                 Reader.readAll("0xa0_ff.f141_a59a")
                         .stream()
-                        .map(it -> ((Reader.BigFloat) it).toDouble(false))
+                        .map(it -> ((Reader.ParsedNumber) it).toDouble(false))
                         .collect(Collectors.toList())
         );
 
@@ -101,14 +101,14 @@ class ReaderTest {
                 ),
                 Reader.readAll("0123456789e019 0123456789e+019 0123456789e-019")
                         .stream()
-                        .map(it -> ((Reader.BigFloat) it).toDouble(false))
+                        .map(it -> ((Reader.ParsedNumber) it).toDouble(false))
                         .collect(Collectors.toList())
         );
 
         Object val = Reader.readAll("nan:0x80_0000").get(0);
-        assertEquals(Reader.BigFloat.class, val.getClass());
+        assertEquals(Reader.ParsedNumber.class, val.getClass());
         assertThrows(RuntimeException.class, () ->
-                ((Reader.BigFloat) val).toFloat(false));
+                ((Reader.ParsedNumber) val).toFloat(false));
     }
 
     static Stream<DynamicTest> runForTestSuite(Consumer<String> sourceConsumer) {

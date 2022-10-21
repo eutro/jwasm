@@ -93,7 +93,7 @@ public class Reader {
         public final BigInteger value;
 
         public static Function<String, Object> parseWith(Type type) {
-            return s -> new MemArgPart(type, (BigInteger) Token.parseInt(s.substring(s.indexOf('=') + 1)));
+            return s -> new MemArgPart(type, Token.parseNumber(s.substring(s.indexOf('=') + 1)).toBigInt());
         }
 
         @Override
@@ -152,22 +152,30 @@ public class Reader {
         }
     }
 
-    public static class BigFloat extends Number {
+    public static class ParsedNumber extends Number {
+        public final boolean hasSign;
         public final int sign;
         public final BigInteger mantissa, exponent;
         public final ExpType expType;
         public final NanType nanType;
+        public final String token;
 
-        public BigFloat(int sign, BigInteger mantissa, BigInteger exponent, ExpType expType) {
-            this(sign, mantissa, exponent, expType, null);
+        public ParsedNumber(String token, int sign, BigInteger mantissa, BigInteger exponent, ExpType expType, boolean hasSign) {
+            this(token, hasSign, sign, mantissa, exponent, expType, null);
         }
 
-        public BigFloat(int sign, BigInteger mantissa, BigInteger exponent, ExpType expType, NanType nanType) {
+        public ParsedNumber(String token, boolean hasSign, int sign, BigInteger mantissa, BigInteger exponent, ExpType expType, NanType nanType) {
+            this.token = token;
+            this.hasSign = hasSign;
             this.sign = sign;
             this.mantissa = mantissa;
             this.exponent = exponent;
             this.expType = expType;
             this.nanType = nanType;
+        }
+
+        public boolean isInteger() {
+            return mantissa != null && exponent != null && exponent.equals(BigInteger.ZERO);
         }
 
         @Override
@@ -206,6 +214,12 @@ public class Reader {
             public String toString() {
                 return name().toLowerCase(Locale.ROOT);
             }
+        }
+
+        public BigInteger toBigInt() {
+            if (!isInteger()) throw new Parser.ParseException("Expected integer", this,
+                    new RuntimeException("unexpected token"));
+            return mantissa.multiply(BigInteger.valueOf(sign));
         }
 
         public float toFloat(boolean acceptScriptNan) {
@@ -290,12 +304,7 @@ public class Reader {
 
         @Override
         public String toString() {
-            return "BigFloat{" +
-                    "sign=" + sign +
-                    ", mantissa=" + mantissa +
-                    ", exponent=" + exponent +
-                    ", expType=" + expType +
-                    '}';
+            return token;
         }
     }
 }

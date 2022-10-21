@@ -189,7 +189,7 @@ public class Parser {
     }
 
     private static boolean couldBeId(Object it) {
-        return it instanceof BigInteger || isId(it);
+        return it instanceof Reader.ParsedNumber || isId(it);
     }
 
     static class IdCtx {
@@ -641,8 +641,8 @@ public class Parser {
     }
 
     private static IdVal<Integer> parseIdx(IdCtx.Field field, Object o) {
-        if (o instanceof BigInteger) {
-            int i = ((BigInteger) o).intValueExact();
+        if (o instanceof Reader.ParsedNumber) {
+            int i = ((Reader.ParsedNumber) o).toBigInt().intValueExact();
             return (m, idcx) -> i;
         } else if (o instanceof String) {
             String id = parseId(o);
@@ -837,7 +837,7 @@ public class Parser {
             while ((maybeLabel = lp.maybeParse(Parser::couldBeId)).isPresent()) {
                 labels.add(parseLabelIdx(maybeLabel.get()));
             }
-            if (labels.size() < 1) throw new ParseException("expected at least one lable for br_table", lp.list);
+            if (labels.size() < 1) throw new ParseException("Expected at least one lable for br_table", lp.list);
             return (mod, idcx) -> {
                 int[] iLabels = new int[labels.size() - 1];
                 int i = 0;
@@ -965,7 +965,12 @@ public class Parser {
     }
 
     static byte parseU8(ListParser lp) {
-        BigInteger bigInt = expectClass(BigInteger.class, lp.expect());
+        Reader.ParsedNumber num = expectClass(Reader.ParsedNumber.class, lp.expect());
+        if (num.hasSign || !num.isInteger()) {
+            throw new ParseException("Expected natural", num,
+                    new RuntimeException("malformed lane index"));
+        }
+        BigInteger bigInt = num.toBigInt();
         if (bigInt.compareTo(BigInteger.ZERO) < 0 ||
                 bigInt.compareTo(BigInteger.valueOf(1 << 8)) >= 0) {
             throw new ParseException("Value out of range for u8", bigInt,
@@ -1048,7 +1053,7 @@ public class Parser {
         // The IndexedList indexes labels with *absolute* depth, but instructions use relative depths,
         // so invert if it is referenced by name.
         return parseIdx(LABEL, obj)
-                .bind(raw -> (mod, idcx) -> obj instanceof BigInteger ? raw : idcx.f(LABEL).size() - raw);
+                .bind(raw -> (mod, idcx) -> obj instanceof String ? idcx.f(LABEL).size() - raw : raw);
     }
 
     private interface InstrSeq {
@@ -1304,9 +1309,9 @@ public class Parser {
                     return pure((moduleName, name) -> new TableImportNode(moduleName, name, tableTy.limits, tableTy.type));
                 },
                 () -> {
-                    // tabletype (= limits reftype) starts with a BigInteger, so if it's not that we have a valtype,
+                    // tabletype (= limits reftype) starts with a number, so if it's not that we have a valtype,
                     // thus it's an elem abbrev
-                    Optional<Object> maybeValType = lp.maybeParse(it -> !(it instanceof BigInteger));
+                    Optional<Object> maybeValType = lp.maybeParse(it -> !(it instanceof Reader.ParsedNumber));
                     @Nullable ModuleField maybeElem = null;
                     TableNode table;
                     if (maybeValType.isPresent()) {
@@ -1403,8 +1408,11 @@ public class Parser {
     }
 
     private static Limits parseLimits(ListParser lp) {
-        BigInteger min = expectClass(BigInteger.class, lp.expect());
-        BigInteger max = lp.maybeParse(BigInteger.class::isInstance).map(BigInteger.class::cast).orElse(null);
+        BigInteger min = expectBigInt(lp.expect());
+        BigInteger max = lp.maybeParse(Reader.ParsedNumber.class::isInstance)
+                .map(Reader.ParsedNumber.class::cast)
+                .map(Reader.ParsedNumber::toBigInt)
+                .orElse(null);
         return new Limits(truncToU32(min), max == null ? null : truncToU32(max));
     }
 

@@ -111,15 +111,15 @@ public class WastReader {
         Object val;
         switch (macro) {
             // @formatter:off
-            case "i32.const": val = expectClass(BigInteger.class, rLp.expect()).intValue(); break;
-            case "i64.const": val = expectClass(BigInteger.class, rLp.expect()).longValue(); break;
+            case "i32.const": val = expectBigInt(rLp.expect()).intValue(); break;
+            case "i64.const": val = expectBigInt(rLp.expect()).longValue(); break;
             case "f32.const": val = expectClass(Number.class, rLp.expect()).floatValue(); break;
             case "f64.const": val = expectClass(Number.class, rLp.expect()).doubleValue(); break;
             case "v128.const": val = ListParser.parseV128Const(rLp, true); break;
             case "ref.null": val = null; rLp.expect(); break;
             case "ref.extern":
                 if (!rLp.iter.hasNext()) return false;
-                val = new ExternRef(expectClass(BigInteger.class, rLp.expect()));
+                val = new ExternRef(expectBigInt(rLp.expect()));
                 break;
             // @formatter:on
             default:

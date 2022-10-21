@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":10,"i2":9,"i3":9,"i4":9,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10,"i26":10,"i27":10,"i28":10,"i29":10,"i30":10,"i31":10,"i32":10,"i33":10};
+var methods = {"i0":10,"i1":10,"i2":9,"i3":9,"i4":9,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10,"i26":10,"i27":10,"i28":10,"i29":10,"i30":10,"i31":10,"i32":10,"i33":10,"i34":10,"i35":10,"i36":10,"i37":10,"i38":10};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -386,7 +386,9 @@ extends <a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html" title
 <div class="block">Visit a
  <a href="https://webassembly.github.io/spec/core/binary/instructions.html#memory-instructions">memory</a>
  <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>
- with a single memory argument.</div>
+ with a single
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-memarg">memory</a>
+ argument.</div>
 </td>
 </tr>
 <tr id="i26" class="altColor">
@@ -459,6 +461,63 @@ extends <a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html" title
 <div class="block">Visit a
  <a href="https://webassembly.github.io/spec/core/binary/instructions.html#variable-instructions">variable</a>
  <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>.</div>
+</td>
+</tr>
+<tr id="i34" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ExprValidator.html#visitVectorConstOrShuffleInsn-int-byte:A-">visitVectorConstOrShuffleInsn</a></span>(int&nbsp;opcode,
+                             byte[]&nbsp;bytes)</code>
+<div class="block">Visit a vector
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#vector-instructions">vector</a>
+ const or shuffle
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>.</div>
+</td>
+</tr>
+<tr id="i35" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ExprValidator.html#visitVectorInsn-int-">visitVectorInsn</a></span>(int&nbsp;opcode)</code>
+<div class="block">Visit a vector
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#vector-instructions">vector</a>
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>
+ with no immediate arguments.</div>
+</td>
+</tr>
+<tr id="i36" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ExprValidator.html#visitVectorLaneInsn-int-byte-">visitVectorLaneInsn</a></span>(int&nbsp;opcode,
+                   byte&nbsp;lane)</code>
+<div class="block">Visit a vector
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#vector-instructions">vector</a>
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>.</div>
+</td>
+</tr>
+<tr id="i37" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ExprValidator.html#visitVectorMemInsn-int-int-int-">visitVectorMemInsn</a></span>(int&nbsp;opcode,
+                  int&nbsp;align,
+                  int&nbsp;offset)</code>
+<div class="block">Visit a vector
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#vector-instructions">vector</a>
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>
+ with a single
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-memarg">memory</a>
+ argument.</div>
+</td>
+</tr>
+<tr id="i38" class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ExprValidator.html#visitVectorMemLaneInsn-int-int-int-byte-">visitVectorMemLaneInsn</a></span>(int&nbsp;opcode,
+                      int&nbsp;align,
+                      int&nbsp;offset,
+                      byte&nbsp;lane)</code>
+<div class="block">Visit a vector
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#vector-instructions">vector</a>
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>
+ with a
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-memarg">memory</a>
+ and a
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-laneidx">lane</a>
+ argument.</div>
 </td>
 </tr>
 </table>
@@ -943,7 +1002,9 @@ protected&nbsp;@Nullable <a href="https://docs.oracle.com/javase/8/docs/api/java
 <div class="block">Visit a
  <a href="https://webassembly.github.io/spec/core/binary/instructions.html#memory-instructions">memory</a>
  <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>
- with a single memory argument.</div>
+ with a single
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-memarg">memory</a>
+ argument.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
 <dd><code><a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html#visitMemInsn-byte-int-int-">visitMemInsn</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html" title="class in io.github.eutro.jwasm">ExprVisitor</a></code></dd>
@@ -1123,6 +1184,128 @@ protected&nbsp;@Nullable <a href="https://docs.oracle.com/javase/8/docs/api/java
 <dd><code>type</code> - The
               <a href="https://webassembly.github.io/spec/core/binary/modules.html#binary-typeidx">index</a>
               of the function's type.</dd>
+</dl>
+</li>
+</ul>
+<a name="visitVectorInsn-int-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>visitVectorInsn</h4>
+<pre>public&nbsp;void&nbsp;visitVectorInsn(int&nbsp;opcode)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html#visitVectorInsn-int-">ExprVisitor</a></code></span></div>
+<div class="block">Visit a vector
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#vector-instructions">vector</a>
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>
+ with no immediate arguments.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html#visitVectorInsn-int-">visitVectorInsn</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html" title="class in io.github.eutro.jwasm">ExprVisitor</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>opcode</code> - The opcode of the instruction.</dd>
+</dl>
+</li>
+</ul>
+<a name="visitVectorMemInsn-int-int-int-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>visitVectorMemInsn</h4>
+<pre>public&nbsp;void&nbsp;visitVectorMemInsn(int&nbsp;opcode,
+                               int&nbsp;align,
+                               int&nbsp;offset)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html#visitVectorMemInsn-int-int-int-">ExprVisitor</a></code></span></div>
+<div class="block">Visit a vector
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#vector-instructions">vector</a>
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>
+ with a single
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-memarg">memory</a>
+ argument.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html#visitVectorMemInsn-int-int-int-">visitVectorMemInsn</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html" title="class in io.github.eutro.jwasm">ExprVisitor</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>opcode</code> - The opcode of the instruction.</dd>
+<dd><code>align</code> - The <code>align</code> of the argument.</dd>
+<dd><code>offset</code> - The <code>offset</code> of the argument.</dd>
+</dl>
+</li>
+</ul>
+<a name="visitVectorMemLaneInsn-int-int-int-byte-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>visitVectorMemLaneInsn</h4>
+<pre>public&nbsp;void&nbsp;visitVectorMemLaneInsn(int&nbsp;opcode,
+                                   int&nbsp;align,
+                                   int&nbsp;offset,
+                                   byte&nbsp;lane)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html#visitVectorMemLaneInsn-int-int-int-byte-">ExprVisitor</a></code></span></div>
+<div class="block">Visit a vector
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#vector-instructions">vector</a>
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>
+ with a
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-memarg">memory</a>
+ and a
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-laneidx">lane</a>
+ argument.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html#visitVectorMemLaneInsn-int-int-int-byte-">visitVectorMemLaneInsn</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html" title="class in io.github.eutro.jwasm">ExprVisitor</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>opcode</code> - The opcode of the instruction.</dd>
+<dd><code>align</code> - The <code>align</code> of the argument.</dd>
+<dd><code>offset</code> - The <code>offset</code> of the argument.</dd>
+<dd><code>lane</code> - The lane argument.</dd>
+</dl>
+</li>
+</ul>
+<a name="visitVectorConstOrShuffleInsn-int-byte:A-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>visitVectorConstOrShuffleInsn</h4>
+<pre>public&nbsp;void&nbsp;visitVectorConstOrShuffleInsn(int&nbsp;opcode,
+                                          byte[]&nbsp;bytes)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html#visitVectorConstOrShuffleInsn-int-byte:A-">ExprVisitor</a></code></span></div>
+<div class="block">Visit a vector
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#vector-instructions">vector</a>
+ const or shuffle
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html#visitVectorConstOrShuffleInsn-int-byte:A-">visitVectorConstOrShuffleInsn</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html" title="class in io.github.eutro.jwasm">ExprVisitor</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>opcode</code> - The opcode of the instruction.</dd>
+<dd><code>bytes</code> - The value of the immediate 16 bytes.</dd>
+</dl>
+</li>
+</ul>
+<a name="visitVectorLaneInsn-int-byte-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>visitVectorLaneInsn</h4>
+<pre>public&nbsp;void&nbsp;visitVectorLaneInsn(int&nbsp;opcode,
+                                byte&nbsp;lane)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html#visitVectorLaneInsn-int-byte-">ExprVisitor</a></code></span></div>
+<div class="block">Visit a vector
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#vector-instructions">vector</a>
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>.
+ with a single
+ <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-laneidx">lane</a>
+ argument.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html#visitVectorLaneInsn-int-byte-">visitVectorLaneInsn</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html" title="class in io.github.eutro.jwasm">ExprVisitor</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>opcode</code> - The opcode of the instruction.</dd>
+<dd><code>lane</code> - The lane argument of the instruction.</dd>
 </dl>
 </li>
 </ul>

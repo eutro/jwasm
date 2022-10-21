@@ -1,7 +1,7 @@
 package io.github.eutro.jwasm.sexp.internal;
 
 import io.github.eutro.jwasm.sexp.Reader;
-import io.github.eutro.jwasm.sexp.Reader.BigFloat;
+import io.github.eutro.jwasm.sexp.Reader.ParsedNumber;
 
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
@@ -19,22 +19,19 @@ public class Token {
         this.value = value;
     }
 
-    public static Object parseInt(String num) {
-        Object o = parseFloat(num);
-        if (!(o instanceof BigInteger)) throw new IllegalStateException();
-        return o;
-    }
-
-    public static Object parseFloat(String num) {
+    public static ParsedNumber parseNumber(String num) {
         num = num.replaceAll("_", "");
 
         int i = 0;
+        boolean hasSign = false;
         int sign = 1;
         if (num.startsWith("-")) {
             sign = -1;
             i++;
+            hasSign = true;
         } else if (num.startsWith("+")) {
             i++;
+            hasSign = true;
         }
         int radix = 10;
         if (num.startsWith("0x", i)) {
@@ -43,27 +40,27 @@ public class Token {
         }
 
         if (num.startsWith("inf", i)) {
-            return new BigFloat(sign, null, null, BigFloat.ExpType.INF);
+            return new ParsedNumber(num, sign, null, null, ParsedNumber.ExpType.INF, hasSign);
         }
 
         if (num.startsWith("nan", i)) {
             if (!num.startsWith("nan:", i)) {
-                return new BigFloat(sign, null, null, BigFloat.ExpType.NAN);
+                return new ParsedNumber(num, sign, null, null, ParsedNumber.ExpType.NAN, hasSign);
             }
             i += 4;
             if (num.startsWith("0x", i)) {
                 i += 2;
                 long bits = Long.parseLong(num.substring(i), 16);
-                return new BigFloat(sign, BigInteger.valueOf(bits), null, BigFloat.ExpType.NAN);
+                return new ParsedNumber(num, sign, BigInteger.valueOf(bits), null, Reader.ParsedNumber.ExpType.NAN, hasSign);
             }
             String nanType = num.substring(i);
             switch (nanType) {
                 case "canonical":
-                    return new BigFloat(sign, null, null, BigFloat.ExpType.NAN,
-                            BigFloat.NanType.CANONICAL);
+                    return new ParsedNumber(num, hasSign, sign, null, null,
+                            ParsedNumber.ExpType.NAN, ParsedNumber.NanType.CANONICAL);
                 case "arithmetic":
-                    return new BigFloat(sign, null, null, BigFloat.ExpType.NAN,
-                            BigFloat.NanType.ARITHMETIC);
+                    return new ParsedNumber(num, hasSign, sign, null, null,
+                            ParsedNumber.ExpType.NAN, ParsedNumber.NanType.ARITHMETIC);
                 default:
                     throw new UnsupportedOperationException("nan:" + nanType);
             }
@@ -72,7 +69,7 @@ public class Token {
         Matcher matcher = Pattern.compile(radix == 10 ? "[eE]" : "[pP]")
                 .matcher(num);
         String base;
-        BigFloat.ExpType expType = radix == 10 ? BigFloat.ExpType.DEC : BigFloat.ExpType.HEX;
+        Reader.ParsedNumber.ExpType expType = radix == 10 ? Reader.ParsedNumber.ExpType.DEC : ParsedNumber.ExpType.HEX;
         BigInteger exponent;
         if (matcher.region(i, num.length()).find()) {
             base = num.substring(i, matcher.start());
@@ -101,12 +98,9 @@ public class Token {
                 }
                 mantissa = mantissa.add(fracPart);
             }
-        } else if (exponent.equals(BigInteger.ZERO)) {
-            return new BigInteger(whole, radix)
-                    .multiply(BigInteger.valueOf(sign));
         }
 
-        return new BigFloat(sign, mantissa, exponent, expType);
+        return new Reader.ParsedNumber(num, sign, mantissa, exponent, expType, hasSign);
     }
 
     public static Object parseString(String str) {
@@ -220,8 +214,7 @@ public class Token {
     public enum Type {
         T_KEYWORD,
         T_ID,
-        T_INT(Token::parseInt),
-        T_FLOAT(Token::parseFloat),
+        T_NUMBER(Token::parseNumber),
         T_STRING(Token::parseString),
         T_BR_OPEN($ -> {
             throw new IllegalStateException();
@@ -260,11 +253,6 @@ public class Token {
             // prefer anything else to keyword (e.g. nan or inf)
             if (lhs == T_KEYWORD) return rhs;
             if (rhs == T_KEYWORD) return lhs;
-
-            // prefer T_INT over T_FLOAT
-            if (lhs == T_INT && rhs == T_FLOAT || lhs == T_FLOAT && rhs == T_INT) {
-                return T_INT;
-            }
 
             throw new IllegalStateException("overlapping tokens " + lhs + " and " + rhs);
         }
