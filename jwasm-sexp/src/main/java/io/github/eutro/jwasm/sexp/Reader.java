@@ -43,6 +43,8 @@ public class Reader {
      *
      * @param stream The stream to read from.
      * @return The list of s-expressions parsed from the string.
+     * @param <E> The stream's exception type.
+     * @throws E If reading from the stream fails.
      */
     public static <E extends Exception> List<Object> readAll(ByteInputStream<E> stream) throws E {
         ListIterator<Token> li = tokenise(stream).listIterator();

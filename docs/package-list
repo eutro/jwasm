@@ -1,0 +1,7 @@
+io.github.eutro.jwasm
+io.github.eutro.jwasm.attrs
+io.github.eutro.jwasm.sexp
+io.github.eutro.jwasm.sexp.internal
+io.github.eutro.jwasm.sexp.wast
+io.github.eutro.jwasm.tree
+io.github.eutro.jwasm.tree.analysis
