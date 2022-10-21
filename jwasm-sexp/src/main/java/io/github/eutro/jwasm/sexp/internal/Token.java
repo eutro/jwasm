@@ -1,6 +1,7 @@
 package io.github.eutro.jwasm.sexp.internal;
 
 import io.github.eutro.jwasm.sexp.Reader;
+import io.github.eutro.jwasm.sexp.Reader.BigFloat;
 
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
@@ -42,28 +43,27 @@ public class Token {
         }
 
         if (num.startsWith("inf", i)) {
-            return Double.POSITIVE_INFINITY * sign;
+            return new BigFloat(sign, null, null, BigFloat.ExpType.INF);
         }
 
         if (num.startsWith("nan", i)) {
             if (!num.startsWith("nan:", i)) {
-                return Double.NaN;
+                return new BigFloat(sign, null, null, BigFloat.ExpType.NAN);
             }
             i += 4;
             if (num.startsWith("0x", i)) {
                 i += 2;
                 long bits = Long.parseLong(num.substring(i), 16);
-                if ((int) bits == bits) {
-                    return Float.intBitsToFloat((int) bits);
-                } else {
-                    return Double.longBitsToDouble(bits);
-                }
+                return new BigFloat(sign, BigInteger.valueOf(bits), null, BigFloat.ExpType.NAN);
             }
             String nanType = num.substring(i);
             switch (nanType) {
                 case "canonical":
-                case "arithmetic": // ???
-                    return Double.NaN;
+                    return new BigFloat(sign, null, null, BigFloat.ExpType.NAN,
+                            BigFloat.NanType.CANONICAL);
+                case "arithmetic":
+                    return new BigFloat(sign, null, null, BigFloat.ExpType.NAN,
+                            BigFloat.NanType.ARITHMETIC);
                 default:
                     throw new UnsupportedOperationException("nan:" + nanType);
             }
@@ -72,48 +72,41 @@ public class Token {
         Matcher matcher = Pattern.compile(radix == 10 ? "[eE]" : "[pP]")
                 .matcher(num);
         String base;
-        double exponent;
+        BigFloat.ExpType expType = radix == 10 ? BigFloat.ExpType.DEC : BigFloat.ExpType.HEX;
+        BigInteger exponent;
         if (matcher.region(i, num.length()).find()) {
             base = num.substring(i, matcher.start());
-            exponent = new BigInteger(num.substring(matcher.end())).doubleValue();
+            exponent = new BigInteger(num.substring(matcher.end()));
         } else {
             base = num.substring(i);
-            exponent = 1;
+            exponent = BigInteger.ZERO;
         }
 
-        double value;
-        if (radix == 10) {
-            if (exponent == 1 && base.indexOf('.') == -1) {
-                return new BigInteger(base);
-            }
-            value = Double.parseDouble(base);
-        } else {
-            String[] parts = base.split("\\.", 2);
-            String whole = parts[0];
+        String[] parts = base.split("\\.", 2);
+        String whole = parts[0];
 
-            double fracPart, wholePart;
-            if (parts.length == 2) {
-                String frac = parts[1];
-                if (frac.length() == 0) {
-                    fracPart = 0.;
+        BigInteger mantissa = new BigInteger(whole, radix);
+        if (parts.length == 2) {
+            String frac = parts[1];
+            if (frac.length() != 0) {
+                BigInteger fracPart = new BigInteger(frac, radix);
+                if (radix == 10) {
+                    mantissa = mantissa.multiply(BigInteger.TEN.pow(frac.length()));
+                    exponent = exponent.subtract(BigInteger.valueOf(frac.length()));
                 } else {
-                    fracPart = new BigInteger(frac, 16).doubleValue();
-                    fracPart /= BigInteger.ONE.shiftLeft(frac.length() * 4).doubleValue();
+                    int LOG_2_SIXTEEN = 4;
+                    mantissa = mantissa.shiftLeft(frac.length() * LOG_2_SIXTEEN);
+                    exponent = exponent.subtract(BigInteger.valueOf(frac.length())
+                            .multiply(BigInteger.valueOf(LOG_2_SIXTEEN)));
                 }
-            } else if (exponent == 1) {
-                return new BigInteger(whole, 16);
-            } else {
-                fracPart = 0;
+                mantissa = mantissa.add(fracPart);
             }
-
-            wholePart = new BigInteger(whole, 16).doubleValue();
-
-            value = wholePart + fracPart;
+        } else if (exponent.equals(BigInteger.ZERO)) {
+            return new BigInteger(whole, radix)
+                    .multiply(BigInteger.valueOf(sign));
         }
-        value *= sign;
-        value = Math.pow(value, exponent);
 
-        return value;
+        return new BigFloat(sign, mantissa, exponent, expType);
     }
 
     public static Object parseString(String str) {

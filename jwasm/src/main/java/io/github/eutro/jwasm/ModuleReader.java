@@ -1,5 +1,7 @@
 package io.github.eutro.jwasm;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -101,7 +103,7 @@ public class ModuleReader<E extends Exception> {
                 sbb.skipAll();
             } else {
                 int typeCount = sbb.getVarUInt32();
-                for (int i = 0; i < typeCount; i++) {
+                for (int i = 0; Integer.compareUnsigned(i, typeCount) < 0; i++) {
                     if (sbb.expect() != Opcodes.TYPES_FUNCTION) {
                         throw new ValidationException(String.format("Malformed functype 0x%02x", Opcodes.TYPES_FUNCTION),
                                 new RuntimeException("malformed functype")
@@ -128,7 +130,7 @@ public class ModuleReader<E extends Exception> {
                 sbb.skipAll();
             } else {
                 int importCount = sbb.getVarUInt32();
-                for (int i = 0; i < importCount; i++) {
+                for (int i = 0; Integer.compareUnsigned(i, importCount) < 0; i++) {
                     String module = sbb.getName();
                     String name = sbb.getName();
                     byte importType = sbb.expect();
@@ -151,12 +153,13 @@ public class ModuleReader<E extends Exception> {
                         }
                         case Opcodes.IMPORTS_GLOBAL: {
                             byte type = sbb.expect();
-                            byte mut = sbb.expect();
+                            byte mut = expectMut(sbb.expect());
                             iv.visitGlobalImport(module, name, mut, type);
                             break;
                         }
                         default:
-                            throw new ValidationException(String.format("Unrecognised import type 0x%02x", importType));
+                            throw new ValidationException(String.format("Unrecognised import kind 0x%02x", importType),
+                                    new RuntimeException("malformed import kind"));
                     }
                 }
 
@@ -168,15 +171,16 @@ public class ModuleReader<E extends Exception> {
 
         section = acceptCustoms(mv, bb, section);
 
+        long funcCount = 0;
         if (section == Opcodes.SECTION_FUNCTION) {
             sbb = bb.sectionStream();
 
             FunctionsVisitor fv = mv.visitFuncs();
+            funcCount = Integer.toUnsignedLong(sbb.getVarUInt32());
             if (fv == null) {
                 sbb.skipAll();
             } else {
-                int typeCount = sbb.getVarUInt32();
-                for (int i = 0; i < typeCount; i++) {
+                for (long i = 0; i < funcCount; i++) {
                     fv.visitFunc(sbb.getVarUInt32());
                 }
 
@@ -196,8 +200,8 @@ public class ModuleReader<E extends Exception> {
                 sbb.skipAll();
             } else {
                 int tableCount = sbb.getVarUInt32();
-                for (int i = 0; i < tableCount; i++) {
-                    byte type = sbb.expect();
+                for (int i = 0; Integer.compareUnsigned(i, tableCount) < 0; i++) {
+                    byte type = expectRefType(sbb.expect());
                     Limits limit = sbb.getLimits();
                     tv.visitTable(limit.min, limit.max, type);
                 }
@@ -218,7 +222,7 @@ public class ModuleReader<E extends Exception> {
                 sbb.skipAll();
             } else {
                 int memCount = sbb.getVarUInt32();
-                for (int i = 0; i < memCount; i++) {
+                for (int i = 0; Integer.compareUnsigned(i, memCount) < 0; i++) {
                     Limits limit = sbb.getLimits();
                     mmv.visitMemory(limit.min, limit.max);
                 }
@@ -239,9 +243,9 @@ public class ModuleReader<E extends Exception> {
                 sbb.skipAll();
             } else {
                 int globCount = sbb.getVarUInt32();
-                for (int i = 0; i < globCount; i++) {
+                for (int i = 0; Integer.compareUnsigned(i, globCount) < 0; i++) {
                     byte type = sbb.expect();
-                    byte mut = sbb.expect();
+                    byte mut = expectMut(sbb.expect());
                     acceptExpr(sbb, gv.visitGlobal(mut, type));
                 }
 
@@ -261,7 +265,7 @@ public class ModuleReader<E extends Exception> {
                 sbb.skipAll();
             } else {
                 int expCount = sbb.getVarUInt32();
-                for (int i = 0; i < expCount; i++) {
+                for (int i = 0; Integer.compareUnsigned(i, expCount) < 0; i++) {
                     String name = sbb.getName();
                     byte type = sbb.expect();
                     int index = sbb.getVarUInt32();
@@ -285,6 +289,10 @@ public class ModuleReader<E extends Exception> {
             sbb.expectEmpty();
             section = bb.get();
         }
+        if (section == Opcodes.SECTION_START) {
+            throw new ValidationException("Multiple start sections",
+                    new RuntimeException("multiple start sections"));
+        }
 
         section = acceptCustoms(mv, bb, section);
 
@@ -296,7 +304,7 @@ public class ModuleReader<E extends Exception> {
                 sbb.skipAll();
             } else {
                 int elemCount = sbb.getVarUInt32();
-                for (int i = 0; i < elemCount; i++) {
+                for (int i = 0; Integer.compareUnsigned(i, elemCount) < 0; i++) {
                     ElementVisitor elv = ev.visitElem();
                     int elemType = sbb.getVarUInt32();
 
@@ -315,12 +323,12 @@ public class ModuleReader<E extends Exception> {
                     if (implicitFuncref && elv != null) elv.visitType(Opcodes.FUNCREF);
                     if ((elemType & Opcodes.ELEM_EXPRESSIONS) != 0) {
                         if (!implicitFuncref) {
-                            byte type = sbb.expect();
+                            byte type = expectRefType(sbb.expect());
                             if (elv != null) elv.visitType(type);
                         }
 
                         int initLen = sbb.getVarUInt32();
-                        for (int j = 0; j < initLen; j++) {
+                        for (int j = 0; Integer.compareUnsigned(j, initLen) < 0; j++) {
                             acceptExpr(sbb, elv == null ? null : elv.visitInit());
                         }
                     } else {
@@ -333,6 +341,7 @@ public class ModuleReader<E extends Exception> {
                         }
 
                         int funcIndices = sbb.getVarUInt32();
+                        if (funcIndices < 0) throw new ValidationException("Too many elements");
                         int[] indices = new int[funcIndices];
                         for (int j = 0; j < funcIndices; j++) {
                             indices[j] = sbb.getVarUInt32();
@@ -350,28 +359,35 @@ public class ModuleReader<E extends Exception> {
 
         section = acceptCustoms(mv, bb, section);
 
+        long dataCount = -1;
         if (section == Opcodes.SECTION_DATA_COUNT) {
             sbb = bb.sectionStream();
-            mv.visitDataCount(sbb.getVarUInt32());
+            dataCount = Integer.toUnsignedLong(sbb.getVarUInt32());
+            mv.visitDataCount((int) dataCount);
             sbb.expectEmpty();
             section = bb.get();
         }
 
         section = acceptCustoms(mv, bb, section);
 
+        long codeCount = 0;
         if (section == Opcodes.SECTION_CODE) {
             sbb = bb.sectionStream();
 
             CodesVisitor cv = mv.visitCode();
+            codeCount = Integer.toUnsignedLong(sbb.getVarUInt32());
+
+            DataUse use = DataUse.NO_USE;
+
             if (cv == null) {
                 sbb.skipAll();
             } else {
-                int codeCount = sbb.getVarUInt32();
-                for (int i = 0; i < codeCount; i++) {
+                for (long i = 0; i < codeCount; i++) {
                     ByteInputStream<E> fbb = sbb.sectionStream();
 
                     byte[] locals;
                     int localsCount = fbb.getVarUInt32();
+                    if (localsCount < 0) throw new ValidationException("Too many local variables");
 
                     if (localsCount == 0) {
                         locals = new byte[0];
@@ -385,6 +401,10 @@ public class ModuleReader<E extends Exception> {
                             byte t = fbb.expect();
                             ts[l] = t;
                             nsum += n;
+                            if (n < 0 || nsum < 0) {
+                                throw new ValidationException("Too many local variables",
+                                        new RuntimeException("too many locals"));
+                            }
                         }
                         locals = new byte[nsum];
                         int index = 0;
@@ -398,7 +418,7 @@ public class ModuleReader<E extends Exception> {
                     if (ev == null) {
                         fbb.skipAll();
                     } else {
-                        acceptExpr(fbb, ev);
+                        use = use.or(acceptExpr(fbb, ev));
                         fbb.expectEmpty();
                     }
                 }
@@ -407,6 +427,13 @@ public class ModuleReader<E extends Exception> {
                 sbb.expectEmpty();
             }
             section = bb.get();
+
+            if (use != DataUse.NO_USE) {
+                if (dataCount == -1) {
+                    throw new ValidationException("Data indices used but no data count section present",
+                            new RuntimeException("data count section required"));
+                }
+            }
         }
 
         section = acceptCustoms(mv, bb, section);
@@ -418,8 +445,12 @@ public class ModuleReader<E extends Exception> {
             if (dv == null) {
                 sbb.skipAll();
             } else {
-                int dataCount = sbb.getVarUInt32();
-                for (int i = 0; i < dataCount; i++) {
+                long dataLen = Integer.toUnsignedLong(sbb.getVarUInt32());
+                if (dataCount != -1 && dataCount != dataLen) {
+                    throw new ValidationException("Data section length does not match data count",
+                            new RuntimeException("data count and data section have inconsistent lengths"));
+                }
+                for (long i = 0; i < dataLen; i++) {
                     DataVisitor ddv = dv.visitData();
                     int dataType = sbb.getVarUInt32();
                     if (dataType >= 0x04 || dataType < 0) {
@@ -446,15 +477,54 @@ public class ModuleReader<E extends Exception> {
 
         if (section != -1) throw new ValidationException(String.format("Unexpected section: 0x%02x", section),
                 new RuntimeException("malformed section id"));
+
+        if (funcCount != codeCount) {
+            throw new ValidationException("Function and code section counts differ",
+                    new RuntimeException("function and code section have inconsistent lengths"));
+        }
+
         mv.visitEnd();
     }
 
-    private void acceptExpr(ByteInputStream<E> bb, ExprVisitor ev) throws E {
+    private static byte expectMut(byte mut) {
+        if (mut != Opcodes.MUT_VAR && mut != Opcodes.MUT_CONST) {
+            throw new ValidationException("Malformed global mutability",
+                    new RuntimeException("malformed mutability"));
+        }
+        return mut;
+    }
+
+    private enum DataUse {
+        NO_USE,
+        USES_DATA,
+        ;
+
+        DataUse or(DataUse o) {
+            if (this == USES_DATA) return this;
+            return o;
+        }
+    }
+
+    private byte expectRefType(byte ty) {
+        if (ty != Opcodes.FUNCREF && ty != Opcodes.EXTERNREF) {
+            throw new ValidationException(String.format("Invalid reftype %02x", ty),
+                    new RuntimeException("malformed reference type"));
+        }
+        return ty;
+    }
+
+    private DataUse acceptExpr(ByteInputStream<E> bb, ExprVisitor ev) throws E {
         int depth = 0;
         if (ev == null) ev = new ExprVisitor();
         byte opcode;
+        DataUse use = DataUse.NO_USE;
         while (true) {
-            opcode = bb.expect();
+            int c = bb.get();
+            if (c == -1) {
+                throw new ValidationException("Expected more instructions",
+                        new RuntimeException("unexpected end of section or function"));
+            }
+            opcode = (byte) c;
             switch (opcode) {
                 case Opcodes.BLOCK:
                 case Opcodes.LOOP:
@@ -469,7 +539,7 @@ public class ModuleReader<E extends Exception> {
                     ev.visitEndInsn();
                     if (--depth < 0) {
                         ev.visitEnd();
-                        return;
+                        return use;
                     }
                     break;
                 case Opcodes.BR:
@@ -495,7 +565,7 @@ public class ModuleReader<E extends Exception> {
                     break;
                 }
                 case Opcodes.REF_NULL:
-                    ev.visitNullInsn(bb.expect());
+                    ev.visitNullInsn(expectRefType(bb.expect()));
                     break;
                 case Opcodes.REF_FUNC:
                     ev.visitFuncRefInsn(bb.getVarUInt32());
@@ -541,7 +611,7 @@ public class ModuleReader<E extends Exception> {
                     break;
                 case Opcodes.MEMORY_SIZE:
                 case Opcodes.MEMORY_GROW:
-                    if (bb.expect() != 0x00) throw new ValidationException("Expected 0x00");
+                    if (bb.expect() != 0x00) throw zeroExpected();
                     ev.visitInsn(opcode);
                     break;
                 case Opcodes.I32_CONST:
@@ -580,43 +650,62 @@ public class ModuleReader<E extends Exception> {
                         case Opcodes.MEMORY_INIT:
                         case Opcodes.DATA_DROP:
                             int index = bb.getVarUInt32();
-                            if (intOpcode == Opcodes.MEMORY_INIT) bb.expect();
+                            use = DataUse.USES_DATA;
+                            if (intOpcode == Opcodes.MEMORY_INIT) {
+                                if (bb.expect() != 0) throw zeroExpected();
+                            }
                             ev.visitIndexedMemInsn(intOpcode, index);
                             break;
                         case Opcodes.MEMORY_COPY:
-                            bb.expect();
+                            if (bb.expect() != 0) throw zeroExpected();
                             // fall through
                         case Opcodes.MEMORY_FILL:
-                            bb.expect();
+                            if (bb.expect() != 0) throw zeroExpected();
                             // fall through
                         default:
                             ev.visitPrefixInsn(intOpcode);
                             break;
                     }
                     break;
+                    // TODO vector instructions
                 default:
+                    if (Byte.toUnsignedInt(opcode)
+                            > Byte.toUnsignedInt(Opcodes.I64_EXTEND_I32_S)) {
+                        throw new ValidationException(String.format("Unrecognised single-byte opcode %02x", opcode),
+                                new RuntimeException("illegal opcode"));
+                    }
                     ev.visitInsn(opcode);
                     break;
             }
         }
     }
 
+    @NotNull
+    private static ValidationException zeroExpected() {
+        return new ValidationException("Expected 0x00",
+                new RuntimeException("zero byte expected"));
+    }
+
     private int acceptCustoms(ModuleVisitor mv, ByteInputStream<E> bb, int section) throws E {
-        ByteInputStream<E> sbb;
+        ByteInputStream.SectionInputStream<E> sbb;
         for (; section == Opcodes.SECTION_CUSTOM; section = bb.get()) {
             int length = bb.getVarUInt32();
-            sbb = bb.sectionStream(length);
+            sbb = (ByteInputStream.SectionInputStream<E>) bb.sectionStream(length);
 
-            byte[] stringBytes = bb.getByteArray();
+            byte[] stringBytes = sbb.getByteArray();
             String name = ByteInputStream.decodeName(stringBytes);
-            int payloadLength = length - stringBytes.length - ByteOutputStream.DUMMY.putVarUInt(stringBytes.length);
+            int payloadLength = length - sbb.gotten;
             if (payloadLength < 0) {
                 throw new ValidationException("Expected more bytes",
                         new RuntimeException("unexpected end"));
             }
             byte[] payload = new byte[payloadLength];
-            sbb.get(payload, 0, payload.length);
+            if (sbb.get(payload, 0, payloadLength) < payloadLength) {
+                throw new ValidationException("Expected more bytes",
+                        new RuntimeException("length out of bounds"));
+            }
             mv.visitCustom(name, payload);
+            sbb.expectEmpty();
         }
         return section;
     }

@@ -21,13 +21,13 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static io.github.eutro.jwasm.sexp.internal.Token.Type;
 import static io.github.eutro.jwasm.sexp.internal.Token.writeUTF8CodePoint;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ReaderTest {
     @Test
@@ -72,7 +72,43 @@ class ReaderTest {
         assertEquals(
                 Collections.singletonList(0xa0ff + (double) 0xf141a59aL / 0x100000000L),
                 Reader.readAll("0xa0_ff.f141_a59a")
+                        .stream()
+                        .map(it -> ((Reader.BigFloat) it).toDouble(false))
+                        .collect(Collectors.toList())
         );
+
+        assertEquals(
+                Arrays.asList(
+                        BigInteger.valueOf(-0x80000001L),
+                        BigInteger.valueOf(-2147483649L)
+                ),
+                Reader.readAll("-0x80000001 -2147483649")
+        );
+
+        assertEquals(
+                Arrays.asList(
+                        new BigInteger("18446744073709551616"),
+                        new BigInteger("-9223372036854775809")
+                ),
+                Reader.readAll("18446744073709551616 -9223372036854775809")
+        );
+
+        assertEquals(
+                Arrays.asList(
+                        0123456789e019D,
+                        0123456789e+019D,
+                        0123456789e-019D
+                ),
+                Reader.readAll("0123456789e019 0123456789e+019 0123456789e-019")
+                        .stream()
+                        .map(it -> ((Reader.BigFloat) it).toDouble(false))
+                        .collect(Collectors.toList())
+        );
+
+        Object val = Reader.readAll("nan:0x80_0000").get(0);
+        assertEquals(Reader.BigFloat.class, val.getClass());
+        assertThrows(RuntimeException.class, () ->
+                ((Reader.BigFloat) val).toFloat(false));
     }
 
     static Stream<DynamicTest> runForTestSuite(Consumer<String> sourceConsumer) {

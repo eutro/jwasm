@@ -8,10 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,20 +21,22 @@ public class WastTest {
         // but that does mean we can't differentiate.
         put("unexpected token", Collections.singleton("unknown operator"));
 
-        // Relevant test is:
-        //;; Type section with signed LEB128 encoded type
-        //(assert_malformed
-        //  (module binary
-        //    "\00asm" "\01\00\00\00"
-        //    "\01"                     ;; Type section id
-        //    "\05"                     ;; Type section length
-        //    "\01"                     ;; Types vector length
-        //    "\e0\7f"                  ;; Malformed functype, -0x20 in signed LEB128 encoding
-        //    "\00\00"
-        //  )
-        //  "integer representation too long"
-        //)
-        put("integer representation too long", Collections.singleton("malformed functype"));
+        put("END opcode expected", Collections.singleton("unexpected end of section or function"));
+        put("section size mismatch", Collections.singleton("unexpected end of section or function"));
+        put("length out of bounds", Collections.singleton("unexpected end"));
+        put("unexpected end of section or function", Collections.singleton("unexpected end"));
+
+        put("integer too large", Collections.singleton("malformed limit"));
+        put("unexpected end", Collections.singleton("unexpected end of section or function"));
+        put("unexpected content after last section", Collections.singleton("multiple start sections"));
+
+        // many "integer representation too long" tests are broken in other funny ways instead...
+        put("integer representation too long",
+                new HashSet<>(Arrays.asList(
+                        "malformed functype",
+                        "unexpected end",
+                        "malformed limit"
+                )));
     }};
 
     @TestFactory

@@ -208,6 +208,10 @@ public class Parser {
             public String toString() {
                 return name().toLowerCase(Locale.ROOT);
             }
+
+            public String duplicateName() {
+                return this == FUNCTION ? "func" : toString();
+            }
         }
 
         final EnumMap<Field, IndexedList<@Nullable String>> fields;
@@ -231,7 +235,7 @@ public class Parser {
 
         public void addIdx(Field field, @Nullable String name) {
             f(field).addOrThrow(name, () -> new ParseException("Duplicate " + field + " id", name,
-                    new RuntimeException("duplicate " + field)));
+                    new RuntimeException("duplicate " + field.duplicateName())));
         }
 
         public IdCtx deriveLocals() {
@@ -290,6 +294,12 @@ public class Parser {
             addOrDoIfPresent(o, () -> {
                 throw supp.get();
             });
+        }
+
+        public void addAllOrThrow(Iterable<? extends T> iterable, Supplier<RuntimeException> supp) {
+            for (T t : iterable) {
+                addOrThrow(t, supp);
+            }
         }
     }
 
@@ -381,7 +391,7 @@ public class Parser {
     }
 
     private static TypeNode parseParamsAndResults(
-            List<String> paramIds,
+            IndexedList<String> paramIds,
             ListParser lp
     ) {
         List<Byte> params = new ArrayList<>(), results = new ArrayList<>();
@@ -391,7 +401,7 @@ public class Parser {
             if (!maybeParamOrResult.isPresent()) break;
             List<?> list = (List<?>) maybeParamOrResult.get();
             if ("param".equals(list.get(0))) {
-                if (!isParams) throw new ParseException("param following results", list,
+                if (!isParams) throw new ParseException("Param following results", list,
                         new RuntimeException("unexpected token"));
                 ListParser pLp = new ListParser(list, 1);
                 boolean hasId = false;
@@ -399,7 +409,9 @@ public class Parser {
                     Optional<String> maybeId = pLp.maybeParseId();
                     if (maybeId.isPresent()) {
                         hasId = true;
-                        paramIds.add(maybeId.get());
+                        paramIds.addOrThrow(maybeId.get(), () ->
+                                new ParseException("Duplicate local variable", list,
+                                        new RuntimeException("duplicate local")));
                     }
                 }
                 while (pLp.iter.hasNext()) {
@@ -426,7 +438,7 @@ public class Parser {
         List<?> list = expectList(funcType);
         ListParser lp = new ListParser(list);
         expectEq("func", lp.expect());
-        TypeNode ft = parseParamsAndResults(new ArrayList<>(), lp);
+        TypeNode ft = parseParamsAndResults(new IndexedList<>(), lp);
         lp.expectEnd();
         return ft;
     }
@@ -489,7 +501,6 @@ public class Parser {
                 fields.add(new ImportField(
                         FUNCTION,
                         maybeId.orElse(null),
-                        module -> module.funcs,
                         desc,
                         tu.fmap(ty -> new FuncImportNode(modNm, nm, ty))
                 ));
@@ -501,7 +512,6 @@ public class Parser {
                 fields.add(new ImportField(
                         TABLE,
                         maybeId.orElse(null),
-                        module -> module.tables,
                         desc,
                         pure(new TableImportNode(modNm, nm, tn.limits, tn.type))
                 ));
@@ -513,7 +523,6 @@ public class Parser {
                 fields.add(new ImportField(
                         MEMORY,
                         maybeId.orElse(null),
-                        module -> module.mems,
                         desc,
                         pure(new MemImportNode(modNm, nm, memTy.limits))
                 ));
@@ -525,7 +534,6 @@ public class Parser {
                 fields.add(new ImportField(
                         GLOBAL,
                         maybeId.orElse(null),
-                        module -> module.globals,
                         desc,
                         pure(new GlobalImportNode(modNm, nm, ty))
                 ));
@@ -582,26 +590,28 @@ public class Parser {
         Optional<Object> maybeType = lp.maybeParse(it -> isMacroList(it, "type").isPresent());
         if (maybeType.isPresent()) {
             List<?> type = (List<?>) maybeType.get();
-            if (type.size() != 2) throw new ParseException("expected two terms (type x)", type);
+            if (type.size() != 2) throw new ParseException("Expected two terms (type x)", type);
             expectEq("type", type.get(0));
             IdVal<Integer> id = parseIdx(TYPE, type.get(1));
 
             if (lp.iter.hasNext()) hasInline:{
                 IndexedList<String> locals = new IndexedList<>();
                 TypeNode inline = parseParamsAndResults(locals, lp);
-                if (inline.params.length == 0 || inline.returns.length == 0) {
+                if (inline.params.length == 0 && inline.returns.length == 0) {
                     // there were more terms, but there wasn't actually an inline typeuse, so skip checking it
                     break hasInline;
                 }
                 IdVal<Integer> oldId = id;
                 id = (m, idcx) -> {
                     int resolved = oldId.resolve(m, idcx);
-                    if (m.types == null || m.types.types == null || m.types.types.size() < resolved) {
-                        throw new ParseException("type index does not exist", lp.list);
+                    if (m.types == null || m.types.types == null || m.types.types.size() <= resolved) {
+                        throw new ParseException("Type index does not exist", lp.list,
+                                new RuntimeException("unknown type"));
                     }
                     TypeNode referenced = m.types.types.get(resolved);
                     if (!inline.equals(referenced)) {
-                        throw new ParseException("type use did not match index type", lp.list);
+                        throw new ParseException("Type use did not match index type", lp.list,
+                                new RuntimeException("inline function type"));
                     }
                     return resolved;
                 };
@@ -651,8 +661,6 @@ public class Parser {
             IdCtx.Field field,
             byte exportType,
 
-            Function<ModuleNode, Object> getLocalObjects,
-
             @Nullable String maybeId,
             List<ModuleField> fields,
             ListParser lp,
@@ -675,7 +683,7 @@ public class Parser {
                             .fmap(f -> f.apply(moduleName, name));
 
                     eiLp.expectEnd();
-                    fields.add(new ImportField(field, maybeId, getLocalObjects, lp.list, theImport));
+                    fields.add(new ImportField(field, maybeId, lp.list, theImport));
                     return;
                 }
                 case "export":
@@ -712,7 +720,6 @@ public class Parser {
         wrapExportImportAbbrevs(
                 FUNCTION,
                 EXPORTS_FUNC,
-                module -> module.funcs,
                 maybeId.orElse(null),
                 fields,
                 lp,
@@ -784,16 +791,20 @@ public class Parser {
                                 locals[i++] = localTy;
                             }
 
+                            Supplier<RuntimeException> duplicateLocal = () ->
+                                    new ParseException("Duplicate local variable", list,
+                                            new RuntimeException("duplicate local"));
+
                             IdCtx localIdcx = idcx.deriveLocals();
                             if (tu.locals == null) {
                                 for (int j = 0; j < funcType.params.length; j++) {
                                     localIdcx.f(LOCAL).add(null);
                                 }
                             } else {
-                                localIdcx.f(LOCAL).addAll(tu.locals);
+                                localIdcx.f(LOCAL).addAllOrThrow(tu.locals, duplicateLocal);
                             }
 
-                            localIdcx.f(LOCAL).addAll(localNames);
+                            localIdcx.f(LOCAL).addAllOrThrow(localNames, duplicateLocal);
 
                             module.funcs.funcs.add(new FuncNode(type));
 
@@ -837,8 +848,15 @@ public class Parser {
         });
         OPCODES.put("return", lp -> pure(new InsnNode(RETURN)));
         OPCODES.put("call", lp -> parseIdx(FUNCTION, lp.expect()).fmap(CallInsnNode::new));
-        OPCODES.put("call_indirect", lp -> maybeParseIdx(TABLE, lp)
-                .ap(parseTypeUse(lp), CallIndirectInsnNode::new));
+        OPCODES.put("call_indirect", lp -> {
+            IdVal<Integer> idx = maybeParseIdx(TABLE, lp);
+            TypeUse tu = parseTypeUse(lp);
+            if (tu.locals != null && !tu.locals.index.isEmpty()) {
+                throw new ParseException("call_indirect typeuse with parameter names", lp.list,
+                        new RuntimeException("unexpected token"));
+            }
+            return idx.ap(tu, CallIndirectInsnNode::new);
+        });
 
         OPCODES.put("ref.null", lp -> pure(new NullInsnNode(parseHeapType(lp))));
         OPCODES.put("ref.is_null", lp -> pure(new InsnNode(REF_IS_NULL)));
@@ -906,11 +924,59 @@ public class Parser {
         OPCODES.put("memory.init", lp -> parseIdx(DATA, lp.expect()).fmap(x -> new IndexedMemInsnNode(MEMORY_INIT, x)));
         OPCODES.put("data.drop", lp -> parseIdx(DATA, lp.expect()).fmap(x -> new IndexedMemInsnNode(DATA_DROP, x)));
 
-        // TODO check ranges?
-        OPCODES.put("i32.const", lp -> pure(new ConstInsnNode(expectClass(BigInteger.class, lp.expect()).intValue())));
-        OPCODES.put("i64.const", lp -> pure(new ConstInsnNode(expectClass(BigInteger.class, lp.expect()).longValue())));
-        OPCODES.put("f32.const", lp -> pure(new ConstInsnNode(expectClass(Number.class, lp.expect()).floatValue())));
-        OPCODES.put("f64.const", lp -> pure(new ConstInsnNode(expectClass(Number.class, lp.expect()).doubleValue())));
+        OPCODES.put("i32.const", lp -> {
+            BigInteger bigInt = expectClass(BigInteger.class, lp.expect());
+            if (bigInt.compareTo(BigInteger.valueOf(Integer.MIN_VALUE)) < 0
+                    || bigInt.compareTo(BigInteger.valueOf(Integer.toUnsignedLong(-1))) > 0) {
+                throw new ParseException("i32 constant out of range", bigInt,
+                        new RuntimeException("constant out of range"));
+            }
+            return pure(new ConstInsnNode(bigInt.intValue()));
+        });
+        BigInteger MAX_UNSIGNED_LONG = BigInteger.ONE.shiftLeft(Long.SIZE).subtract(BigInteger.ONE);
+        OPCODES.put("i64.const", lp -> {
+            BigInteger bigInt = expectClass(BigInteger.class, lp.expect());
+            if (bigInt.compareTo(BigInteger.valueOf(Long.MIN_VALUE)) < 0
+                    || bigInt.compareTo(MAX_UNSIGNED_LONG) > 0) {
+                throw new ParseException("i64 constant out of range", bigInt,
+                        new RuntimeException("constant out of range"));
+            }
+            return pure(new ConstInsnNode(bigInt.longValue()));
+        });
+        OPCODES.put("f32.const", lp -> {
+            Object val = lp.expect();
+            float f;
+            if (val instanceof Reader.BigFloat) {
+                f = ((Reader.BigFloat) val).toFloat(false);
+            } else if (val instanceof BigInteger) {
+                f = ((BigInteger) val).floatValue();
+                if (Float.isInfinite(f)) {
+                    throw new ParseException("f32 constant out of range", val,
+                            new RuntimeException("constant out of range"));
+                }
+            } else {
+                throw new ParseException("Expected float", val,
+                        val instanceof String ? new RuntimeException("unknown operator") : null);
+            }
+            return pure(new ConstInsnNode(f));
+        });
+        OPCODES.put("f64.const", lp -> {
+            Object val = lp.expect();
+            double f;
+            if (val instanceof Reader.BigFloat) {
+                f = ((Reader.BigFloat) val).toDouble(false);
+            } else if (val instanceof BigInteger) {
+                f = ((BigInteger) val).doubleValue();
+                if (Double.isInfinite(f)) {
+                    throw new ParseException("f64 constant out of range", val,
+                            new RuntimeException("constant out of range"));
+                }
+            } else {
+                throw new ParseException("Expected double", val,
+                        val instanceof String ? new RuntimeException("unknown operator") : null);
+            }
+            return pure(new ConstInsnNode(f));
+        });
     }
 
     static class Entry {
@@ -1218,10 +1284,12 @@ public class Parser {
             Consumer<Optional<String>> checkRepeatLabel = (otherLabel) -> {
                 if (otherLabel.isPresent()) {
                     if (!maybeLabelId.isPresent()) {
-                        throw new ParseException("repeated label with no start label", otherLabel.get());
+                        throw new ParseException("Repeated label with no start label", otherLabel.get(),
+                                new RuntimeException("mismatching label"));
                     }
                     if (!maybeLabelId.get().equals(otherLabel.get())) {
-                        throw new ParseException("repeated label does not match start label", otherLabel.get());
+                        throw new ParseException("Repeated label does not match start label", otherLabel.get(),
+                                new RuntimeException("mismatching label"));
                     }
                 }
             };
@@ -1371,7 +1439,6 @@ public class Parser {
         wrapExportImportAbbrevs(
                 TABLE,
                 EXPORTS_TABLE,
-                module -> module.tables,
                 maybeId.orElse(null),
                 fields,
                 lp,
@@ -1491,7 +1558,6 @@ public class Parser {
         wrapExportImportAbbrevs(
                 MEMORY,
                 EXPORTS_MEM,
-                module -> module.mems,
                 maybeId.orElse(null),
                 fields,
                 lp,
@@ -1560,7 +1626,6 @@ public class Parser {
         wrapExportImportAbbrevs(
                 GLOBAL,
                 EXPORTS_GLOBAL,
-                module -> module.globals,
                 maybeId.orElse(null),
                 fields,
                 lp,
@@ -1821,20 +1886,17 @@ public class Parser {
     private static class ImportField implements ModuleField {
         private final IdCtx.Field field;
         private final @Nullable String maybeId;
-        private final Function<ModuleNode, Object> getLocalObjects;
         private final Object in;
         private final IdVal<AbstractImportNode> theImport;
 
         public ImportField(
                 IdCtx.Field field,
                 @Nullable String maybeId,
-                Function<ModuleNode, Object> getLocalObjects,
                 Object in,
                 IdVal<AbstractImportNode> theImport
         ) {
             this.field = field;
             this.maybeId = maybeId;
-            this.getLocalObjects = getLocalObjects;
             this.in = in;
             this.theImport = theImport;
         }
@@ -1846,11 +1908,16 @@ public class Parser {
 
         @Override
         public void mod(IdCtx idcx, ModuleNode module) {
-            if (getLocalObjects.apply(module) != null) {
+            IdCtx.Field precField = null;
+            if (module.funcs != null) precField = FUNCTION;
+            else if (module.globals != null) precField = GLOBAL;
+            else if (module.tables != null) precField = TABLE;
+            else if (module.mems != null) precField = MEMORY;
+            if (precField != null) {
                 throw new ParseException(
-                        "Imports must precede local " + field + "s",
+                        "Imports must precede local " + precField + "s",
                         in,
-                        new RuntimeException("import after " + field)
+                        new RuntimeException("import after " + precField)
                 );
             }
             if (module.imports == null) module.imports = new ImportsNode();

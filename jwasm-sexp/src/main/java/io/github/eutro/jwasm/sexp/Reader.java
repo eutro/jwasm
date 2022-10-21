@@ -149,4 +149,151 @@ public class Reader {
             }
         }
     }
+
+    public static class BigFloat extends Number {
+        public final int sign;
+        public final BigInteger mantissa, exponent;
+        public final ExpType expType;
+        public final NanType nanType;
+
+        public BigFloat(int sign, BigInteger mantissa, BigInteger exponent, ExpType expType) {
+            this(sign, mantissa, exponent, expType, null);
+        }
+
+        public BigFloat(int sign, BigInteger mantissa, BigInteger exponent, ExpType expType, NanType nanType) {
+            this.sign = sign;
+            this.mantissa = mantissa;
+            this.exponent = exponent;
+            this.expType = expType;
+            this.nanType = nanType;
+        }
+
+        @Override
+        public int intValue() {
+            return (int) doubleValue();
+        }
+
+        @Override
+        public long longValue() {
+            return (long) doubleValue();
+        }
+
+        @Override
+        public float floatValue() {
+            return toFloat(true);
+        }
+
+        @Override
+        public double doubleValue() {
+            return toDouble(true);
+        }
+
+        public enum ExpType {
+            INF,
+            NAN,
+            HEX,
+            DEC,
+        }
+
+        public enum NanType {
+            CANONICAL,
+            ARITHMETIC,
+            ;
+
+            @Override
+            public String toString() {
+                return name().toLowerCase(Locale.ROOT);
+            }
+        }
+
+        public float toFloat(boolean acceptScriptNan) {
+            float v;
+            switch (expType) {
+                case INF:
+                    return sign < 0 ? Float.NEGATIVE_INFINITY : Float.POSITIVE_INFINITY;
+                case NAN:
+                    if (mantissa == null) {
+                        if (nanType != null && !acceptScriptNan) {
+                            throw new Parser.ParseException(nanType + " NaN forbidden outside of scripts", this,
+                                    new RuntimeException("unexpected token"));
+                        }
+                        v = Float.NaN;
+                    } else {
+                        int FLOAT_SIGNIF = 23;
+                        if (mantissa.equals(BigInteger.ZERO)
+                                || mantissa.compareTo(BigInteger.valueOf(1L << FLOAT_SIGNIF)) >= 0) {
+                            throw new Parser.ParseException("Value out of range for float NaN", this,
+                                    new RuntimeException("constant out of range"));
+                        }
+                        v = Float.intBitsToFloat(mantissa.intValue());
+                    }
+                    break;
+                case DEC: {
+                    v = mantissa.floatValue() * (float) Math.pow(10., exponent.doubleValue());
+                    break;
+                }
+                case HEX: {
+                    v = mantissa.floatValue() * (float) Math.pow(2., exponent.doubleValue());
+                    break;
+                }
+                default:
+                    throw new AssertionError();
+            }
+            if (Float.isInfinite(v)) {
+                throw new Parser.ParseException("Value out of range for float", this,
+                        new RuntimeException("constant out of range"));
+            }
+            return sign < 0 ? -v : v;
+        }
+
+        public double toDouble(boolean acceptScriptNan) {
+            double v;
+            switch (expType) {
+                case INF:
+                    return sign < 0 ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
+                case NAN:
+                    if (mantissa == null) {
+                        if (nanType != null && !acceptScriptNan) {
+                            throw new Parser.ParseException(nanType + " NaN forbidden outside of scripts", this,
+                                    new RuntimeException("unexpected token"));
+                        }
+                        v = Double.NaN;
+                    } else {
+                        int DOUBLE_SIGNIF = 52;
+                        if (mantissa.equals(BigInteger.ZERO)
+                                || mantissa.compareTo(BigInteger.valueOf(1L << DOUBLE_SIGNIF)) >= 0) {
+                            throw new Parser.ParseException("Value out of range for double NaN", this,
+                                    new RuntimeException("constant out of range"));
+                        }
+                        v = Double.longBitsToDouble(mantissa.longValue());
+                    }
+                    break;
+                case DEC: {
+                    v = mantissa.doubleValue() * Math.pow(10., exponent.doubleValue());
+                    break;
+                }
+                case HEX: {
+                    v = mantissa.doubleValue() * Math.pow(2., exponent.doubleValue());
+                    break;
+                }
+                default:
+                    throw new AssertionError();
+            }
+            if (Double.isInfinite(v)) {
+                throw new Parser.ParseException("Value out of range for double", this,
+                        new RuntimeException("constant out of range"));
+            }
+            return sign < 0 ? -v : v;
+        }
+
+        @Override
+        public String toString() {
+            return "BigFloat{" +
+                    "sign=" + sign +
+                    ", mantissa=" + mantissa +
+                    ", exponent=" + exponent +
+                    ", expType=" + expType +
+                    '}';
+        }
+    }
 }
