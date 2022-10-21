@@ -316,6 +316,7 @@ public interface ByteInputStream<E extends Exception> {
             case I64:
             case F32:
             case F64:
+            case V128:
             case FUNCREF:
             case EXTERNREF:
                 return BlockType.valtype(first);

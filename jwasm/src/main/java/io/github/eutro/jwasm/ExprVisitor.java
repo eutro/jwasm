@@ -171,7 +171,9 @@ public class ExprVisitor extends BaseVisitor<ExprVisitor> {
      * Visit a
      * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#memory-instructions">memory</a>
      * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>
-     * with a single memory argument.
+     * with a single
+     * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-memarg">memory</a>
+     * argument.
      *
      * @param opcode The opcode of the instruction.
      * @param align  The {@code align} of the argument.
@@ -282,5 +284,80 @@ public class ExprVisitor extends BaseVisitor<ExprVisitor> {
      */
     public void visitCallIndirectInsn(int table, int type) {
         if (dl != null) dl.visitCallIndirectInsn(table, type);
+    }
+
+    /**
+     * Visit a vector
+     * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#vector-instructions">vector</a>
+     * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>
+     * with no immediate arguments.
+     *
+     * @param opcode The opcode of the instruction.
+     */
+    public void visitVectorInsn(int opcode) {
+        if (dl != null) dl.visitVectorInsn(opcode);
+    }
+
+    /**
+     * Visit a vector
+     * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#vector-instructions">vector</a>
+     * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>
+     * with a single
+     * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-memarg">memory</a>
+     * argument.
+     *
+     * @param opcode The opcode of the instruction.
+     * @param align  The {@code align} of the argument.
+     * @param offset The {@code offset} of the argument.
+     */
+    public void visitVectorMemInsn(int opcode, int align, int offset) {
+        if (dl != null) dl.visitVectorMemInsn(opcode, align, offset);
+    }
+
+    /**
+     * Visit a vector
+     * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#vector-instructions">vector</a>
+     * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>
+     * with a
+     * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-memarg">memory</a>
+     * and a
+     * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-laneidx">lane</a>
+     * argument.
+     *
+     * @param opcode The opcode of the instruction.
+     * @param align  The {@code align} of the argument.
+     * @param offset The {@code offset} of the argument.
+     * @param lane The lane argument.
+     */
+    public void visitVectorMemLaneInsn(int opcode, int align, int offset, byte lane) {
+        if (dl != null) dl.visitVectorMemLaneInsn(opcode, align, offset, lane);
+    }
+
+    /**
+     * Visit a vector
+     * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#vector-instructions">vector</a>
+     * const or shuffle
+     * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>.
+     *
+     * @param opcode The opcode of the instruction.
+     * @param bytes The value of the immediate 16 bytes.
+     */
+    public void visitVectorConstOrShuffleInsn(int opcode, byte[] bytes) {
+        if (dl != null) dl.visitVectorConstOrShuffleInsn(opcode, bytes);
+    }
+
+    /**
+     * Visit a vector
+     * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#vector-instructions">vector</a>
+     * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-instr">instr</a>.
+     * with a single
+     * <a href="https://webassembly.github.io/spec/core/binary/instructions.html#binary-laneidx">lane</a>
+     * argument.
+     *
+     * @param opcode The opcode of the instruction.
+     * @param lane The lane argument of the instruction.
+     */
+    public void visitVectorLaneInsn(int opcode, byte lane) {
+        if (dl != null) dl.visitVectorLaneInsn(opcode, lane);
     }
 }

@@ -125,4 +125,29 @@ public class ConstantExprValidator extends ExprVisitor {
     public void visitCallIndirectInsn(int table, int type) {
         notConstant();
     }
+
+    @Override
+    public void visitVectorInsn(int opcode) {
+        notConstant();
+    }
+
+    @Override
+    public void visitVectorMemInsn(int opcode, int align, int offset) {
+        notConstant();
+    }
+
+    @Override
+    public void visitVectorMemLaneInsn(int opcode, int align, int offset, byte lane) {
+        notConstant();
+    }
+
+    @Override
+    public void visitVectorConstOrShuffleInsn(int opcode, byte[] bytes) {
+        notConstant();
+    }
+
+    @Override
+    public void visitVectorLaneInsn(int opcode, byte lane) {
+        notConstant();
+    }
 }

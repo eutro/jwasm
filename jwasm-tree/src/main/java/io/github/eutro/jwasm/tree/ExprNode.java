@@ -165,6 +165,36 @@ public class ExprNode extends ExprVisitor implements Iterable<AbstractInsnNode> 
         insns().add(new CallIndirectInsnNode(table, type));
     }
 
+    @Override
+    public void visitVectorInsn(int opcode) {
+        super.visitVectorInsn(opcode);
+        insns().add(new VectorInsnNode(opcode));
+    }
+
+    @Override
+    public void visitVectorMemInsn(int opcode, int align, int offset) {
+        super.visitVectorMemInsn(opcode, align, offset);
+        insns().add(new VectorMemInsnNode(opcode, align, offset));
+    }
+
+    @Override
+    public void visitVectorMemLaneInsn(int opcode, int align, int offset, byte lane) {
+        super.visitVectorMemLaneInsn(opcode, align, offset, lane);
+        insns().add(new VectorMemLaneInsnNode(opcode, align, offset, lane));
+    }
+
+    @Override
+    public void visitVectorConstOrShuffleInsn(int opcode, byte[] bytes) {
+        super.visitVectorConstOrShuffleInsn(opcode, bytes);
+        insns().add(new VectorConstOrShuffleInsnNode(opcode, bytes));
+    }
+
+    @Override
+    public void visitVectorLaneInsn(int opcode, byte lane) {
+        super.visitVectorLaneInsn(opcode, lane);
+        insns().add(new VectorLaneInsnNode(opcode, lane));
+    }
+
     @NotNull
     @Override
     public Iterator<AbstractInsnNode> iterator() {

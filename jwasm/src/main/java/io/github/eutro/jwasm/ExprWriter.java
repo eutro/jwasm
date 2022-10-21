@@ -200,6 +200,43 @@ public class ExprWriter extends ExprVisitor implements ByteArrayConvertible {
     }
 
     @Override
+    public void visitVectorInsn(int opcode) {
+        out.put(Opcodes.VECTOR_PREFIX);
+        out.putVarUInt(opcode);
+    }
+
+    @Override
+    public void visitVectorMemInsn(int opcode, int align, int offset) {
+        out.put(Opcodes.VECTOR_PREFIX);
+        out.putVarUInt(opcode);
+        out.putVarUInt(align);
+        out.putVarUInt(offset);
+    }
+
+    @Override
+    public void visitVectorMemLaneInsn(int opcode, int align, int offset, byte lane) {
+        out.put(Opcodes.VECTOR_PREFIX);
+        out.putVarUInt(opcode);
+        out.putVarUInt(align);
+        out.putVarUInt(offset);
+        out.put(lane);
+    }
+
+    @Override
+    public void visitVectorConstOrShuffleInsn(int opcode, byte[] bytes) {
+        out.put(Opcodes.VECTOR_PREFIX);
+        out.putVarUInt(opcode);
+        out.put(bytes);
+    }
+
+    @Override
+    public void visitVectorLaneInsn(int opcode, byte lane) {
+        out.put(Opcodes.VECTOR_PREFIX);
+        out.putVarUInt(opcode);
+        out.put(lane);
+    }
+
+    @Override
     public void visitEnd() {
         if (onEnd != null) onEnd.accept(toByteArray());
     }

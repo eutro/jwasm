@@ -1,8 +1,11 @@
 package io.github.eutro.jwasm.sexp.internal;
 
 import io.github.eutro.jwasm.sexp.Parser;
+import io.github.eutro.jwasm.sexp.Reader;
 
+import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.CharBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.CodingErrorAction;
@@ -45,7 +48,8 @@ public class ListParser {
 
     public static List<?> expectList(Object obj) {
         if (!(obj instanceof List)) {
-            throw new Parser.ParseException("expected list", obj);
+            throw new Parser.ParseException("Expected list", obj,
+                    new RuntimeException("unexpected token"));
         }
         return (List<?>) obj;
     }
@@ -86,10 +90,116 @@ public class ListParser {
         return buf.toString();
     }
 
-    public Object expect() {
+    public static byte[] parseV128Const(ListParser lp, boolean acceptScriptNan) {
+        String shape = expectClass(String.class, lp.expect());
+        byte[] value = new byte[16];
+        ByteBuffer buf = ByteBuffer.wrap(value).order(ByteOrder.LITTLE_ENDIAN);
+        String msg = "wrong number of lane literals";
+        switch (shape) {
+            case "i8x16":
+                for (int i = 0; i < 16; i++) {
+                    buf.put((byte) parseIX(lp.expect(msg), 8));
+                }
+                break;
+            case "i16x8":
+                for (int i = 0; i < 8; i++) {
+                    buf.putShort((short) parseIX(lp.expect(msg), 16));
+                }
+                break;
+            case "i32x4":
+                for (int i = 0; i < 4; i++) {
+                    buf.putInt(parseI32(lp.expect(msg)));
+                }
+                break;
+            case "i64x2":
+                for (int i = 0; i < 2; i++) {
+                    buf.putLong(parseI64(lp.expect(msg)));
+                }
+                break;
+            case "f32x4":
+                for (int i = 0; i < 4; i++) {
+                    buf.putFloat(parseF32(lp.expect(msg), acceptScriptNan));
+                }
+                break;
+            case "f64x2":
+                for (int i = 0; i < 2; i++) {
+                    buf.putDouble(parseF64(lp.expect(msg), acceptScriptNan));
+                }
+                break;
+            default:
+                throw new Parser.ParseException("Unrecognised vector shape", shape);
+        }
+        return value;
+    }
+
+    private static long parseIX(Object obj, int x) {
+        BigInteger bigInt = expectClass(BigInteger.class, obj);
+        if (bigInt.compareTo(BigInteger.ONE.shiftLeft(x - 1).negate()) < 0
+                || bigInt.compareTo(BigInteger.ONE.shiftLeft(x).subtract(BigInteger.ONE)) > 0) {
+            throw new Parser.ParseException("i" + x + " constant out of range", bigInt,
+                    new RuntimeException("constant out of range"));
+        }
+        return bigInt.longValue();
+    }
+
+    public static int parseI32(Object obj) {
+        return (int) parseIX(obj, 32);
+    }
+
+    public static long parseI64(Object obj) {
+        return parseIX(obj, 64);
+    }
+
+    public static float parseF32(Object val) {
+        return parseF32(val, false);
+    }
+
+    public static float parseF32(Object val, boolean acceptScriptNan) {
+        float f;
+        if (val instanceof Reader.BigFloat) {
+            f = ((Reader.BigFloat) val).toFloat(acceptScriptNan);
+        } else if (val instanceof BigInteger) {
+            f = ((BigInteger) val).floatValue();
+            if (Float.isInfinite(f)) {
+                throw new Parser.ParseException("f32 constant out of range", val,
+                        new RuntimeException("constant out of range"));
+            }
+        } else {
+            throw new Parser.ParseException("Expected float", val,
+                    val instanceof String ? new RuntimeException("unknown operator") : null);
+        }
+        return f;
+    }
+
+    public static double parseF64(Object val) {
+        return parseF64(val, false);
+    }
+
+    public static double parseF64(Object val, boolean acceptScriptNan) {
+        double f;
+        if (val instanceof Reader.BigFloat) {
+            f = ((Reader.BigFloat) val).toDouble(acceptScriptNan);
+        } else if (val instanceof BigInteger) {
+            f = ((BigInteger) val).doubleValue();
+            if (Double.isInfinite(f)) {
+                throw new Parser.ParseException("f64 constant out of range", val,
+                        new RuntimeException("constant out of range"));
+            }
+        } else {
+            throw new Parser.ParseException("Expected double", val,
+                    val instanceof String ? new RuntimeException("unknown operator") : null);
+        }
+        return f;
+    }
+
+    public Object expect(String msg) {
         if (!iter.hasNext()) throw new Parser.ParseException("Expected more terms", list,
-                new RuntimeException("unexpected token"));
+                new RuntimeException(msg));
         return iter.next();
+    }
+
+    public Object expect() {
+        return expect("unexpected token");
     }
 
     public Optional<Object> maybeParse(Predicate<Object> pred) {

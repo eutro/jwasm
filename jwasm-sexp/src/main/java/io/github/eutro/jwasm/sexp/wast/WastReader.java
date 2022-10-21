@@ -115,6 +115,7 @@ public class WastReader {
             case "i64.const": val = expectClass(BigInteger.class, rLp.expect()).longValue(); break;
             case "f32.const": val = expectClass(Number.class, rLp.expect()).floatValue(); break;
             case "f64.const": val = expectClass(Number.class, rLp.expect()).doubleValue(); break;
+            case "v128.const": val = ListParser.parseV128Const(rLp, true); break;
             case "ref.null": val = null; rLp.expect(); break;
             case "ref.extern":
                 if (!rLp.iter.hasNext()) return false;

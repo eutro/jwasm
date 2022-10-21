@@ -4,6 +4,8 @@ import io.github.eutro.jwasm.BlockType;
 import io.github.eutro.jwasm.Limits;
 import io.github.eutro.jwasm.ModuleReader;
 import io.github.eutro.jwasm.ValidationException;
+import io.github.eutro.jwasm.attrs.InsnAttributes;
+import io.github.eutro.jwasm.attrs.Opcode;
 import io.github.eutro.jwasm.sexp.Reader.MemArgPart;
 import io.github.eutro.jwasm.sexp.internal.ListParser;
 import io.github.eutro.jwasm.tree.*;
@@ -17,7 +19,6 @@ import java.util.*;
 import java.util.function.*;
 
 import static io.github.eutro.jwasm.Opcodes.*;
-import static io.github.eutro.jwasm.sexp.Parser.Entry.e;
 import static io.github.eutro.jwasm.sexp.Parser.IdCtx.Field.*;
 import static io.github.eutro.jwasm.sexp.Parser.IdVal.pure;
 import static io.github.eutro.jwasm.sexp.internal.ListParser.*;
@@ -354,6 +355,7 @@ public class Parser {
             case "i64": return I64;
             case "f32": return F32;
             case "f64": return F64;
+            case "v128": return V128;
             case "funcref": return FUNCREF;
             case "externref": return EXTERNREF;
             // @formatter:on
@@ -924,238 +926,89 @@ public class Parser {
         OPCODES.put("memory.init", lp -> parseIdx(DATA, lp.expect()).fmap(x -> new IndexedMemInsnNode(MEMORY_INIT, x)));
         OPCODES.put("data.drop", lp -> parseIdx(DATA, lp.expect()).fmap(x -> new IndexedMemInsnNode(DATA_DROP, x)));
 
-        OPCODES.put("i32.const", lp -> {
-            BigInteger bigInt = expectClass(BigInteger.class, lp.expect());
-            if (bigInt.compareTo(BigInteger.valueOf(Integer.MIN_VALUE)) < 0
-                    || bigInt.compareTo(BigInteger.valueOf(Integer.toUnsignedLong(-1))) > 0) {
-                throw new ParseException("i32 constant out of range", bigInt,
-                        new RuntimeException("constant out of range"));
+        OPCODES.put("i32.const", lp -> pure(new ConstInsnNode(parseI32(lp.expect()))));
+        OPCODES.put("i64.const", lp -> pure(new ConstInsnNode(parseI64(lp.expect()))));
+        OPCODES.put("f32.const", lp -> pure(new ConstInsnNode(parseF32(lp.expect()))));
+        OPCODES.put("f64.const", lp -> pure(new ConstInsnNode(parseF64(lp.expect()))));
+
+        OPCODES.put("v128.load", lp -> pure(parseMemArg(16, lp, (a, o) -> new VectorMemInsnNode(V128_LOAD, a, o))));
+        OPCODES.put("v128.load8x8_s", lp -> pure(parseMemArg(8, lp, (a, o) -> new VectorMemInsnNode(V128_LOAD8X8_S, a, o))));
+        OPCODES.put("v128.load8x8_u", lp -> pure(parseMemArg(8, lp, (a, o) -> new VectorMemInsnNode(V128_LOAD8X8_U, a, o))));
+        OPCODES.put("v128.load16x4_s", lp -> pure(parseMemArg(8, lp, (a, o) -> new VectorMemInsnNode(V128_LOAD16X4_S, a, o))));
+        OPCODES.put("v128.load16x4_u", lp -> pure(parseMemArg(8, lp, (a, o) -> new VectorMemInsnNode(V128_LOAD16X4_U, a, o))));
+        OPCODES.put("v128.load32x2_s", lp -> pure(parseMemArg(8, lp, (a, o) -> new VectorMemInsnNode(V128_LOAD32X2_S, a, o))));
+        OPCODES.put("v128.load32x2_u", lp -> pure(parseMemArg(8, lp, (a, o) -> new VectorMemInsnNode(V128_LOAD32X2_U, a, o))));
+        OPCODES.put("v128.load8_splat", lp -> pure(parseMemArg(1, lp, (a, o) -> new VectorMemInsnNode(V128_LOAD8_SPLAT, a, o))));
+        OPCODES.put("v128.load16_splat", lp -> pure(parseMemArg(2, lp, (a, o) -> new VectorMemInsnNode(V128_LOAD16_SPLAT, a, o))));
+        OPCODES.put("v128.load32_splat", lp -> pure(parseMemArg(4, lp, (a, o) -> new VectorMemInsnNode(V128_LOAD32_SPLAT, a, o))));
+        OPCODES.put("v128.load64_splat", lp -> pure(parseMemArg(8, lp, (a, o) -> new VectorMemInsnNode(V128_LOAD64_SPLAT, a, o))));
+        OPCODES.put("v128.load32_zero", lp -> pure(parseMemArg(4, lp, (a, o) -> new VectorMemInsnNode(V128_LOAD32_ZERO, a, o))));
+        OPCODES.put("v128.load64_zero", lp -> pure(parseMemArg(8, lp, (a, o) -> new VectorMemInsnNode(V128_LOAD64_ZERO, a, o))));
+        OPCODES.put("v128.store", lp -> pure(parseMemArg(16, lp, (a, o) -> new VectorMemInsnNode(V128_STORE, a, o))));
+        OPCODES.put("v128.load8_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_LOAD8_LANE, a, o, parseU8(lp)))));
+        OPCODES.put("v128.load16_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_LOAD16_LANE, a, o, parseU8(lp)))));
+        OPCODES.put("v128.load32_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_LOAD32_LANE, a, o, parseU8(lp)))));
+        OPCODES.put("v128.load64_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_LOAD64_LANE, a, o, parseU8(lp)))));
+        OPCODES.put("v128.store8_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_STORE8_LANE, a, o, parseU8(lp)))));
+        OPCODES.put("v128.store16_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_STORE16_LANE, a, o, parseU8(lp)))));
+        OPCODES.put("v128.store32_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_STORE32_LANE, a, o, parseU8(lp)))));
+        OPCODES.put("v128.store64_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_STORE64_LANE, a, o, parseU8(lp)))));
+
+        OPCODES.put("v128.const", lp -> pure(new VectorConstOrShuffleInsnNode(V128_CONST, parseV128Const(lp, false))));
+        OPCODES.put("i8x16.shuffle", lp -> {
+            byte[] lanes = new byte[16];
+            for (int i = 0; i < lanes.length; i++) {
+                lanes[i] = parseU8(lp);
             }
-            return pure(new ConstInsnNode(bigInt.intValue()));
-        });
-        BigInteger MAX_UNSIGNED_LONG = BigInteger.ONE.shiftLeft(Long.SIZE).subtract(BigInteger.ONE);
-        OPCODES.put("i64.const", lp -> {
-            BigInteger bigInt = expectClass(BigInteger.class, lp.expect());
-            if (bigInt.compareTo(BigInteger.valueOf(Long.MIN_VALUE)) < 0
-                    || bigInt.compareTo(MAX_UNSIGNED_LONG) > 0) {
-                throw new ParseException("i64 constant out of range", bigInt,
-                        new RuntimeException("constant out of range"));
-            }
-            return pure(new ConstInsnNode(bigInt.longValue()));
-        });
-        OPCODES.put("f32.const", lp -> {
-            Object val = lp.expect();
-            float f;
-            if (val instanceof Reader.BigFloat) {
-                f = ((Reader.BigFloat) val).toFloat(false);
-            } else if (val instanceof BigInteger) {
-                f = ((BigInteger) val).floatValue();
-                if (Float.isInfinite(f)) {
-                    throw new ParseException("f32 constant out of range", val,
-                            new RuntimeException("constant out of range"));
-                }
-            } else {
-                throw new ParseException("Expected float", val,
-                        val instanceof String ? new RuntimeException("unknown operator") : null);
-            }
-            return pure(new ConstInsnNode(f));
-        });
-        OPCODES.put("f64.const", lp -> {
-            Object val = lp.expect();
-            double f;
-            if (val instanceof Reader.BigFloat) {
-                f = ((Reader.BigFloat) val).toDouble(false);
-            } else if (val instanceof BigInteger) {
-                f = ((BigInteger) val).doubleValue();
-                if (Double.isInfinite(f)) {
-                    throw new ParseException("f64 constant out of range", val,
-                            new RuntimeException("constant out of range"));
-                }
-            } else {
-                throw new ParseException("Expected double", val,
-                        val instanceof String ? new RuntimeException("unknown operator") : null);
-            }
-            return pure(new ConstInsnNode(f));
+            return pure(new VectorConstOrShuffleInsnNode(I8X16_SHUFFLE, lanes));
         });
     }
 
-    static class Entry {
-        final String name;
-        final byte opcode;
-
-        private Entry(String name, byte opcode) {
-            this.name = name;
-            this.opcode = opcode;
+    static byte parseU8(ListParser lp) {
+        BigInteger bigInt = expectClass(BigInteger.class, lp.expect());
+        if (bigInt.compareTo(BigInteger.ZERO) < 0 ||
+                bigInt.compareTo(BigInteger.valueOf(1 << 8)) >= 0) {
+            throw new ParseException("Value out of range for u8", bigInt,
+                    new RuntimeException("malformed lane index"));
         }
-
-        static Entry e(String name, byte opcode) {
-            return new Entry(name, opcode);
-        }
+        return bigInt.byteValueExact();
     }
 
     static {
-        Entry[] entries = {
-                e("i32.eqz", I32_EQZ),
-                e("i32.eq", I32_EQ),
-                e("i32.ne", I32_NE),
-                e("i32.lt_s", I32_LT_S),
-                e("i32.lt_u", I32_LT_U),
-                e("i32.gt_s", I32_GT_S),
-                e("i32.gt_u", I32_GT_U),
-                e("i32.le_s", I32_LE_S),
-                e("i32.le_u", I32_LE_U),
-                e("i32.ge_s", I32_GE_S),
-                e("i32.ge_u", I32_GE_U),
-                e("i64.eqz", I64_EQZ),
-                e("i64.eq", I64_EQ),
-                e("i64.ne", I64_NE),
-                e("i64.lt_s", I64_LT_S),
-                e("i64.lt_u", I64_LT_U),
-                e("i64.gt_s", I64_GT_S),
-                e("i64.gt_u", I64_GT_U),
-                e("i64.le_s", I64_LE_S),
-                e("i64.le_u", I64_LE_U),
-                e("i64.ge_s", I64_GE_S),
-                e("i64.ge_u", I64_GE_U),
-                e("f32.eq", F32_EQ),
-                e("f32.ne", F32_NE),
-                e("f32.lt", F32_LT),
-                e("f32.gt", F32_GT),
-                e("f32.le", F32_LE),
-                e("f32.ge", F32_GE),
-                e("f64.eq", F64_EQ),
-                e("f64.ne", F64_NE),
-                e("f64.lt", F64_LT),
-                e("f64.gt", F64_GT),
-                e("f64.le", F64_LE),
-                e("f64.ge", F64_GE),
-                e("i32.clz", I32_CLZ),
-                e("i32.ctz", I32_CTZ),
-                e("i32.popcnt", I32_POPCNT),
-                e("i32.add", I32_ADD),
-                e("i32.sub", I32_SUB),
-                e("i32.mul", I32_MUL),
-                e("i32.div_s", I32_DIV_S),
-                e("i32.div_u", I32_DIV_U),
-                e("i32.rem_s", I32_REM_S),
-                e("i32.rem_u", I32_REM_U),
-                e("i32.and", I32_AND),
-                e("i32.or", I32_OR),
-                e("i32.xor", I32_XOR),
-                e("i32.shl", I32_SHL),
-                e("i32.shr_s", I32_SHR_S),
-                e("i32.shr_u", I32_SHR_U),
-                e("i32.rotl", I32_ROTL),
-                e("i32.rotr", I32_ROTR),
-                e("i64.clz", I64_CLZ),
-                e("i64.ctz", I64_CTZ),
-                e("i64.popcnt", I64_POPCNT),
-                e("i64.add", I64_ADD),
-                e("i64.sub", I64_SUB),
-                e("i64.mul", I64_MUL),
-                e("i64.div_s", I64_DIV_S),
-                e("i64.div_u", I64_DIV_U),
-                e("i64.rem_s", I64_REM_S),
-                e("i64.rem_u", I64_REM_U),
-                e("i64.and", I64_AND),
-                e("i64.or", I64_OR),
-                e("i64.xor", I64_XOR),
-                e("i64.shl", I64_SHL),
-                e("i64.shr_s", I64_SHR_S),
-                e("i64.shr_u", I64_SHR_U),
-                e("i64.rotl", I64_ROTL),
-                e("i64.rotr", I64_ROTR),
-                e("f32.abs", F32_ABS),
-                e("f32.neg", F32_NEG),
-                e("f32.ceil", F32_CEIL),
-                e("f32.floor", F32_FLOOR),
-                e("f32.trunc", F32_TRUNC),
-                e("f32.nearest", F32_NEAREST),
-                e("f32.sqrt", F32_SQRT),
-                e("f32.add", F32_ADD),
-                e("f32.sub", F32_SUB),
-                e("f32.mul", F32_MUL),
-                e("f32.div", F32_DIV),
-                e("f32.min", F32_MIN),
-                e("f32.max", F32_MAX),
-                e("f32.copysign", F32_COPYSIGN),
-                e("f64.abs", F64_ABS),
-                e("f64.neg", F64_NEG),
-                e("f64.ceil", F64_CEIL),
-                e("f64.floor", F64_FLOOR),
-                e("f64.trunc", F64_TRUNC),
-                e("f64.nearest", F64_NEAREST),
-                e("f64.sqrt", F64_SQRT),
-                e("f64.add", F64_ADD),
-                e("f64.sub", F64_SUB),
-                e("f64.mul", F64_MUL),
-                e("f64.div", F64_DIV),
-                e("f64.min", F64_MIN),
-                e("f64.max", F64_MAX),
-                e("f64.copysign", F64_COPYSIGN),
-                e("i32.wrap_i64", I32_WRAP_I64),
-                e("i32.trunc_f32_s", I32_TRUNC_F32_S),
-                e("i32.trunc_f32_u", I32_TRUNC_F32_U),
-                e("i32.trunc_f64_s", I32_TRUNC_F64_S),
-                e("i32.trunc_f64_u", I32_TRUNC_F64_U),
-                e("i64.extend_i32_s", I64_EXTEND_I32_S),
-                e("i64.extend_i32_u", I64_EXTEND_I32_U),
-                e("i64.trunc_f32_s", I64_TRUNC_F32_S),
-                e("i64.trunc_f32_u", I64_TRUNC_F32_U),
-                e("i64.trunc_f64_s", I64_TRUNC_F64_S),
-                e("i64.trunc_f64_u", I64_TRUNC_F64_U),
-                e("f32.convert_i32_s", F32_CONVERT_I32_S),
-                e("f32.convert_i32_u", F32_CONVERT_I32_U),
-                e("f32.convert_i64_s", F32_CONVERT_I64_S),
-                e("f32.convert_i64_u", F32_CONVERT_I64_U),
-                e("f32.demote_f64", F32_DEMOTE_F64),
-                e("f64.convert_i32_s", F64_CONVERT_I32_S),
-                e("f64.convert_i32_u", F64_CONVERT_I32_U),
-                e("f64.convert_i64_s", F64_CONVERT_I64_S),
-                e("f64.convert_i64_u", F64_CONVERT_I64_U),
-                e("f64.promote_f32", F64_PROMOTE_F32),
-                e("i32.reinterpret_f32", I32_REINTERPRET_F32),
-                e("i64.reinterpret_f64", I64_REINTERPRET_F64),
-                e("f32.reinterpret_i32", F32_REINTERPRET_I32),
-                e("f64.reinterpret_i64", F64_REINTERPRET_I64),
-                e("i32.extend8_s", I32_EXTEND8_S),
-                e("i32.extend16_s", I32_EXTEND16_S),
-                e("i64.extend8_s", I64_EXTEND8_S),
-                e("i64.extend16_s", I64_EXTEND16_S),
-                e("i64.extend32_s", I64_EXTEND32_S),
-        };
-        for (Entry entry : entries) {
-            byte opc = entry.opcode;
-            OPCODES.put(entry.name, lp -> pure(new InsnNode(opc)));
-        }
-
-        String[] names = {
-                "i32.trunc_sat_f32_s",
-                "i32.trunc_sat_f32_u",
-                "i32.trunc_sat_f64_s",
-                "i32.trunc_sat_f64_u",
-                "i64.trunc_sat_f32_s",
-                "i64.trunc_sat_f32_u",
-                "i64.trunc_sat_f64_s",
-                "i64.trunc_sat_f64_u",
-        };
-        int[] iOps = {
-                I32_TRUNC_SAT_F32_S,
-                I32_TRUNC_SAT_F32_U,
-                I32_TRUNC_SAT_F64_S,
-                I32_TRUNC_SAT_F64_U,
-                I64_TRUNC_SAT_F32_S,
-                I64_TRUNC_SAT_F32_U,
-                I64_TRUNC_SAT_F64_S,
-                I64_TRUNC_SAT_F64_U,
-        };
-        for (int i = 0; i < names.length; i++) {
-            int opc = iOps[i];
-            OPCODES.put(names[i], lp -> pure(new PrefixInsnNode(opc)));
+        for (Opcode opcode : InsnAttributes.allOpcodes()) {
+            InsnAttributes attrs = InsnAttributes.lookup(opcode);
+            byte opc = opcode.opcode;
+            int iOpc = opcode.intOpcode;
+            String mnemonic = attrs.getMnemonic();
+            if (OPCODES.containsKey(mnemonic)) continue;
+            switch (attrs.getVisitTarget()) {
+                case Insn:
+                    OPCODES.put(mnemonic, lp -> pure(new InsnNode(opc)));
+                    break;
+                case PrefixInsn:
+                    OPCODES.put(mnemonic, lp -> pure(new PrefixInsnNode(iOpc)));
+                    break;
+                case VectorInsn:
+                    OPCODES.put(mnemonic, lp -> pure(new VectorInsnNode(iOpc)));
+                    break;
+                case VectorLaneInsn:
+                    OPCODES.put(mnemonic, lp -> pure(new VectorLaneInsnNode(iOpc, parseU8(lp))));
+                    break;
+                case BlockInsn:
+                case ElseInsn:
+                case EndInsn:
+                    break;
+                default:
+                    throw new IllegalStateException("Instruction " + mnemonic + " is registered but has no parser!");
+            }
         }
     }
 
-    private static AbstractInsnNode parseMemArg(byte opcode, int n, ListParser lp) {
+    interface MemArgConsumer<T> {
+        T consume(int align, int offset);
+    }
+
+    private static <T> T parseMemArg(int n, ListParser lp, MemArgConsumer<T> c) {
         Function<Object, BigInteger> extractValue = it -> ((MemArgPart) it).value;
         int offset = lp.maybeParse(it -> it instanceof MemArgPart && ((MemArgPart) it).type == MemArgPart.Type.OFFSET)
                 .map(extractValue.andThen(Parser::truncToU32))
@@ -1164,13 +1017,17 @@ public class Parser {
                 .map(extractValue.andThen(Parser::truncToU32))
                 .map(a -> {
                     if (a == 0 || (a & (a - 1)) != 0) {
-                        throw new ParseException("align not a power of two", lp.iter.previous(),
+                        throw new ParseException("Align not a power of two", lp.iter.previous(),
                                 new RuntimeException("alignment"));
                     }
                     return Integer.numberOfTrailingZeros(a);
                 })
                 .orElse(n);
-        return new MemInsnNode(opcode, align, offset);
+        return c.consume(align, offset);
+    }
+
+    private static AbstractInsnNode parseMemArg(byte opcode, int n, ListParser lp) {
+        return parseMemArg(n, lp, (align, offset) -> new MemInsnNode(opcode, align, offset));
     }
 
     private static byte parseHeapType(ListParser lp) {

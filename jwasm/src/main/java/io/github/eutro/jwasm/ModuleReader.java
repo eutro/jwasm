@@ -47,9 +47,9 @@ public class ModuleReader<E extends Exception> {
      * Construct a {@link ModuleReader} that reads from a subarray of the given byte array,
      * starting at {@code offset} with a length of {@code len} bytes.
      *
-     * @param b The byte array to read from.
+     * @param b      The byte array to read from.
      * @param offset The offset of the subarray to use.
-     * @param len The length of the subarray to use.
+     * @param len    The length of the subarray to use.
      * @return The new {@link ModuleReader}.
      */
     public static ModuleReader<RuntimeException> fromBytes(byte[] b, int offset, int len) {
@@ -626,7 +626,7 @@ public class ModuleReader<E extends Exception> {
                 case Opcodes.F64_CONST:
                     ev.visitConstInsn(bb.getFloat64());
                     break;
-                case Opcodes.INSN_PREFIX:
+                case Opcodes.INSN_PREFIX: {
                     int intOpcode = bb.getVarUInt32();
                     switch (intOpcode) {
                         case Opcodes.TABLE_INIT: {
@@ -667,7 +667,67 @@ public class ModuleReader<E extends Exception> {
                             break;
                     }
                     break;
-                    // TODO vector instructions
+                }
+                case Opcodes.VECTOR_PREFIX: {
+                    int intOpcode = bb.getVarUInt32();
+                    switch (intOpcode) {
+                        case Opcodes.V128_LOAD:
+                        case Opcodes.V128_LOAD8X8_S:
+                        case Opcodes.V128_LOAD8X8_U:
+                        case Opcodes.V128_LOAD16X4_S:
+                        case Opcodes.V128_LOAD16X4_U:
+                        case Opcodes.V128_LOAD32X2_S:
+                        case Opcodes.V128_LOAD32X2_U:
+                        case Opcodes.V128_LOAD8_SPLAT:
+                        case Opcodes.V128_LOAD16_SPLAT:
+                        case Opcodes.V128_LOAD32_SPLAT:
+                        case Opcodes.V128_LOAD64_SPLAT:
+                        case Opcodes.V128_LOAD32_ZERO:
+                        case Opcodes.V128_LOAD64_ZERO:
+                        case Opcodes.V128_STORE:
+                            ev.visitVectorMemInsn(intOpcode, bb.getVarUInt32(), bb.getVarUInt32());
+                            break;
+                        case Opcodes.V128_LOAD8_LANE:
+                        case Opcodes.V128_LOAD16_LANE:
+                        case Opcodes.V128_LOAD32_LANE:
+                        case Opcodes.V128_LOAD64_LANE:
+                        case Opcodes.V128_STORE8_LANE:
+                        case Opcodes.V128_STORE16_LANE:
+                        case Opcodes.V128_STORE32_LANE:
+                        case Opcodes.V128_STORE64_LANE:
+                            ev.visitVectorMemLaneInsn(intOpcode, bb.getVarUInt32(), bb.getVarUInt32(), bb.expect());
+                            break;
+                        case Opcodes.V128_CONST:
+                        case Opcodes.I8X16_SHUFFLE: {
+                            byte[] args = new byte[16];
+                            if (bb.get(args, 0, 16) < 16) {
+                                bb.expect(); // throw
+                            }
+                            ev.visitVectorConstOrShuffleInsn(intOpcode, args);
+                            break;
+                        }
+                        case Opcodes.I8X16_EXTRACT_LANE_S:
+                        case Opcodes.I8X16_EXTRACT_LANE_U:
+                        case Opcodes.I8X16_REPLACE_LANE:
+                        case Opcodes.I16X8_EXTRACT_LANE_S:
+                        case Opcodes.I16X8_EXTRACT_LANE_U:
+                        case Opcodes.I16X8_REPLACE_LANE:
+                        case Opcodes.I32X4_EXTRACT_LANE:
+                        case Opcodes.I32X4_REPLACE_LANE:
+                        case Opcodes.I64X2_EXTRACT_LANE:
+                        case Opcodes.I64X2_REPLACE_LANE:
+                        case Opcodes.F32X4_EXTRACT_LANE:
+                        case Opcodes.F32X4_REPLACE_LANE:
+                        case Opcodes.F64X2_EXTRACT_LANE:
+                        case Opcodes.F64X2_REPLACE_LANE:
+                            ev.visitVectorLaneInsn(intOpcode, bb.expect());
+                            break;
+                        default:
+                            ev.visitVectorInsn(intOpcode);
+                            break;
+                    }
+                    break;
+                }
                 default:
                     if (Byte.toUnsignedInt(opcode)
                             > Byte.toUnsignedInt(Opcodes.I64_EXTEND_I32_S)) {

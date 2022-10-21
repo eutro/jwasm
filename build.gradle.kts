@@ -57,6 +57,7 @@ subprojects {
 project(":jwasm-analysis") {
     dependencies {
         implementation(project(":jwasm-tree"))
+        implementation(project(":jwasm-attrs"))
     }
 }
 

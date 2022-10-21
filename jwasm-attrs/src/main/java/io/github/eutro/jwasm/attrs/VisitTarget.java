@@ -1,0 +1,28 @@
+package io.github.eutro.jwasm.attrs;
+
+public enum VisitTarget {
+    Insn,
+    PrefixInsn,
+    ConstInsn,
+    NullInsn,
+    FuncRefInsn,
+    SelectInsn,
+    VariableInsn,
+    TableInsn,
+    PrefixTableInsn,
+    PrefixBinaryTableInsn,
+    MemInsn,
+    IndexedMemInsn,
+    BlockInsn,
+    ElseInsn,
+    EndInsn,
+    BreakInsn,
+    TableBreakInsn,
+    CallInsn,
+    CallIndirectInsn,
+    VectorInsn,
+    VectorMemInsn,
+    VectorMemLaneInsn,
+    VectorConstOrShuffleInsn,
+    VectorLaneInsn,
+}

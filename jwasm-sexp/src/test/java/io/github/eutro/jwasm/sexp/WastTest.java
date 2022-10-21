@@ -19,7 +19,10 @@ public class WastTest {
         // The reference interpreter differs here, defining a finite set of operators, catching
         // unrecognised operators when lexing. I'd rather keep our lexer (and reader) more extensible,
         // but that does mean we can't differentiate.
-        put("unexpected token", Collections.singleton("unknown operator"));
+        put("unexpected token", new HashSet<>(Arrays.asList(
+                "unknown operator",
+                "malformed lane index"
+        )));
 
         put("END opcode expected", Collections.singleton("unexpected end of section or function"));
         put("section size mismatch", Collections.singleton("unexpected end of section or function"));
@@ -29,14 +32,20 @@ public class WastTest {
         put("integer too large", Collections.singleton("malformed limit"));
         put("unexpected end", Collections.singleton("unexpected end of section or function"));
         put("unexpected content after last section", Collections.singleton("multiple start sections"));
+        put("alignment must be a power of two", Collections.singleton("alignment"));
+        put("wrong number of lane literals", new HashSet<>(Arrays.asList(
+                "unexpected token",
+                "constant out of range"
+        )));
+        put("invalid lane length", Collections.singleton("unexpected token"));
+        put("malformed lane index", Collections.singleton("Unexpected )"));
 
         // many "integer representation too long" tests are broken in other funny ways instead...
-        put("integer representation too long",
-                new HashSet<>(Arrays.asList(
-                        "malformed functype",
-                        "unexpected end",
-                        "malformed limit"
-                )));
+        put("integer representation too long", new HashSet<>(Arrays.asList(
+                "malformed functype",
+                "unexpected end",
+                "malformed limit"
+        )));
     }};
 
     @TestFactory

@@ -1,9 +1,10 @@
 package io.github.eutro.jwasm.tree.analysis;
 
-import io.github.eutro.jwasm.BlockType;
-import io.github.eutro.jwasm.ByteList;
-import io.github.eutro.jwasm.ExprVisitor;
-import io.github.eutro.jwasm.ValidationException;
+import io.github.eutro.jwasm.*;
+import io.github.eutro.jwasm.attrs.InsnAttributes;
+import io.github.eutro.jwasm.attrs.Opcode;
+import io.github.eutro.jwasm.attrs.StackType;
+import io.github.eutro.jwasm.attrs.VisitTarget;
 import io.github.eutro.jwasm.tree.*;
 import org.jetbrains.annotations.Nullable;
 
@@ -170,6 +171,11 @@ public class ExprValidator extends ExprVisitor {
         insn++;
     }
 
+    private void applyType(StackType type) {
+        popVs(type.pops);
+        pushVs(type.pushes);
+    }
+
     @Override
     public void visitInsn(byte opcode) {
         super.visitInsn(opcode);
@@ -203,224 +209,6 @@ public class ExprValidator extends ExprVisitor {
                 break;
             }
 
-            case I32_EQ:
-            case I32_NE:
-            case I32_LT_S:
-            case I32_LT_U:
-            case I32_GT_S:
-            case I32_GT_U:
-            case I32_LE_S:
-            case I32_LE_U:
-            case I32_GE_S:
-            case I32_GE_U:
-                // and by coincidence...
-            case I32_ADD:
-            case I32_SUB:
-            case I32_MUL:
-            case I32_DIV_S:
-            case I32_DIV_U:
-            case I32_REM_S:
-            case I32_REM_U:
-            case I32_AND:
-            case I32_OR:
-            case I32_XOR:
-            case I32_SHL:
-            case I32_SHR_S:
-            case I32_SHR_U:
-            case I32_ROTL:
-            case I32_ROTR:
-                popVs(I32, I32);
-                pushV(I32);
-                break;
-
-            case I64_EQ:
-            case I64_NE:
-            case I64_LT_S:
-            case I64_LT_U:
-            case I64_GT_S:
-            case I64_GT_U:
-            case I64_LE_S:
-            case I64_LE_U:
-            case I64_GE_S:
-            case I64_GE_U:
-                popVs(I64, I64);
-                pushV(I32);
-                break;
-
-            case F32_EQ:
-            case F32_NE:
-            case F32_LT:
-            case F32_GT:
-            case F32_LE:
-            case F32_GE:
-                popVs(F32, F32);
-                pushV(I32);
-                break;
-
-            case F64_EQ:
-            case F64_NE:
-            case F64_LT:
-            case F64_GT:
-            case F64_LE:
-            case F64_GE:
-                popVs(F64, F64);
-                pushV(I32);
-                break;
-
-            case I32_EQZ:
-            case I32_CLZ:
-            case I32_CTZ:
-            case I32_POPCNT:
-                popV(I32);
-                pushV(I32);
-                break;
-
-            case I64_EQZ:
-
-            case I32_WRAP_I64:
-                popV(I64);
-                pushV(I32);
-                break;
-
-            case I64_CLZ:
-            case I64_CTZ:
-            case I64_POPCNT:
-                popV(I64);
-                pushV(I64);
-                break;
-
-            case I64_ADD:
-            case I64_SUB:
-            case I64_MUL:
-            case I64_DIV_S:
-            case I64_DIV_U:
-            case I64_REM_S:
-            case I64_REM_U:
-            case I64_AND:
-            case I64_OR:
-            case I64_XOR:
-            case I64_SHL:
-            case I64_SHR_S:
-            case I64_SHR_U:
-            case I64_ROTL:
-            case I64_ROTR:
-                popVs(I64, I64);
-                pushV(I64);
-                break;
-
-            case F32_ABS:
-            case F32_NEG:
-            case F32_CEIL:
-            case F32_FLOOR:
-            case F32_TRUNC:
-            case F32_NEAREST:
-            case F32_SQRT:
-                popV(F32);
-                pushV(F32);
-                break;
-
-            case F32_ADD:
-            case F32_SUB:
-            case F32_MUL:
-            case F32_DIV:
-            case F32_MIN:
-            case F32_MAX:
-            case F32_COPYSIGN:
-                popVs(F32, F32);
-                pushV(F32);
-                break;
-
-            case F64_ABS:
-            case F64_NEG:
-            case F64_CEIL:
-            case F64_FLOOR:
-            case F64_TRUNC:
-            case F64_NEAREST:
-            case F64_SQRT:
-                popV(F64);
-                pushV(F64);
-                break;
-
-            case F64_ADD:
-            case F64_SUB:
-            case F64_MUL:
-            case F64_DIV:
-            case F64_MIN:
-            case F64_MAX:
-            case F64_COPYSIGN:
-                popVs(F64, F64);
-                pushV(F64);
-                break;
-            case I32_TRUNC_F32_S:
-            case I32_TRUNC_F32_U:
-            case I32_REINTERPRET_F32:
-                popV(F32);
-                pushV(I32);
-                break;
-            case I32_TRUNC_F64_S:
-            case I32_TRUNC_F64_U:
-                popV(F64);
-                pushV(I32);
-                break;
-            case I64_EXTEND_I32_S:
-            case I64_EXTEND_I32_U:
-                popV(I32);
-                pushV(I64);
-                break;
-            case I64_TRUNC_F32_S:
-            case I64_TRUNC_F32_U:
-                popV(F32);
-                pushV(I64);
-                break;
-            case I64_TRUNC_F64_S:
-            case I64_TRUNC_F64_U:
-            case I64_REINTERPRET_F64:
-                popV(F64);
-                pushV(I64);
-                break;
-            case F32_CONVERT_I32_S:
-            case F32_CONVERT_I32_U:
-            case F32_REINTERPRET_I32:
-                popV(I32);
-                pushV(F32);
-                break;
-            case F32_CONVERT_I64_S:
-            case F32_CONVERT_I64_U:
-                popV(I64);
-                pushV(F32);
-                break;
-            case F32_DEMOTE_F64:
-                popV(F64);
-                pushV(F32);
-                break;
-            case F64_CONVERT_I32_S:
-            case F64_CONVERT_I32_U:
-                popV(I32);
-                pushV(F64);
-                break;
-            case F64_CONVERT_I64_S:
-            case F64_CONVERT_I64_U:
-            case F64_REINTERPRET_I64:
-                popV(I64);
-                pushV(F64);
-                break;
-            case F64_PROMOTE_F32:
-                popV(F32);
-                pushV(F64);
-                break;
-
-            case I32_EXTEND8_S:
-            case I32_EXTEND16_S:
-                popVs(I32);
-                pushV(I32);
-                break;
-            case I64_EXTEND8_S:
-            case I64_EXTEND16_S:
-            case I64_EXTEND32_S:
-                popVs(I32);
-                pushV(I64);
-                break;
-
             case MEMORY_SIZE:
                 assertMsg(validator.mems != null && validator.mems.memories != null && !validator.mems.memories.isEmpty(),
                         "memory 0 does not exist");
@@ -434,7 +222,12 @@ public class ExprValidator extends ExprVisitor {
                 break;
 
             default:
-                throw new ValidationException(String.format("0x%02x is not a valid zero-arity instruction", opcode), null);
+                InsnAttributes attrs = InsnAttributes.lookup(opcode);
+                if (attrs == null || attrs.getVisitTarget() != VisitTarget.Insn || attrs.getType() == null) {
+                    throw new ValidationException(String.format("0x%02x is not a valid no-immediate instruction", opcode), null);
+                }
+                applyType(attrs.getType());
+                break;
         }
         bumpI();
     }
@@ -622,11 +415,15 @@ public class ExprValidator extends ExprVisitor {
         bumpI();
     }
 
+    private void assertMemExists() {
+        assertMsg(validator.mems != null && validator.mems.memories != null && !validator.mems.memories.isEmpty(),
+                "memory %d does not exist", 0);
+    }
+
     @Override
     public void visitMemInsn(byte opcode, int align, int offset) {
         super.visitMemInsn(opcode, align, offset);
-        assertMsg(validator.mems != null && validator.mems.memories != null && !validator.mems.memories.isEmpty(),
-                "memory %d does not exist", 0);
+        assertMemExists();
         boolean isPop;
         byte type;
         switch (opcode) {
@@ -706,6 +503,7 @@ public class ExprValidator extends ExprVisitor {
                 case I64:
                 case F32:
                 case F64:
+                case V128:
                 case FUNCREF:
                 case EXTERNREF:
                     inputs = Collections.emptyList();
@@ -824,6 +622,58 @@ public class ExprValidator extends ExprVisitor {
         popVs(tn.params);
         pushVs(tn.returns);
         bumpI();
+    }
+
+    private InsnAttributes checkVectorAgainstAttrs(int opcode, VisitTarget target) {
+        InsnAttributes attrs = InsnAttributes.lookup(new Opcode(VECTOR_PREFIX, opcode));
+        if (attrs == null || attrs.getVisitTarget() != target) {
+            throw new ValidationException("Unrecognised " + target + " instruction");
+        }
+        assert attrs.getType() != null;
+        applyType(attrs.getType());
+        return attrs;
+    }
+
+    @Override
+    public void visitVectorInsn(int opcode) {
+        super.visitVectorInsn(opcode);
+        checkVectorAgainstAttrs(opcode, VisitTarget.VectorInsn);
+    }
+
+    @Override
+    public void visitVectorMemInsn(int opcode, int align, int offset) {
+        super.visitVectorMemInsn(opcode, align, offset);
+        assertMemExists();
+        checkVectorAgainstAttrs(opcode, VisitTarget.VectorMemInsn);
+    }
+
+    @Override
+    public void visitVectorMemLaneInsn(int opcode, int align, int offset, byte lane) {
+        super.visitVectorMemLaneInsn(opcode, align, offset, lane);
+        assertMemExists();
+        checkVectorAgainstAttrs(opcode, VisitTarget.VectorMemLaneInsn);
+    }
+
+    @Override
+    public void visitVectorConstOrShuffleInsn(int opcode, byte[] bytes) {
+        super.visitVectorConstOrShuffleInsn(opcode, bytes);
+        checkVectorAgainstAttrs(opcode, VisitTarget.VectorConstOrShuffleInsn);
+        if (opcode == I8X16_SHUFFLE) {
+            for (byte lane : bytes) {
+                if (Byte.toUnsignedInt(lane) >= 32) {
+                    throw new ValidationException("All 18x16.shuffle lanes must be less than 32");
+                }
+            }
+        }
+    }
+
+    @Override
+    public void visitVectorLaneInsn(int opcode, byte lane) {
+        super.visitVectorLaneInsn(opcode, lane);
+        InsnAttributes attrs = checkVectorAgainstAttrs(opcode, VisitTarget.VectorLaneInsn);
+        if (lane >= attrs.getVectorShape().dim) {
+            throw new ValidationException("Lane index must be smaller than vector dimension");
+        }
     }
 
     @Override
