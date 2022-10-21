@@ -1,6 +1,7 @@
 package io.github.eutro.jwasm.tree.analysis;
 
 import io.github.eutro.jwasm.BlockType;
+import io.github.eutro.jwasm.ByteList;
 import io.github.eutro.jwasm.ExprVisitor;
 import io.github.eutro.jwasm.ValidationException;
 import io.github.eutro.jwasm.tree.*;

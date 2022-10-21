@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
+import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 
 import static io.github.eutro.jwasm.Opcodes.*;
@@ -88,7 +89,8 @@ public interface ByteInputStream<E extends Exception> {
      */
     default byte expect() throws E {
         int v = get();
-        if (v == -1) throw new ValidationException("Unexpected end of input");
+        if (v == -1) throw new ValidationException("Unexpected end of input",
+                new RuntimeException("unexpected end"));
         return (byte) v;
     }
 
@@ -118,9 +120,9 @@ public interface ByteInputStream<E extends Exception> {
         int c = get();
         int d = expect();
         return d << 24 |
-               c << 16 |
-               b << 8 |
-               a;
+                c << 16 |
+                b << 8 |
+                a;
     }
 
     /**
@@ -157,7 +159,12 @@ public interface ByteInputStream<E extends Exception> {
      * @throws ValidationException If the number exceeds 5 bytes.
      */
     default int getVarUInt32() throws E {
-        return (int) getVarUIntX(5);
+        long uInt35 = getVarUIntX(5);
+        if (uInt35 > Integer.toUnsignedLong(-1)) {
+            throw new ValidationException("Integer out of range for u32",
+                    new RuntimeException("integer too large"));
+        }
+        return (int) uInt35;
     }
 
     /**
@@ -171,14 +178,28 @@ public interface ByteInputStream<E extends Exception> {
      * @throws ValidationException If the number exceeds {@code bytes} bytes.
      */
     default long getVarUIntX(int bytes) throws E {
+        final int MAX_NON_OVERFLOW_BYTES = Long.SIZE / 7;
         long v = 0;
         int count = 0;
-        for (; count < bytes; ++count) {
+        int maxCount = Integer.min(bytes, MAX_NON_OVERFLOW_BYTES);
+        for (; count < maxCount; ++count) {
             byte b = expect();
             v |= (long) (b & 0x7F) << (count * 7);
             if ((b & 0x80) == 0) return v;
         }
-        throw new ValidationException(String.format("varuint: 0x%02x... exceeded %d bytes", v, bytes));
+        if (bytes > MAX_NON_OVERFLOW_BYTES) more:{
+            if (bytes > MAX_NON_OVERFLOW_BYTES + 1) throw new IllegalArgumentException();
+            byte b = expect();
+            if ((b & 0x80) != 0) break more; // error with too long
+            // error if it would overflow the long (imagine we are reading an u1)
+            if (b >= 2) {
+                throw new ValidationException("Integer out of range for u64",
+                        new RuntimeException("integer too large"));
+            }
+            v |= (long) (b & 0x7F) << (count * 7);
+        }
+        throw new ValidationException(String.format("VarUInt: 0x%02x... exceeded %d bytes", v, bytes),
+                new RuntimeException("integer representation too long"));
     }
 
     /**
@@ -191,7 +212,12 @@ public interface ByteInputStream<E extends Exception> {
      * @throws ValidationException If the number exceeds 5 bytes.
      */
     default int getVarSInt32() throws E {
-        return (int) getVarSIntX(5);
+        long sInt35 = getVarSIntX(5);
+        if (sInt35 < Integer.MIN_VALUE || sInt35 > Integer.MAX_VALUE) {
+            throw new ValidationException("Integer out of range for s32",
+                    new RuntimeException("integer too large"));
+        }
+        return (int) sInt35;
     }
 
     /**
@@ -238,17 +264,36 @@ public interface ByteInputStream<E extends Exception> {
      * @throws ValidationException If the number exceeds {@code bytes} bytes.
      */
     default long getVarSIntX0(int bytes, long v, int count) throws E {
+        final int MAX_NON_OVERFLOW_BYTES = Long.SIZE / 7;
         byte b;
         long signBits = -1;
+        int maxCount = Integer.min(bytes, MAX_NON_OVERFLOW_BYTES);
         loop:
         {
-            for (; count < bytes; ++count) {
+            for (; count < maxCount; ++count) {
                 b = expect();
                 v |= (long) (b & 0x7F) << (count * 7);
                 signBits <<= 7;
                 if ((b & 0x80) == 0) break loop;
             }
-            throw new ValidationException(String.format("varsint: 0x%02x... exceeded %d bytes", v, bytes));
+            if (bytes > MAX_NON_OVERFLOW_BYTES) more:{
+                if (bytes > MAX_NON_OVERFLOW_BYTES + 1) throw new IllegalArgumentException();
+                b = expect();
+                if ((b & 0x80) != 0) break more; // error with too long
+                // error if it would overflow the long (imagine we are reading a s1)
+                boolean isSigned = (1 << 6) <= b;
+                if (isSigned
+                        ? b < (1 << 7) - 1
+                        : b >= 1) {
+                    throw new ValidationException("Integer out of range for s64",
+                            new RuntimeException("integer too large"));
+                }
+                v |= (long) (b & 0x7F) << (count * 7);
+                signBits <<= 7;
+                break loop;
+            }
+            throw new ValidationException(String.format("VarSInt: 0x%02x... exceeded %d bytes", v, bytes),
+                    new RuntimeException("integer representation too long"));
         }
         if (((signBits >> 1) & v) != 0) {
             v |= signBits;
@@ -295,7 +340,10 @@ public interface ByteInputStream<E extends Exception> {
     default byte[] getByteArray() throws E {
         int size = getVarUInt32();
         byte[] ret = new byte[size];
-        if (get(ret, 0, size) < size) throw new ValidationException("Unexpected end of input");
+        if (get(ret, 0, size) < size) {
+            throw new ValidationException("Unexpected end of input",
+                    new RuntimeException("unexpected end"));
+        }
         return ret;
     }
 
@@ -309,19 +357,31 @@ public interface ByteInputStream<E extends Exception> {
      * @throws ValidationException If the bytes aren't valid UTF-8.
      */
     default String getName() throws E {
+        return decodeName(getByteArray());
+    }
+
+    static String decodeName(byte[] bytes) {
         try {
-            return StandardCharsets.UTF_8.newDecoder().decode(ByteBuffer.wrap(getByteArray())).toString();
+            return StandardCharsets.UTF_8
+                    .newDecoder()
+                    .onMalformedInput(CodingErrorAction.REPORT)
+                    .onUnmappableCharacter(CodingErrorAction.REPORT)
+                    .decode(ByteBuffer.wrap(bytes))
+                    .toString();
         } catch (CharacterCodingException e) {
-            throw new ValidationException("Invalid UTF-8 bytes in name", e);
+            ValidationException ve = new ValidationException("Invalid UTF-8 bytes in name",
+                    new RuntimeException("malformed UTF-8 encoding"));
+            ve.addSuppressed(e);
+            throw ve;
         }
     }
 
     /**
      * Read a WebAssembly {@code limit} from the stream, which is a minimum and an optional maximum.
      *
+     * @return A {@link Limits} value read from the stream.
      * @throws E                   If a read error occurred.
      * @throws ValidationException If the limit type wasn't recognised.
-     * @return A {@link Limits} value read from the stream.
      */
     default Limits getLimits() throws E {
         byte type = expect();
@@ -331,7 +391,8 @@ public interface ByteInputStream<E extends Exception> {
             case Opcodes.LIMIT_WMAX:
                 return new Limits(getVarUInt32(), getVarUInt32());
             default:
-                throw new ValidationException(String.format("Unrecognised limit type 0x%02x", type));
+                throw new ValidationException(String.format("Unrecognised limit type 0x%02x", type),
+                        new RuntimeException("malformed limit"));
         }
     }
 
@@ -379,7 +440,7 @@ public interface ByteInputStream<E extends Exception> {
         /**
          * How many bytes have been read through this stream.
          */
-        private int gotten = 0;
+        int gotten = 0;
 
         /**
          * Construct a sectioned view of a stream.
@@ -390,6 +451,28 @@ public interface ByteInputStream<E extends Exception> {
         public SectionInputStream(ByteInputStream<E> source, int length) {
             this.source = source;
             this.length = length;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public byte expect() throws E {
+            int v = get();
+            if (v == -1) throw new ValidationException("Unexpected end of section",
+                    new RuntimeException("unexpected end"));
+            return (byte) v;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void expectEmpty() throws E {
+            if (get() != -1) {
+                throw new ValidationException("Expected less bytes",
+                        new RuntimeException("section size mismatch"));
+            }
         }
 
         /**

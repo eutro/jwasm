@@ -15,7 +15,7 @@ public class EndInsnNode extends AbstractInsnNode {
     /**
      * Constructs an {@link EndInsnNode}.
      */
-    protected EndInsnNode() {
+    public EndInsnNode() {
         super(Opcodes.END);
     }
 
