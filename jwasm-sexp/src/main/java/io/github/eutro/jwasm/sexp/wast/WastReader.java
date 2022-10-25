@@ -5,6 +5,8 @@ import io.github.eutro.jwasm.sexp.Parser;
 import io.github.eutro.jwasm.sexp.Reader;
 import io.github.eutro.jwasm.sexp.internal.ListParser;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -198,7 +200,11 @@ public class WastReader {
         return fromSexps(Reader.readAll(source));
     }
 
-    public static <E extends Exception> WastReader fromStream(ByteInputStream<E> stream) throws E {
+    public static <E extends Exception> WastReader fromSource(ByteInputStream<E> stream) throws E {
         return fromSexps(Reader.readAll(stream));
+    }
+
+    public static WastReader fromSource(InputStream stream) throws IOException {
+        return fromSource(new ByteInputStream.InputStreamByteInputStream(stream));
     }
 }

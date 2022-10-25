@@ -3,8 +3,5 @@ dependencies {
     implementation(project(":jwasm-attrs"))
     implementation(project(":jwasm-tree"))
     testImplementation(project(":jwasm-analysis"))
-}
-
-tasks.test {
-    environment("WASM_TESTSUITE" to file("./testsuite"))
+    testImplementation(project(":jwasm-test"))
 }

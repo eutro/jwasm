@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 public class ParserTest {
     @TestFactory
     Stream<DynamicTest> evaluateTestSuite() {
-        return ReaderTest.runForTestSuite(src -> {
+        return ReaderTest.runForTestSuite((name, src) -> {
             List<Object> script = Reader.readAll(src);
 
             List<ModuleNode> modules = parseAllModules(script);

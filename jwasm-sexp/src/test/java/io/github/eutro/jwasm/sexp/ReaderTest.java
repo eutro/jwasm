@@ -2,12 +2,12 @@ package io.github.eutro.jwasm.sexp;
 
 import io.github.eutro.jwasm.ByteInputStream;
 import io.github.eutro.jwasm.sexp.internal.Token;
+import io.github.eutro.jwasm.test.ModuleTestBase;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
+import java.io.*;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -15,12 +15,9 @@ import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.Random;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -112,27 +109,21 @@ class ReaderTest {
     }
 
     interface SuiteRunner {
-        void accept(String scriptName, String source);
-    }
-
-    static Stream<DynamicTest> runForTestSuite(Consumer<String> stringConsumer) {
-        return runForTestSuite((name, source) -> stringConsumer.accept(source));
+        void accept(String scriptName, InputStream source) throws Throwable;
     }
 
     static Stream<DynamicTest> runForTestSuite(SuiteRunner runner) {
-        String testsuite = System.getenv("WASM_TESTSUITE");
-        if (testsuite == null) {
-            throw new IllegalStateException("WASM_TESTSUITE not supplied");
+        try {
+            return ModuleTestBase.openTestSuite()
+                    .filter(entry -> entry.getName().indexOf('/') == -1
+                            && entry.getName().endsWith(".wast"))
+                    .map(entry -> DynamicTest.dynamicTest(entry.getName(), () ->
+                            runner.accept(entry.getName(), new BufferedInputStream(entry.getStream()))))
+                    // will be closed!
+                    ;
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
-
-        File suiteDir = new File(testsuite);
-        File[] files = Objects.requireNonNull(suiteDir.listFiles(($, name) -> name.endsWith(".wast")));
-        Arrays.sort(files);
-        return Arrays.stream(files)
-                .map(script -> DynamicTest.dynamicTest(script.getName(), script.toURI(), () -> {
-                    String source = new String(Files.readAllBytes(script.toPath()), StandardCharsets.UTF_8);
-                    runner.accept(script.getName(), source);
-                }));
     }
 
     @TestFactory

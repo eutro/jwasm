@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 public class UnparserTest {
     @TestFactory
     Stream<DynamicTest> testTestSuite() {
-        return ReaderTest.runForTestSuite(src -> {
+        return ReaderTest.runForTestSuite((name, src) -> {
             List<Object> script = Reader.readAll(src);
 
             List<ModuleNode> modules;

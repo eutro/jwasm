@@ -7,6 +7,8 @@ import io.github.eutro.jwasm.sexp.internal.LexerDFA;
 import io.github.eutro.jwasm.sexp.internal.LineCountingPushbackByteInputStream;
 import io.github.eutro.jwasm.sexp.internal.Token;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -53,6 +55,17 @@ public class Reader {
             res.add(read0(li));
         }
         return res;
+    }
+
+    /**
+     * Read all s-expressions from an input stream.
+     *
+     * @param stream The stream to read from.
+     * @return The list of s-expressions parsed from the string.
+     * @throws IOException If reading from the stream fails.
+     */
+    public static List<Object> readAll(InputStream stream) throws IOException {
+        return readAll(new ByteInputStream.InputStreamByteInputStream(stream));
     }
 
     static Object read0(ListIterator<Token> tokens) {
