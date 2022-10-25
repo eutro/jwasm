@@ -7,8 +7,8 @@ public class VectorMemLaneInsnNode extends VectorInsnNode {
     public int offset;
     public byte lane;
 
-    public VectorMemLaneInsnNode(int opcode, int align, int offset, byte lane) {
-        super(opcode);
+    public VectorMemLaneInsnNode(int intOpcode, int align, int offset, byte lane) {
+        super(intOpcode);
         this.align = align;
         this.offset = offset;
         this.lane = lane;
@@ -16,6 +16,6 @@ public class VectorMemLaneInsnNode extends VectorInsnNode {
 
     @Override
     public void accept(ExprVisitor ev) {
-        ev.visitVectorMemLaneInsn(opcode, align, offset, lane);
+        ev.visitVectorMemLaneInsn(intOpcode, align, offset, lane);
     }
 }

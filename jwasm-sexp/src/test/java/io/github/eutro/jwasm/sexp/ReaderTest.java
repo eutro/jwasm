@@ -111,7 +111,15 @@ class ReaderTest {
                 ((Reader.ParsedNumber) val).toFloat(false));
     }
 
-    static Stream<DynamicTest> runForTestSuite(Consumer<String> sourceConsumer) {
+    interface SuiteRunner {
+        void accept(String scriptName, String source);
+    }
+
+    static Stream<DynamicTest> runForTestSuite(Consumer<String> stringConsumer) {
+        return runForTestSuite((name, source) -> stringConsumer.accept(source));
+    }
+
+    static Stream<DynamicTest> runForTestSuite(SuiteRunner runner) {
         String testsuite = System.getenv("WASM_TESTSUITE");
         if (testsuite == null) {
             throw new IllegalStateException("WASM_TESTSUITE not supplied");
@@ -123,13 +131,13 @@ class ReaderTest {
         return Arrays.stream(files)
                 .map(script -> DynamicTest.dynamicTest(script.getName(), script.toURI(), () -> {
                     String source = new String(Files.readAllBytes(script.toPath()), StandardCharsets.UTF_8);
-                    sourceConsumer.accept(source);
+                    runner.accept(script.getName(), source);
                 }));
     }
 
     @TestFactory
     Stream<DynamicTest> parseTestSuite() {
-        return runForTestSuite(Reader::readAll);
+        return runForTestSuite((name, src) -> Reader.readAll(src));
     }
 
     @Test

@@ -50,6 +50,15 @@ public class InsnAttributes {
         return vectorShape;
     }
 
+    public int getMemBits() {
+        return memBits;
+    }
+
+    private InsnAttributes setMemBits(int memLoadBits) {
+        this.memBits = memLoadBits;
+        return this;
+    }
+
     private static final Map<Opcode, InsnAttributes> OPCODE_MAP = new HashMap<>();
     private static final Map<String, InsnAttributes> MNEMONIC_MAP = new HashMap<>();
 
@@ -58,6 +67,7 @@ public class InsnAttributes {
     private final VisitTarget visitTarget;
     private final @Nullable StackType type;
     private final VectorShape vectorShape;
+    private int memBits = -1;
 
     private static final HashMap<StackType, StackType> TYPE_INTERNS = new HashMap<>();
 
@@ -71,20 +81,20 @@ public class InsnAttributes {
         MNEMONIC_MAP.put(mnemonic, this);
     }
 
-    private static void reg(Opcode opc, String mnemonic, VisitTarget target, @Nullable StackType type) {
-        new InsnAttributes(opc, mnemonic, target, type, null);
+    private static InsnAttributes reg(Opcode opc, String mnemonic, VisitTarget target, @Nullable StackType type) {
+        return new InsnAttributes(opc, mnemonic, target, type, null);
     }
 
-    private static void reg(byte opc, String mnemonic, VisitTarget target, @Nullable StackType type) {
-        reg(new Opcode(opc, 0), mnemonic, target, type);
+    private static InsnAttributes reg(byte opc, String mnemonic, VisitTarget target, @Nullable StackType type) {
+        return reg(new Opcode(opc, 0), mnemonic, target, type);
     }
 
-    private static void reg(int opc, String mnemonic, VisitTarget target, @Nullable StackType type) {
-        reg(new Opcode(INSN_PREFIX, opc), mnemonic, target, type);
+    private static InsnAttributes reg(int opc, String mnemonic, VisitTarget target, @Nullable StackType type) {
+        return reg(new Opcode(INSN_PREFIX, opc), mnemonic, target, type);
     }
 
-    private static void regV(int opc, @Nullable VectorShape shape, String mnemonic, VisitTarget target, @Nullable StackType type) {
-        new InsnAttributes(new Opcode(VECTOR_PREFIX, opc), mnemonic, target, type, shape);
+    private static InsnAttributes regV(int opc, @Nullable VectorShape shape, String mnemonic, VisitTarget target, @Nullable StackType type) {
+        return new InsnAttributes(new Opcode(VECTOR_PREFIX, opc), mnemonic, target, type, shape);
     }
 
     static {
@@ -120,35 +130,35 @@ public class InsnAttributes {
         reg(TABLE_GROW, "table.grow", PrefixTableInsn, null);
         reg(TABLE_SIZE, "table.size", PrefixTableInsn, null);
         reg(TABLE_FILL, "table.fill", PrefixTableInsn, null);
-        reg(I32_LOAD, "i32.load", MemInsn, pop(I32).and(push(I32)));
-        reg(I64_LOAD, "i64.load", MemInsn, pop(I32).and(push(I64)));
-        reg(F32_LOAD, "f32.load", MemInsn, pop(I32).and(push(F32)));
-        reg(F64_LOAD, "f64.load", MemInsn, pop(I32).and(push(F64)));
-        reg(I32_LOAD8_S, "i32.load8_s", MemInsn, pop(I32).and(push(I32)));
-        reg(I32_LOAD8_U, "i32.load8_u", MemInsn, pop(I32).and(push(I32)));
-        reg(I32_LOAD16_S, "i32.load16_s", MemInsn, pop(I32).and(push(I32)));
-        reg(I32_LOAD16_U, "i32.load16_u", MemInsn, pop(I32).and(push(I32)));
-        reg(I64_LOAD8_S, "i64.load8_s", MemInsn, pop(I32).and(push(I64)));
-        reg(I64_LOAD8_U, "i64.load8_u", MemInsn, pop(I32).and(push(I64)));
-        reg(I64_LOAD16_S, "i64.load16_s", MemInsn, pop(I32).and(push(I64)));
-        reg(I64_LOAD16_U, "i64.load16_u", MemInsn, pop(I32).and(push(I64)));
-        reg(I64_LOAD32_S, "i64.load32_s", MemInsn, pop(I32).and(push(I64)));
-        reg(I64_LOAD32_U, "i64.load32_u", MemInsn, pop(I32).and(push(I64)));
-        reg(I32_STORE, "i32.store", MemInsn, pop(I32, I32));
-        reg(I64_STORE, "i64.store", MemInsn, pop(I32, I64));
-        reg(F32_STORE, "f32.store", MemInsn, pop(I32, F32));
-        reg(F64_STORE, "f64.store", MemInsn, pop(I32, F64));
-        reg(I32_STORE8, "i32.store8", MemInsn, pop(I32, I32));
-        reg(I32_STORE16, "i32.store16", MemInsn, pop(I32, I32));
-        reg(I64_STORE8, "i64.store8", MemInsn, pop(I32, I64));
-        reg(I64_STORE16, "i64.store16", MemInsn, pop(I32, I64));
-        reg(I64_STORE32, "i64.store32", MemInsn, pop(I32, I64));
-        reg(MEMORY_SIZE, "memory.size", Insn, null);
-        reg(MEMORY_GROW, "memory.grow", Insn, null);
-        reg(MEMORY_INIT, "memory.init", IndexedMemInsn, null);
-        reg(DATA_DROP, "data.drop", IndexedMemInsn, null);
-        reg(MEMORY_COPY, "memory.copy", PrefixInsn, null);
-        reg(MEMORY_FILL, "memory.fill", PrefixInsn, null);
+        reg(I32_LOAD, "i32.load", MemInsn, pop(I32).and(push(I32))).setMemBits(32);
+        reg(I64_LOAD, "i64.load", MemInsn, pop(I32).and(push(I64))).setMemBits(64);
+        reg(F32_LOAD, "f32.load", MemInsn, pop(I32).and(push(F32))).setMemBits(32);
+        reg(F64_LOAD, "f64.load", MemInsn, pop(I32).and(push(F64))).setMemBits(64);
+        reg(I32_LOAD8_S, "i32.load8_s", MemInsn, pop(I32).and(push(I32))).setMemBits(8);
+        reg(I32_LOAD8_U, "i32.load8_u", MemInsn, pop(I32).and(push(I32))).setMemBits(8);
+        reg(I32_LOAD16_S, "i32.load16_s", MemInsn, pop(I32).and(push(I32))).setMemBits(16);
+        reg(I32_LOAD16_U, "i32.load16_u", MemInsn, pop(I32).and(push(I32))).setMemBits(16);
+        reg(I64_LOAD8_S, "i64.load8_s", MemInsn, pop(I32).and(push(I64))).setMemBits(8);
+        reg(I64_LOAD8_U, "i64.load8_u", MemInsn, pop(I32).and(push(I64))).setMemBits(8);
+        reg(I64_LOAD16_S, "i64.load16_s", MemInsn, pop(I32).and(push(I64))).setMemBits(16);
+        reg(I64_LOAD16_U, "i64.load16_u", MemInsn, pop(I32).and(push(I64))).setMemBits(16);
+        reg(I64_LOAD32_S, "i64.load32_s", MemInsn, pop(I32).and(push(I64))).setMemBits(32);
+        reg(I64_LOAD32_U, "i64.load32_u", MemInsn, pop(I32).and(push(I64))).setMemBits(32);
+        reg(I32_STORE, "i32.store", MemInsn, pop(I32, I32)).setMemBits(32);
+        reg(I64_STORE, "i64.store", MemInsn, pop(I32, I64)).setMemBits(64);
+        reg(F32_STORE, "f32.store", MemInsn, pop(I32, F32)).setMemBits(32);
+        reg(F64_STORE, "f64.store", MemInsn, pop(I32, F64)).setMemBits(64);
+        reg(I32_STORE8, "i32.store8", MemInsn, pop(I32, I32)).setMemBits(8);
+        reg(I32_STORE16, "i32.store16", MemInsn, pop(I32, I32)).setMemBits(16);
+        reg(I64_STORE8, "i64.store8", MemInsn, pop(I32, I64)).setMemBits(8);
+        reg(I64_STORE16, "i64.store16", MemInsn, pop(I32, I64)).setMemBits(16);
+        reg(I64_STORE32, "i64.store32", MemInsn, pop(I32, I64)).setMemBits(32);
+        reg(MEMORY_SIZE, "memory.size", Insn, push(I32));
+        reg(MEMORY_GROW, "memory.grow", Insn, pop(I32).and(push(I32)));
+        reg(MEMORY_INIT, "memory.init", IndexedMemInsn, pop(I32, I32, I32));
+        reg(DATA_DROP, "data.drop", IndexedMemInsn, pop());
+        reg(MEMORY_COPY, "memory.copy", PrefixInsn, pop(I32, I32, I32));
+        reg(MEMORY_FILL, "memory.fill", PrefixInsn, pop(I32, I32, I32));
         reg(I32_CONST, "i32.const", ConstInsn, push(I32));
         reg(I64_CONST, "i64.const", ConstInsn, push(I64));
         reg(F32_CONST, "f32.const", ConstInsn, push(F32));
@@ -278,9 +288,9 @@ public class InsnAttributes {
         reg(F64_REINTERPRET_I64, "f64.reinterpret_i64", Insn, convertOp(F64, I64));
         reg(I32_EXTEND8_S, "i32.extend8_s", Insn, unOp(I32));
         reg(I32_EXTEND16_S, "i32.extend16_s", Insn, unOp(I32));
-        reg(I64_EXTEND8_S, "i64.extend8_s", Insn, convertOp(I32, I64));
-        reg(I64_EXTEND16_S, "i64.extend16_s", Insn, convertOp(I32, I64));
-        reg(I64_EXTEND32_S, "i64.extend32_s", Insn, convertOp(I32, I64));
+        reg(I64_EXTEND8_S, "i64.extend8_s", Insn, unOp(I64));
+        reg(I64_EXTEND16_S, "i64.extend16_s", Insn, unOp(I64));
+        reg(I64_EXTEND32_S, "i64.extend32_s", Insn, unOp(I64));
         reg(I32_TRUNC_SAT_F32_S, "i32.trunc_sat_f32_s", PrefixInsn, convertOp(I32, F32));
         reg(I32_TRUNC_SAT_F32_U, "i32.trunc_sat_f32_u", PrefixInsn, convertOp(I32, F32));
         reg(I32_TRUNC_SAT_F64_S, "i32.trunc_sat_f64_s", PrefixInsn, convertOp(I32, F64));
@@ -290,28 +300,28 @@ public class InsnAttributes {
         reg(I64_TRUNC_SAT_F64_S, "i64.trunc_sat_f64_s", PrefixInsn, convertOp(I64, F64));
         reg(I64_TRUNC_SAT_F64_U, "i64.trunc_sat_f64_u", PrefixInsn, convertOp(I64, F64));
 
-        regV(V128_LOAD, null, "v128.load", VectorMemInsn, pop(I32).and(push(V128)));
-        regV(V128_LOAD8X8_S, null, "v128.load8x8_s", VectorMemInsn, pop(I32).and(push(V128)));
-        regV(V128_LOAD8X8_U, null, "v128.load8x8_u", VectorMemInsn, pop(I32).and(push(V128)));
-        regV(V128_LOAD16X4_S, null, "v128.load16x4_s", VectorMemInsn, pop(I32).and(push(V128)));
-        regV(V128_LOAD16X4_U, null, "v128.load16x4_u", VectorMemInsn, pop(I32).and(push(V128)));
-        regV(V128_LOAD32X2_S, null, "v128.load32x2_s", VectorMemInsn, pop(I32).and(push(V128)));
-        regV(V128_LOAD32X2_U, null, "v128.load32x2_u", VectorMemInsn, pop(I32).and(push(V128)));
-        regV(V128_LOAD8_SPLAT, null, "v128.load8_splat", VectorMemInsn, pop(I32).and(push(V128)));
-        regV(V128_LOAD16_SPLAT, null, "v128.load16_splat", VectorMemInsn, pop(I32).and(push(V128)));
-        regV(V128_LOAD32_SPLAT, null, "v128.load32_splat", VectorMemInsn, pop(I32).and(push(V128)));
-        regV(V128_LOAD64_SPLAT, null, "v128.load64_splat", VectorMemInsn, pop(I32).and(push(V128)));
-        regV(V128_LOAD32_ZERO, null, "v128.load32_zero", VectorMemInsn, pop(I32).and(push(V128)));
-        regV(V128_LOAD64_ZERO, null, "v128.load64_zero", VectorMemInsn, pop(I32).and(push(V128)));
-        regV(V128_STORE, null, "v128.store", VectorMemInsn, pop(I32, V128));
-        regV(V128_LOAD8_LANE, null, "v128.load8_lane", VectorMemLaneInsn, pop(I32, V128).and(push(V128)));
-        regV(V128_LOAD16_LANE, null, "v128.load16_lane", VectorMemLaneInsn, pop(I32, V128).and(push(V128)));
-        regV(V128_LOAD32_LANE, null, "v128.load32_lane", VectorMemLaneInsn, pop(I32, V128).and(push(V128)));
-        regV(V128_LOAD64_LANE, null, "v128.load64_lane", VectorMemLaneInsn, pop(I32, V128).and(push(V128)));
-        regV(V128_STORE8_LANE, null, "v128.store8_lane", VectorMemLaneInsn, pop(I32, V128).and(push(V128)));
-        regV(V128_STORE16_LANE, null, "v128.store16_lane", VectorMemLaneInsn, pop(I32, V128).and(push(V128)));
-        regV(V128_STORE32_LANE, null, "v128.store32_lane", VectorMemLaneInsn, pop(I32, V128).and(push(V128)));
-        regV(V128_STORE64_LANE, null, "v128.store64_lane", VectorMemLaneInsn, pop(I32, V128).and(push(V128)));
+        regV(V128_LOAD, null, "v128.load", VectorMemInsn, pop(I32).and(push(V128))).setMemBits(128);
+        regV(V128_LOAD8X8_S, null, "v128.load8x8_s", VectorMemInsn, pop(I32).and(push(V128))).setMemBits(8 * 8);
+        regV(V128_LOAD8X8_U, null, "v128.load8x8_u", VectorMemInsn, pop(I32).and(push(V128))).setMemBits(8 * 8);
+        regV(V128_LOAD16X4_S, null, "v128.load16x4_s", VectorMemInsn, pop(I32).and(push(V128))).setMemBits(16 * 4);
+        regV(V128_LOAD16X4_U, null, "v128.load16x4_u", VectorMemInsn, pop(I32).and(push(V128))).setMemBits(16 * 4);
+        regV(V128_LOAD32X2_S, null, "v128.load32x2_s", VectorMemInsn, pop(I32).and(push(V128))).setMemBits(32 * 2);
+        regV(V128_LOAD32X2_U, null, "v128.load32x2_u", VectorMemInsn, pop(I32).and(push(V128))).setMemBits(32 * 2);
+        regV(V128_LOAD8_SPLAT, null, "v128.load8_splat", VectorMemInsn, pop(I32).and(push(V128))).setMemBits(8);
+        regV(V128_LOAD16_SPLAT, null, "v128.load16_splat", VectorMemInsn, pop(I32).and(push(V128))).setMemBits(16);
+        regV(V128_LOAD32_SPLAT, null, "v128.load32_splat", VectorMemInsn, pop(I32).and(push(V128))).setMemBits(32);
+        regV(V128_LOAD64_SPLAT, null, "v128.load64_splat", VectorMemInsn, pop(I32).and(push(V128))).setMemBits(64);
+        regV(V128_LOAD32_ZERO, null, "v128.load32_zero", VectorMemInsn, pop(I32).and(push(V128))).setMemBits(32);
+        regV(V128_LOAD64_ZERO, null, "v128.load64_zero", VectorMemInsn, pop(I32).and(push(V128))).setMemBits(64);
+        regV(V128_STORE, null, "v128.store", VectorMemInsn, pop(I32, V128)).setMemBits(128);
+        regV(V128_LOAD8_LANE, I8X16, "v128.load8_lane", VectorMemLaneInsn, pop(I32, V128).and(push(V128))).setMemBits(8);
+        regV(V128_LOAD16_LANE, I16X8, "v128.load16_lane", VectorMemLaneInsn, pop(I32, V128).and(push(V128))).setMemBits(16);
+        regV(V128_LOAD32_LANE, I32X4, "v128.load32_lane", VectorMemLaneInsn, pop(I32, V128).and(push(V128))).setMemBits(32);
+        regV(V128_LOAD64_LANE, I64X2, "v128.load64_lane", VectorMemLaneInsn, pop(I32, V128).and(push(V128))).setMemBits(64);
+        regV(V128_STORE8_LANE, I8X16, "v128.store8_lane", VectorMemLaneInsn, pop(I32, V128)).setMemBits(8);
+        regV(V128_STORE16_LANE, I16X8, "v128.store16_lane", VectorMemLaneInsn, pop(I32, V128)).setMemBits(16);
+        regV(V128_STORE32_LANE, I32X4, "v128.store32_lane", VectorMemLaneInsn, pop(I32, V128)).setMemBits(32);
+        regV(V128_STORE64_LANE, I64X2, "v128.store64_lane", VectorMemLaneInsn, pop(I32, V128)).setMemBits(64);
         regV(V128_CONST, null, "v128.const", VectorConstOrShuffleInsn, push(V128));
         regV(I8X16_SHUFFLE, I8X16, "i8x16.shuffle", VectorConstOrShuffleInsn, binOp(V128));
         regV(I8X16_EXTRACT_LANE_S, I8X16, "i8x16.extract_lane_s", VectorLaneInsn, pop(V128).and(push(I32)));
@@ -397,9 +407,9 @@ public class InsnAttributes {
         regV(I8X16_BITMASK, I8X16, "i8x16.bitmask", VectorInsn, testOp(V128));
         regV(I8X16_NARROW_I16X8_S, I8X16, "i8x16.narrow_i16x8_s", VectorInsn, binOp(V128));
         regV(I8X16_NARROW_I16X8_U, I8X16, "i8x16.narrow_i16x8_u", VectorInsn, binOp(V128));
-        regV(I8X16_SHL, I8X16, "i8x16.shl", VectorInsn, binOp(V128));
-        regV(I8X16_SHR_S, I8X16, "i8x16.shr_s", VectorInsn, binOp(V128));
-        regV(I8X16_SHR_U, I8X16, "i8x16.shr_u", VectorInsn, binOp(V128));
+        regV(I8X16_SHL, I8X16, "i8x16.shl", VectorInsn, pop(V128, I32).and(push(V128)));
+        regV(I8X16_SHR_S, I8X16, "i8x16.shr_s", VectorInsn, pop(V128, I32).and(push(V128)));
+        regV(I8X16_SHR_U, I8X16, "i8x16.shr_u", VectorInsn, pop(V128, I32).and(push(V128)));
         regV(I8X16_ADD, I8X16, "i8x16.add", VectorInsn, binOp(V128));
         regV(I8X16_ADD_SAT_S, I8X16, "i8x16.add_sat_s", VectorInsn, binOp(V128));
         regV(I8X16_ADD_SAT_U, I8X16, "i8x16.add_sat_u", VectorInsn, binOp(V128));
@@ -424,9 +434,9 @@ public class InsnAttributes {
         regV(I16X8_EXTEND_HIGH_I8X16_S, I16X8, "i16x8.extend_high_i8x16_s", VectorInsn, unOp(V128));
         regV(I16X8_EXTEND_LOW_I8X16_U, I16X8, "i16x8.extend_low_i8x16_u", VectorInsn, unOp(V128));
         regV(I16X8_EXTEND_HIGH_I8X16_U, I16X8, "i16x8.extend_high_i8x16_u", VectorInsn, unOp(V128));
-        regV(I16X8_SHL, I16X8, "i16x8.shl", VectorInsn, binOp(V128));
-        regV(I16X8_SHR_S, I16X8, "i16x8.shr_s", VectorInsn, binOp(V128));
-        regV(I16X8_SHR_U, I16X8, "i16x8.shr_u", VectorInsn, binOp(V128));
+        regV(I16X8_SHL, I16X8, "i16x8.shl", VectorInsn, pop(V128, I32).and(push(V128)));
+        regV(I16X8_SHR_S, I16X8, "i16x8.shr_s", VectorInsn, pop(V128, I32).and(push(V128)));
+        regV(I16X8_SHR_U, I16X8, "i16x8.shr_u", VectorInsn, pop(V128, I32).and(push(V128)));
         regV(I16X8_ADD, I16X8, "i16x8.add", VectorInsn, binOp(V128));
         regV(I16X8_ADD_SAT_S, I16X8, "i16x8.add_sat_s", VectorInsn, binOp(V128));
         regV(I16X8_ADD_SAT_U, I16X8, "i16x8.add_sat_u", VectorInsn, binOp(V128));
@@ -453,9 +463,9 @@ public class InsnAttributes {
         regV(I32X4_EXTEND_HIGH_I16X8_S, I32X4, "i32x4.extend_high_i16x8_s", VectorInsn, unOp(V128));
         regV(I32X4_EXTEND_LOW_I16X8_U, I32X4, "i32x4.extend_low_i16x8_u", VectorInsn, unOp(V128));
         regV(I32X4_EXTEND_HIGH_I16X8_U, I32X4, "i32x4.extend_high_i16x8_u", VectorInsn, unOp(V128));
-        regV(I32X4_SHL, I32X4, "i32x4.shl", VectorInsn, binOp(V128));
-        regV(I32X4_SHR_S, I32X4, "i32x4.shr_s", VectorInsn, binOp(V128));
-        regV(I32X4_SHR_U, I32X4, "i32x4.shr_u", VectorInsn, binOp(V128));
+        regV(I32X4_SHL, I32X4, "i32x4.shl", VectorInsn, pop(V128, I32).and(push(V128)));
+        regV(I32X4_SHR_S, I32X4, "i32x4.shr_s", VectorInsn, pop(V128, I32).and(push(V128)));
+        regV(I32X4_SHR_U, I32X4, "i32x4.shr_u", VectorInsn, pop(V128, I32).and(push(V128)));
         regV(I32X4_ADD, I32X4, "i32x4.add", VectorInsn, binOp(V128));
         regV(I32X4_SUB, I32X4, "i32x4.sub", VectorInsn, binOp(V128));
         regV(I32X4_MUL, I32X4, "i32x4.mul", VectorInsn, binOp(V128));
@@ -476,9 +486,9 @@ public class InsnAttributes {
         regV(I64X2_EXTEND_HIGH_I32X4_S, I64X2, "i64x2.extend_high_i32x4_s", VectorInsn, unOp(V128));
         regV(I64X2_EXTEND_LOW_I32X4_U, I64X2, "i64x2.extend_low_i32x4_u", VectorInsn, unOp(V128));
         regV(I64X2_EXTEND_HIGH_I32X4_U, I64X2, "i64x2.extend_high_i32x4_u", VectorInsn, unOp(V128));
-        regV(I64X2_SHL, I64X2, "i64x2.shl", VectorInsn, binOp(V128));
-        regV(I64X2_SHR_S, I64X2, "i64x2.shr_s", VectorInsn, binOp(V128));
-        regV(I64X2_SHR_U, I64X2, "i64x2.shr_u", VectorInsn, binOp(V128));
+        regV(I64X2_SHL, I64X2, "i64x2.shl", VectorInsn, pop(V128, I32).and(push(V128)));
+        regV(I64X2_SHR_S, I64X2, "i64x2.shr_s", VectorInsn, pop(V128, I32).and(push(V128)));
+        regV(I64X2_SHR_U, I64X2, "i64x2.shr_u", VectorInsn, pop(V128, I32).and(push(V128)));
         regV(I64X2_ADD, I64X2, "i64x2.add", VectorInsn, binOp(V128));
         regV(I64X2_SUB, I64X2, "i64x2.sub", VectorInsn, binOp(V128));
         regV(I64X2_MUL, I64X2, "i64x2.mul", VectorInsn, binOp(V128));

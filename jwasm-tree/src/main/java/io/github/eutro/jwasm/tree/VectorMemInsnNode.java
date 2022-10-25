@@ -6,14 +6,14 @@ public class VectorMemInsnNode extends VectorInsnNode {
     public int align;
     public int offset;
 
-    public VectorMemInsnNode(int opcode, int align, int offset) {
-        super(opcode);
+    public VectorMemInsnNode(int intOpcode, int align, int offset) {
+        super(intOpcode);
         this.align = align;
         this.offset = offset;
     }
 
     @Override
     public void accept(ExprVisitor ev) {
-        ev.visitVectorMemInsn(opcode, align, offset);
+        ev.visitVectorMemInsn(intOpcode, align, offset);
     }
 }

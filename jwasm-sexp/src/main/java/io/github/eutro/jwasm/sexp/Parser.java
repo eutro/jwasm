@@ -784,15 +784,6 @@ public class Parser {
                                 );
                             }
 
-                            byte[] locals = new byte[funcType.params.length + localTys.size()];
-                            int i = 0;
-                            for (byte param : funcType.params) {
-                                locals[i++] = param;
-                            }
-                            for (byte localTy : localTys) {
-                                locals[i++] = localTy;
-                            }
-
                             Supplier<RuntimeException> duplicateLocal = () ->
                                     new ParseException("Duplicate local variable", list,
                                             new RuntimeException("duplicate local"));
@@ -814,6 +805,13 @@ public class Parser {
                             ExprNode expr = new ExprNode();
                             expr.instructions = new ArrayList<>(realInstrs);
                             expr.instructions.add(new EndInsnNode());
+
+                            byte[] locals = new byte[localTys.size()];
+                            int i = 0;
+                            for (byte localTy : localTys) {
+                                locals[i++] = localTy;
+                            }
+
                             module.codes.codes.add(new CodeNode(locals, expr));
                         }
                     });
@@ -830,7 +828,7 @@ public class Parser {
         OPCODES.put("unreachable", lp -> pure(new InsnNode(UNREACHABLE)));
         OPCODES.put("nop", lp -> pure(new InsnNode(NOP)));
         OPCODES.put("br", lp -> parseLabelIdx(lp.expect()).fmap(lb -> new BreakInsnNode(BR, lb)));
-        OPCODES.put("br_if", lp -> parseLabelIdx(lp.expect()).fmap(lb -> new BreakInsnNode(BR, lb)));
+        OPCODES.put("br_if", lp -> parseLabelIdx(lp.expect()).fmap(lb -> new BreakInsnNode(BR_IF, lb)));
         OPCODES.put("br_table", lp -> {
             Optional<Object> maybeLabel;
             List<IdVal<Integer>> labels = new ArrayList<>();
@@ -865,7 +863,13 @@ public class Parser {
         OPCODES.put("ref.func", lp -> parseIdx(FUNCTION, lp.expect()).fmap(FuncRefInsnNode::new));
 
         OPCODES.put("drop", lp -> pure(new InsnNode(DROP)));
-        OPCODES.put("select", lp -> pure(new SelectInsnNode(parseResults(lp))));
+        OPCODES.put("select", lp -> {
+            if (lp.peek().flatMap(it -> isMacroList(it, "result")).isPresent()) {
+                return pure(new SelectInsnNode(parseResults(lp)));
+            } else {
+                return pure(new InsnNode(SELECT));
+            }
+        });
 
         OPCODES.put("local.get", lp -> parseIdx(LOCAL, lp.expect()).fmap(idx -> new VariableInsnNode(LOCAL_GET, idx)));
         OPCODES.put("local.set", lp -> parseIdx(LOCAL, lp.expect()).fmap(idx -> new VariableInsnNode(LOCAL_SET, idx)));
@@ -945,26 +949,26 @@ public class Parser {
         OPCODES.put("v128.load32_zero", lp -> pure(parseMemArg(4, lp, (a, o) -> new VectorMemInsnNode(V128_LOAD32_ZERO, a, o))));
         OPCODES.put("v128.load64_zero", lp -> pure(parseMemArg(8, lp, (a, o) -> new VectorMemInsnNode(V128_LOAD64_ZERO, a, o))));
         OPCODES.put("v128.store", lp -> pure(parseMemArg(16, lp, (a, o) -> new VectorMemInsnNode(V128_STORE, a, o))));
-        OPCODES.put("v128.load8_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_LOAD8_LANE, a, o, parseU8(lp)))));
-        OPCODES.put("v128.load16_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_LOAD16_LANE, a, o, parseU8(lp)))));
-        OPCODES.put("v128.load32_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_LOAD32_LANE, a, o, parseU8(lp)))));
-        OPCODES.put("v128.load64_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_LOAD64_LANE, a, o, parseU8(lp)))));
-        OPCODES.put("v128.store8_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_STORE8_LANE, a, o, parseU8(lp)))));
-        OPCODES.put("v128.store16_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_STORE16_LANE, a, o, parseU8(lp)))));
-        OPCODES.put("v128.store32_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_STORE32_LANE, a, o, parseU8(lp)))));
-        OPCODES.put("v128.store64_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_STORE64_LANE, a, o, parseU8(lp)))));
+        OPCODES.put("v128.load8_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_LOAD8_LANE, a, o, parseLaneU8(lp)))));
+        OPCODES.put("v128.load16_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_LOAD16_LANE, a, o, parseLaneU8(lp)))));
+        OPCODES.put("v128.load32_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_LOAD32_LANE, a, o, parseLaneU8(lp)))));
+        OPCODES.put("v128.load64_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_LOAD64_LANE, a, o, parseLaneU8(lp)))));
+        OPCODES.put("v128.store8_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_STORE8_LANE, a, o, parseLaneU8(lp)))));
+        OPCODES.put("v128.store16_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_STORE16_LANE, a, o, parseLaneU8(lp)))));
+        OPCODES.put("v128.store32_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_STORE32_LANE, a, o, parseLaneU8(lp)))));
+        OPCODES.put("v128.store64_lane", lp -> parseMemArg(1, lp, (a, o) -> pure(new VectorMemLaneInsnNode(V128_STORE64_LANE, a, o, parseLaneU8(lp)))));
 
         OPCODES.put("v128.const", lp -> pure(new VectorConstOrShuffleInsnNode(V128_CONST, parseV128Const(lp, false))));
         OPCODES.put("i8x16.shuffle", lp -> {
             byte[] lanes = new byte[16];
             for (int i = 0; i < lanes.length; i++) {
-                lanes[i] = parseU8(lp);
+                lanes[i] = parseLaneU8(lp);
             }
             return pure(new VectorConstOrShuffleInsnNode(I8X16_SHUFFLE, lanes));
         });
     }
 
-    static byte parseU8(ListParser lp) {
+    static byte parseLaneU8(ListParser lp) {
         Reader.ParsedNumber num = expectClass(Reader.ParsedNumber.class, lp.expect());
         if (num.hasSign || !num.isInteger()) {
             throw new ParseException("Expected natural", num,
@@ -976,7 +980,7 @@ public class Parser {
             throw new ParseException("Value out of range for u8", bigInt,
                     new RuntimeException("malformed lane index"));
         }
-        return bigInt.byteValueExact();
+        return bigInt.byteValue();
     }
 
     static {
@@ -997,7 +1001,7 @@ public class Parser {
                     OPCODES.put(mnemonic, lp -> pure(new VectorInsnNode(iOpc)));
                     break;
                 case VectorLaneInsn:
-                    OPCODES.put(mnemonic, lp -> pure(new VectorLaneInsnNode(iOpc, parseU8(lp))));
+                    OPCODES.put(mnemonic, lp -> pure(new VectorLaneInsnNode(iOpc, parseLaneU8(lp))));
                     break;
                 case BlockInsn:
                 case ElseInsn:
@@ -1027,7 +1031,7 @@ public class Parser {
                     }
                     return Integer.numberOfTrailingZeros(a);
                 })
-                .orElse(n);
+                .orElse(Integer.numberOfTrailingZeros(n));
         return c.consume(align, offset);
     }
 
@@ -1053,7 +1057,10 @@ public class Parser {
         // The IndexedList indexes labels with *absolute* depth, but instructions use relative depths,
         // so invert if it is referenced by name.
         return parseIdx(LABEL, obj)
-                .bind(raw -> (mod, idcx) -> obj instanceof String ? idcx.f(LABEL).size() - raw : raw);
+                .bind(raw -> (mod, idcx) ->
+                        obj instanceof String
+                                ? idcx.f(LABEL).size() - raw - 1
+                                : raw);
     }
 
     private interface InstrSeq {
@@ -1667,7 +1674,8 @@ public class Parser {
             public void mod(IdCtx idcx, ModuleNode module) {
                 if (module.elems == null) module.elems = new ElementSegmentsNode();
                 if (module.elems.elems == null) module.elems.elems = new ArrayList<>();
-                module.elems.elems.add(finalEn.resolve(module, idcx));
+                ElementNode elem = finalEn.resolve(module, idcx);
+                module.elems.elems.add(elem);
             }
         });
     }
@@ -1736,8 +1744,9 @@ public class Parser {
         if (lp.maybeParse(s::equals).isPresent()) {
             expr = parseExpr(lp);
         } else {
-            InstrSeq singleInsn = parseSingleInsn(lp);
-            lp.expectEnd();
+            InstrSeq singleInsn = parseSingleInsn(
+                    new ListParser(Collections.singletonList(lp.list))
+            );
             expr = (mod, idcx) -> {
                 ExprNode node = new ExprNode();
                 singleInsn.resolveInsns(node.instructions = new ArrayList<>(), mod, idcx);

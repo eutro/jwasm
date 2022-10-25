@@ -4,25 +4,26 @@ import io.github.eutro.jwasm.BlockType;
 import io.github.eutro.jwasm.ExprVisitor;
 import io.github.eutro.jwasm.Opcodes;
 import io.github.eutro.jwasm.ValidationException;
-import io.github.eutro.jwasm.tree.GlobalNode;
+import io.github.eutro.jwasm.tree.GlobalTypeNode;
 import org.jetbrains.annotations.Nullable;
 
-import static io.github.eutro.jwasm.tree.analysis.ModuleValidator.assertMsg;
+import static io.github.eutro.jwasm.tree.analysis.ModuleValidator.assertMsg1;
 
 /**
  * An {@link ExprVisitor} that asserts that the expression is a
  * <a href="https://webassembly.github.io/spec/core/valid/instructions.html#constant-expressions">constant</a>.
  */
 public class ConstantExprValidator extends ExprVisitor {
-    private final ModuleValidator validator;
+    final VerifCtx ctx;
 
-    public ConstantExprValidator(ModuleValidator mn, @Nullable ExprVisitor dl) {
+    public ConstantExprValidator(VerifCtx ctx, @Nullable ExprVisitor dl) {
         super(dl);
-        validator = mn;
+        this.ctx = ctx;
     }
 
     protected void notConstant() {
-        throw new ValidationException("expression is not constant", null);
+        throw new ValidationException("Expression is not constant",
+                new RuntimeException("constant expression required"));
     }
 
     @Override
@@ -61,9 +62,9 @@ public class ConstantExprValidator extends ExprVisitor {
             notConstant();
         }
         super.visitVariableInsn(opcode, variable);
-        assert (validator != null && validator.globals != null && validator.globals.globals != null);
-        GlobalNode global = validator.globals.globals.get(variable);
-        assertMsg(global.type.mut == Opcodes.MUT_CONST, "global %d must be const", variable);
+        GlobalTypeNode ty = ctx.globals.get(variable);
+        assertMsg1(ty.mut == Opcodes.MUT_CONST, "constant expression required",
+                "global %d must be const", variable);
     }
 
     @Override
@@ -143,7 +144,10 @@ public class ConstantExprValidator extends ExprVisitor {
 
     @Override
     public void visitVectorConstOrShuffleInsn(int opcode, byte[] bytes) {
-        notConstant();
+        if (opcode != Opcodes.V128_CONST) {
+            notConstant();
+        }
+        super.visitVectorConstOrShuffleInsn(opcode, bytes);
     }
 
     @Override

@@ -63,7 +63,7 @@ public class ElementNode extends ElementVisitor implements Iterable<ExprNode> {
      *
      * @see #indices
      */
-    public List<ExprNode> init;
+    public List<ExprNode> init = new ArrayList<>();
 
     /**
      * Construct a visitor with no delegate.
@@ -135,6 +135,7 @@ public class ElementNode extends ElementVisitor implements Iterable<ExprNode> {
     public void visitElemIndices(int[] indices) {
         super.visitElemIndices(indices);
         this.indices = indices;
+        this.init = null;
     }
 
     @Override

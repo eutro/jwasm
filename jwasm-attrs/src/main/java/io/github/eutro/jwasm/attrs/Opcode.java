@@ -1,5 +1,7 @@
 package io.github.eutro.jwasm.attrs;
 
+import io.github.eutro.jwasm.Opcodes;
+
 import java.util.Objects;
 
 public class Opcode {
@@ -22,5 +24,24 @@ public class Opcode {
     @Override
     public int hashCode() {
         return Objects.hash(opcode, intOpcode);
+    }
+
+    public static Opcode byteOpcode(byte b) {
+        return new Opcode(b, 0);
+    }
+
+    public static Opcode prefixOpcode(int i) {
+        return new Opcode(Opcodes.INSN_PREFIX, i);
+    }
+
+    public static Opcode vectorOpcode(int i) {
+        return new Opcode(Opcodes.VECTOR_PREFIX, i);
+    }
+
+    @Override
+    public String toString() {
+        return opcode == Opcodes.INSN_PREFIX || opcode == Opcodes.VECTOR_PREFIX
+                ? String.format("0x%02X %d", opcode, intOpcode)
+                : String.format("0x%02X", opcode);
     }
 }

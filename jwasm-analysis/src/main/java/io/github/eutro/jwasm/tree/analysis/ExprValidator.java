@@ -6,14 +6,17 @@ import io.github.eutro.jwasm.attrs.Opcode;
 import io.github.eutro.jwasm.attrs.StackType;
 import io.github.eutro.jwasm.attrs.VisitTarget;
 import io.github.eutro.jwasm.tree.*;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static io.github.eutro.jwasm.Opcodes.*;
-import static io.github.eutro.jwasm.tree.analysis.ModuleValidator.assertMsg;
+import static io.github.eutro.jwasm.attrs.Opcode.*;
+import static io.github.eutro.jwasm.tree.analysis.ModuleValidator.*;
 
 /**
  * An {@link ExprVisitor} that verifies whether the expression is well-formed.
@@ -22,6 +25,10 @@ import static io.github.eutro.jwasm.tree.analysis.ModuleValidator.assertMsg;
  * <a href="https://webassembly.github.io/spec/core/appendix/algorithm.html#algo-valid">here</a>.
  */
 public class ExprValidator extends ExprVisitor {
+
+    public static final String TYPE_MISMATCH = "type mismatch";
+    public static final String INVALID_LANE_INDEX = "invalid lane index";
+
     public static class CtrlFrame {
         public int opcode;
         public List<Byte> startTypes, endTypes;
@@ -32,25 +39,17 @@ public class ExprValidator extends ExprVisitor {
     public final List<Byte> vals = new ArrayList<>();
     public final List<CtrlFrame> ctrls = new ArrayList<>();
 
-    protected ModuleValidator validator;
-    protected byte[] locals;
-    protected byte @Nullable [] returns;
-    protected byte [] result;
+    protected final VerifCtx ctx;
     protected int insn = 0;
 
     public ExprValidator(
-            ModuleValidator validator,
-            byte[] locals,
-            byte @Nullable [] returns,
-            byte[] result,
+            VerifCtx ctx,
+            List<Byte> expectedType,
             @Nullable ExprVisitor dl
     ) {
         super(dl);
-        this.validator = validator;
-        this.locals = locals;
-        this.returns = returns;
-        this.result = result;
-        pushC(END, Collections.emptyList(), new ByteList(result));
+        this.ctx = ctx;
+        pushC(END, Collections.emptyList(), expectedType);
     }
 
     public static boolean isNum(@Nullable Byte ty) {
@@ -76,7 +75,7 @@ public class ExprValidator extends ExprVisitor {
     }
 
     public static boolean isValType(@Nullable Byte ty) {
-        return isNum(ty) || isRef(ty);
+        return isNum(ty) || isRef(ty) || ty == V128;
     }
 
     protected CtrlFrame ctrlsRef(int idx) {
@@ -95,7 +94,8 @@ public class ExprValidator extends ExprVisitor {
             if (ctrlsRef(0).unreachable) {
                 return null;
             } else {
-                throw new ValidationException("Pop underflows current block", null);
+                throw new ValidationException("Pop underflows current block",
+                        typeMismatch());
             }
         }
         return vals.remove(vals.size() - 1);
@@ -104,7 +104,8 @@ public class ExprValidator extends ExprVisitor {
     private @Nullable Byte popV(Byte expect) {
         Byte actual = popV();
         if (actual != null && expect != null && (byte) actual != expect) {
-            throw new ValidationException(String.format("Mismatched types, expected 0x%02x, got 0x%02x", expect, actual), null);
+            throw new ValidationException(String.format("Mismatched types, expected 0x%02x, got 0x%02x", expect, actual),
+                    typeMismatch());
         }
         return actual;
     }
@@ -120,10 +121,11 @@ public class ExprValidator extends ExprVisitor {
     }
 
     protected List<Byte> popVs(List<Byte> types) {
-        List<Byte> popped = new ArrayList<>();
+        List<Byte> popped = new ArrayList<>(types.size());
         for (int i = types.size() - 1; i >= 0; i--) {
             popped.add(popV(types.get(i)));
         }
+        Collections.reverse(popped);
         return popped;
     }
 
@@ -144,15 +146,20 @@ public class ExprValidator extends ExprVisitor {
 
     protected CtrlFrame popC() {
         if (ctrls.isEmpty()) {
-            throw new ValidationException("Attempted to pop empty control stack", null);
+            throw new ValidationException("Attempted to pop empty control stack", typeMismatch());
         }
         CtrlFrame frame = ctrlsRef(0);
         popVs(frame.endTypes);
         if (vals.size() != frame.height) {
-            throw new ValidationException("Stack height does not match frame height", null);
+            throw new ValidationException("Stack height does not match frame height", typeMismatch());
         }
         ctrls.remove(ctrls.size() - 1);
         return frame;
+    }
+
+    @NotNull
+    private static RuntimeException typeMismatch() {
+        return new RuntimeException(TYPE_MISMATCH);
     }
 
     protected List<Byte> labelTypes(CtrlFrame frame) {
@@ -171,7 +178,10 @@ public class ExprValidator extends ExprVisitor {
         insn++;
     }
 
-    private void applyType(StackType type) {
+    private void applyType(@Nullable StackType type) {
+        if (type == null) {
+            throw new IllegalArgumentException();
+        }
         popVs(type.pops);
         pushVs(type.pushes);
     }
@@ -186,12 +196,13 @@ public class ExprValidator extends ExprVisitor {
             case NOP:
                 break;
             case RETURN:
-                assertMsg(returns != null, "expression does not have a return type");
-                popVs(returns);
+                assertMsg(ctx.returns != null, "expression does not have a return type");
+                popVs(ctx.returns);
                 unreachable();
                 break;
             case REF_IS_NULL:
-                assertMsg(isRef(popV()), "ref.is_null argument must be a reference type");
+                assertMsg1(isRef(popV()), TYPE_MISMATCH,
+                        "ref.is_null argument must be a reference type");
                 pushV(I32);
                 break;
             case DROP: {
@@ -203,20 +214,20 @@ public class ExprValidator extends ExprVisitor {
                 Byte t1, t2;
                 t1 = popV();
                 t2 = popV();
-                assertMsg(isNum(t1) && isNum(t2), "select arguments must both be numbers");
-                assertMsg(!(t1 != null && t2 != null && (byte) t1 != t2), "select argument types do not match");
+                assertMsg1(isNum(t1) && isNum(t2), TYPE_MISMATCH,
+                        "select arguments must both be numbers");
+                assertMsg1(!(t1 != null && t2 != null && (byte) t1 != t2), TYPE_MISMATCH,
+                        "select argument types do not match");
                 pushV(t1 == null ? t2 : t1);
                 break;
             }
 
             case MEMORY_SIZE:
-                assertMsg(validator.mems != null && validator.mems.memories != null && !validator.mems.memories.isEmpty(),
-                        "memory 0 does not exist");
+                assertMemExists();
                 pushV(I32);
                 break;
             case MEMORY_GROW:
-                assertMsg(validator.mems != null && validator.mems.memories != null && !validator.mems.memories.isEmpty(),
-                        "memory 0 does not exist");
+                assertMemExists();
                 popV(I32);
                 pushV(I32);
                 break;
@@ -236,29 +247,13 @@ public class ExprValidator extends ExprVisitor {
     public void visitPrefixInsn(int opcode) {
         super.visitPrefixInsn(opcode);
         switch (opcode) {
-            case I32_TRUNC_SAT_F32_S:
-            case I32_TRUNC_SAT_F32_U:
-                popV(F32);
-                pushV(I32);
-                break;
-            case I32_TRUNC_SAT_F64_S:
-            case I32_TRUNC_SAT_F64_U:
-                popV(F64);
-                pushV(I32);
-                break;
-            case I64_TRUNC_SAT_F32_S:
-            case I64_TRUNC_SAT_F32_U:
-                popV(F32);
-                pushV(I64);
-                break;
-            case I64_TRUNC_SAT_F64_S:
-            case I64_TRUNC_SAT_F64_U:
-                popV(F64);
-                pushV(I64);
-                break;
-            default:
-                throw new ValidationException(String.format("opcode 0x%02x %d does not exist", INSN_PREFIX, opcode), null);
+            case MEMORY_COPY:
+            case MEMORY_FILL:
+                assertMemExists();
         }
+        InsnAttributes attrs = InsnAttributes.lookupPrefix(opcode);
+        checkVisitTarget(VisitTarget.PrefixInsn, attrs, Opcode.prefixOpcode(opcode));
+        applyType(Objects.requireNonNull(attrs.getType()));
         bumpI();
     }
 
@@ -290,7 +285,14 @@ public class ExprValidator extends ExprVisitor {
     @Override
     public void visitFuncRefInsn(int function) {
         super.visitFuncRefInsn(function);
-        assertMsg(validator.referencableFuncs.size() > function, "function %d does not exist", function);
+        if (!ctx.refs.contains(function)) {
+            if (ctx.funcs.size() > function) {
+                throw new ValidationException("Function reference %d not declared",
+                        new RuntimeException("undeclared function reference"));
+            } else {
+                throw new ValidationException("unknown function " + function);
+            }
+        }
         pushV(FUNCREF);
         bumpI();
     }
@@ -298,7 +300,8 @@ public class ExprValidator extends ExprVisitor {
     @Override
     public void visitSelectInsn(byte[] type) {
         super.visitSelectInsn(type);
-        assertMsg(type.length == 1, "the length of type in a select must be 1");
+        assertMsg1(type.length == 1, "invalid result arity",
+                "the length of type in a select must be 1, (got %d)", type.length);
         byte t = type[0];
         popVs(t, t, I32);
         pushV(t);
@@ -311,25 +314,41 @@ public class ExprValidator extends ExprVisitor {
         boolean isLocal, pops = false, pushes = false;
         byte type;
         switch (opcode) {
-            case LOCAL_GET: isLocal = true; pushes = true; break;
-            case LOCAL_SET: isLocal = true; pops = true; break;
-            case LOCAL_TEE: isLocal = true; pops = true; pushes = true; break;
-            case GLOBAL_GET: isLocal = false; pushes = true; break;
-            case GLOBAL_SET: isLocal = false; pops = true; break;
+            case LOCAL_GET:
+                isLocal = true;
+                pushes = true;
+                break;
+            case LOCAL_SET:
+                isLocal = true;
+                pops = true;
+                break;
+            case LOCAL_TEE:
+                isLocal = true;
+                pops = true;
+                pushes = true;
+                break;
+            case GLOBAL_GET:
+                isLocal = false;
+                pushes = true;
+                break;
+            case GLOBAL_SET:
+                isLocal = false;
+                pops = true;
+                break;
             default:
                 throw new ValidationException(String.format("0x%02x is not a valid variable insn", opcode), null);
         }
         if (isLocal) {
-            assertMsg(locals.length > variable, "local %d does not exist", variable);
-            type = locals[variable];
+            assertExists(ctx.locals, variable, "local");
+            type = ctx.locals.get(variable);
         } else {
-            assertMsg(validator.globals != null && validator.globals.globals != null && validator.globals.globals.size() > variable,
-                    "global %d does not exist", variable);
-            GlobalNode gn = validator.globals.globals.get(variable);
+            assertExists(ctx.globals, variable, "global");
+            GlobalTypeNode gn = ctx.globals.get(variable);
             if (pops) {
-                assertMsg(gn.type.mut == MUT_VAR, "global %d is not mutable", variable);
+                assertMsg1(gn.mut == MUT_VAR, "global is immutable",
+                        "global %d is not mutable", variable);
             }
-            type = gn.type.type;
+            type = gn.type;
         }
         if (pops) {
             popV(type);
@@ -343,9 +362,8 @@ public class ExprValidator extends ExprVisitor {
     @Override
     public void visitTableInsn(byte opcode, int table) {
         super.visitTableInsn(opcode, table);
-        assertMsg(validator.tables != null && validator.tables.tables != null && validator.tables.tables.size() > table,
-                "table %d does note exist", table);
-        TableNode tn = validator.tables.tables.get(table);
+        assertExists(ctx.tables, table, "table");
+        TableNode tn = ctx.tables.get(table);
         switch (opcode) {
             case TABLE_GET:
                 popV(I32);
@@ -364,12 +382,10 @@ public class ExprValidator extends ExprVisitor {
     public void visitPrefixTableInsn(int opcode, int table) {
         super.visitPrefixTableInsn(opcode, table);
         if (opcode == ELEM_DROP) {
-            assertMsg(validator.elems != null && validator.elems.elems != null && validator.elems.elems.size() > table,
-                    "elem %d does not exist", table);
+            assertExists(ctx.elems, table, "elem segment");
         } else {
-            assertMsg(validator.tables != null && validator.tables.tables != null && validator.tables.tables.size() > table,
-                    "table %d does not exist", table);
-            TableNode tn = validator.tables.tables.get(table);
+            assertExists(ctx.tables, table, "table");
+            TableNode tn = ctx.tables.get(table);
             switch (opcode) {
                 case TABLE_SIZE:
                     pushV(I32);
@@ -380,8 +396,13 @@ public class ExprValidator extends ExprVisitor {
                     break;
                 case TABLE_FILL:
                     popVs(I32, tn.type, I32);
-                default:
-                    throw new ValidationException(String.format("0x%02x %d is not a valid table insn", INSN_PREFIX, opcode), null);
+                    break;
+                default: {
+                    Opcode opc = prefixOpcode(opcode);
+                    InsnAttributes attrs = InsnAttributes.lookup(opc);
+                    checkVisitTarget(VisitTarget.PrefixTableInsn, attrs, opc);
+                    throw new IllegalStateException(attrs.getMnemonic());
+                }
             }
         }
         bumpI();
@@ -392,20 +413,16 @@ public class ExprValidator extends ExprVisitor {
         super.visitPrefixBinaryTableInsn(opcode, firstIndex, secondIndex);
         switch (opcode) {
             case TABLE_INIT:
-                assertMsg(validator.tables != null && validator.tables.tables != null && validator.tables.tables.size() > firstIndex,
-                        "table %d does not exist", firstIndex);
-                assertMsg(validator.elems != null && validator.elems.elems != null && validator.elems.elems.size() > secondIndex,
-                        "element %d does not exist", secondIndex);
-                assertMsg(validator.tables.tables.get(firstIndex).type == validator.elems.elems.get(secondIndex).type,
+                assertExists(ctx.tables, firstIndex, "table");
+                assertExists(ctx.elems, secondIndex, "element");
+                assertMsg1(ctx.tables.get(firstIndex).type == ctx.elems.get(secondIndex), TYPE_MISMATCH,
                         "element and table types don't match");
                 popVs(I32, I32, I32);
                 break;
             case TABLE_COPY:
-                assertMsg(validator.tables != null && validator.tables.tables != null && validator.tables.tables.size() > firstIndex,
-                        "table %d does not exist", firstIndex);
-                assertMsg(validator.tables != null && validator.tables.tables != null && validator.tables.tables.size() > secondIndex,
-                        "table %d does not exist", secondIndex);
-                assertMsg(validator.tables.tables.get(firstIndex).type == validator.tables.tables.get(secondIndex).type,
+                assertExists(ctx.tables, firstIndex, "table");
+                assertExists(ctx.tables, secondIndex, "table");
+                assertMsg1(ctx.tables.get(firstIndex).type == ctx.tables.get(secondIndex).type, TYPE_MISMATCH,
                         "table types don't match");
                 popVs(I32, I32, I32);
                 break;
@@ -416,76 +433,43 @@ public class ExprValidator extends ExprVisitor {
     }
 
     private void assertMemExists() {
-        assertMsg(validator.mems != null && validator.mems.memories != null && !validator.mems.memories.isEmpty(),
-                "memory %d does not exist", 0);
+        assertExists(ctx.mems, 0, "memory");
     }
 
     @Override
     public void visitMemInsn(byte opcode, int align, int offset) {
         super.visitMemInsn(opcode, align, offset);
         assertMemExists();
-        boolean isPop;
-        byte type;
-        switch (opcode) {
-            case I32_LOAD:
-            case I32_LOAD8_S:
-            case I32_LOAD8_U:
-            case I32_LOAD16_S:
-            case I32_LOAD16_U: isPop = false; type = I32; break;
-            case I64_LOAD:
-            case I64_LOAD8_S:
-            case I64_LOAD8_U:
-            case I64_LOAD16_S:
-            case I64_LOAD16_U:
-            case I64_LOAD32_S:
-            case I64_LOAD32_U: isPop = false; type = I64; break;
-            case F32_LOAD: isPop = false; type = F32;  break;
-            case F64_LOAD: isPop = false; type = F64;  break;
-            case I32_STORE:
-            case I32_STORE8:
-            case I32_STORE16: isPop = true; type = I32; break;
-            case I64_STORE:
-            case I64_STORE8:
-            case I64_STORE16:
-            case I64_STORE32: isPop = true; type = I64; break;
-            case F32_STORE: isPop = true; type = F32; break;
-            case F64_STORE: isPop = true; type = F64; break;
-            default:
-                throw new ValidationException(String.format("0x%02d is not a valid memory insn", opcode), null);
-        }
-        if (isPop) {
-            popV(type);
-            popV(I32);
-        } else {
-            popV(I32);
-            pushV(type);
-        }
+        checkAlign(byteOpcode(opcode), align);
+        InsnAttributes attrs = InsnAttributes.lookup(opcode);
+        checkVisitTarget(VisitTarget.MemInsn, attrs, byteOpcode(opcode));
+        applyType(Objects.requireNonNull(attrs.getType()));
         bumpI();
+    }
+
+    private void checkAlign(Opcode opcode, int align) {
+        int memBits = InsnAttributes.lookup(opcode).getMemBits();
+        if (memBits == -1) throw new IllegalStateException();
+        // 2^align > n/8
+        // => align > lg(n/8)
+        if (align > 64
+                || (1L << align) > (memBits / 8)) {
+            throw new ValidationException(
+                    String.format("Alignment (2^%d) exceeds natural alignment (%d)", align, memBits / 8),
+                    new RuntimeException("alignment must not be larger than natural"));
+        }
     }
 
     @Override
     public void visitIndexedMemInsn(int opcode, int index) {
         super.visitIndexedMemInsn(opcode, index);
-        if (opcode == DATA_DROP) {
-            assertMsg(validator.dataCount != null && validator.dataCount > index,
-                    "data %d does not exist", index);
-        } else {
-            assertMsg(validator.mems != null && validator.mems.memories != null && validator.mems.memories.size() > index,
-                    "memory %d does not exist", index);
-            switch (opcode) {
-                case MEMORY_INIT:
-                    assertMsg(validator.dataCount != null && validator.dataCount > index,
-                            "data %d is not defined", index);
-                    popVs(I32, I32, I32);
-                    break;
-                case MEMORY_COPY:
-                case MEMORY_FILL:
-                    popVs(I32, I32, I32);
-                    break;
-                default:
-                    throw new ValidationException(String.format("0x%02d is not a valid indexed memory insn", opcode), null);
-            }
+        if (opcode == MEMORY_INIT) {
+            assertMemExists();
         }
+        assertExists(ctx.datas, index, "data segment");
+        InsnAttributes attrs = InsnAttributes.lookupPrefix(opcode);
+        checkVisitTarget(VisitTarget.IndexedMemInsn, attrs, prefixOpcode(opcode));
+        applyType(Objects.requireNonNull(attrs.getType()));
         bumpI();
     }
 
@@ -513,9 +497,9 @@ public class ExprValidator extends ExprVisitor {
                     throw new ValidationException(String.format("Block type 0x%02x does not exist.", blockType.get()), null);
             }
         } else {
-            assertMsg(validator.types != null && validator.types.types != null && blockType.get() < validator.types.types.size(),
+            assertMsg(blockType.get() < ctx.types.size(),
                     "Block type %d does not exist", blockType.get());
-            TypeNode funcTy = validator.types.types.get(blockType.get());
+            TypeNode funcTy = ctx.types.get(blockType.get());
             inputs = new ByteList(funcTy.params);
             outputs = new ByteList(funcTy.returns);
         }
@@ -558,7 +542,7 @@ public class ExprValidator extends ExprVisitor {
     @Override
     public void visitBreakInsn(byte opcode, int label) {
         super.visitBreakInsn(opcode, label);
-        assertMsg(ctrls.size() > label, "label %d does not exist at this depth", label);
+        assertExists(ctrls, label, "label");
         List<Byte> labelTys = labelTypes(ctrlsRef(label));
         switch (opcode) {
             case BR:
@@ -579,14 +563,15 @@ public class ExprValidator extends ExprVisitor {
     @Override
     public void visitTableBreakInsn(int[] labels, int defaultLabel) {
         super.visitTableBreakInsn(labels, defaultLabel);
-        assertMsg(ctrls.size() > defaultLabel, "label %d does not exist at this depth", defaultLabel);
+        assertExists(ctrls, defaultLabel, "label");
         popV(I32);
         List<Byte> defaultLabelTys = labelTypes(ctrlsRef(defaultLabel));
         int arity = defaultLabelTys.size();
         for (int n : labels) {
-            assertMsg(ctrls.size() > n, "label %d does not exist at this depth", n);
+            assertExists(ctrls, n, "label");
             List<Byte> labelTys = labelTypes(ctrlsRef(n));
-            assertMsg(labelTys.size() == arity, "block type mismatch");
+            assertMsg1(labelTys.size() == arity, TYPE_MISMATCH,
+                    "block type mismatch");
             pushVs(popVs(labelTys));
         }
         popVs(defaultLabelTys);
@@ -597,12 +582,8 @@ public class ExprValidator extends ExprVisitor {
     @Override
     public void visitCallInsn(int function) {
         super.visitCallInsn(function);
-        assertMsg(validator.referencableFuncs.size() > function,
-                "function %d does not exist", function);
-        FuncNode func = validator.referencableFuncs.get(function);
-        assertMsg(validator.types != null && validator.types.types != null && validator.types.types.size() > func.type,
-                "type %d does not exist", func.type);
-        TypeNode type = validator.types.types.get(func.type);
+        assertExists(ctx.funcs, function, "function");
+        TypeNode type = ctx.funcs.get(function);
         popVs(type.params);
         pushVs(type.returns);
         bumpI();
@@ -611,13 +592,11 @@ public class ExprValidator extends ExprVisitor {
     @Override
     public void visitCallIndirectInsn(int table, int type) {
         super.visitCallIndirectInsn(table, type);
-        assertMsg(validator.tables != null && validator.tables.tables != null && validator.tables.tables.size() > table,
-                "table %d does not exist", table);
-        TableNode tab = validator.tables.tables.get(table);
+        assertExists(ctx.tables, table, "table");
+        TableNode tab = ctx.tables.get(table);
         assertMsg(tab.type == FUNCREF, "table type must be funcref");
-        assertMsg(validator.types != null && validator.types.types != null && validator.types.types.size() > type,
-                "type %d does not exist", type);
-        TypeNode tn = validator.types.types.get(type);
+        assertExists(ctx.types, type, "type");
+        TypeNode tn = ctx.types.get(type);
         popV(I32);
         popVs(tn.params);
         pushVs(tn.returns);
@@ -625,13 +604,18 @@ public class ExprValidator extends ExprVisitor {
     }
 
     private InsnAttributes checkVectorAgainstAttrs(int opcode, VisitTarget target) {
-        InsnAttributes attrs = InsnAttributes.lookup(new Opcode(VECTOR_PREFIX, opcode));
-        if (attrs == null || attrs.getVisitTarget() != target) {
-            throw new ValidationException("Unrecognised " + target + " instruction");
-        }
-        assert attrs.getType() != null;
+        Opcode opc = vectorOpcode(opcode);
+        InsnAttributes attrs = InsnAttributes.lookup(opc);
+        checkVisitTarget(target, attrs, opc);
         applyType(attrs.getType());
         return attrs;
+    }
+
+    private static void checkVisitTarget(VisitTarget target, InsnAttributes attrs, Opcode opcode) {
+        if (attrs == null || attrs.getVisitTarget() != target) {
+            throw new ValidationException("Unrecognised " + target + " instruction " +
+                    (attrs == null ? opcode : attrs.getMnemonic()));
+        }
     }
 
     @Override
@@ -645,13 +629,16 @@ public class ExprValidator extends ExprVisitor {
         super.visitVectorMemInsn(opcode, align, offset);
         assertMemExists();
         checkVectorAgainstAttrs(opcode, VisitTarget.VectorMemInsn);
+        checkAlign(vectorOpcode(opcode), align);
     }
 
     @Override
     public void visitVectorMemLaneInsn(int opcode, int align, int offset, byte lane) {
         super.visitVectorMemLaneInsn(opcode, align, offset, lane);
         assertMemExists();
-        checkVectorAgainstAttrs(opcode, VisitTarget.VectorMemLaneInsn);
+        InsnAttributes attrs = checkVectorAgainstAttrs(opcode, VisitTarget.VectorMemLaneInsn);
+        checkAlign(vectorOpcode(opcode), align);
+        checkLane(lane, attrs);
     }
 
     @Override
@@ -661,7 +648,8 @@ public class ExprValidator extends ExprVisitor {
         if (opcode == I8X16_SHUFFLE) {
             for (byte lane : bytes) {
                 if (Byte.toUnsignedInt(lane) >= 32) {
-                    throw new ValidationException("All 18x16.shuffle lanes must be less than 32");
+                    throw new ValidationException("All 18x16.shuffle lanes must be less than 32",
+                            new RuntimeException(INVALID_LANE_INDEX));
                 }
             }
         }
@@ -671,8 +659,13 @@ public class ExprValidator extends ExprVisitor {
     public void visitVectorLaneInsn(int opcode, byte lane) {
         super.visitVectorLaneInsn(opcode, lane);
         InsnAttributes attrs = checkVectorAgainstAttrs(opcode, VisitTarget.VectorLaneInsn);
-        if (lane >= attrs.getVectorShape().dim) {
-            throw new ValidationException("Lane index must be smaller than vector dimension");
+        checkLane(lane, attrs);
+    }
+
+    private static void checkLane(byte lane, InsnAttributes attrs) {
+        if (Byte.toUnsignedInt(lane) >= attrs.getVectorShape().dim) {
+            throw new ValidationException("Lane index must be smaller than vector dimension",
+                    new RuntimeException(INVALID_LANE_INDEX));
         }
     }
 

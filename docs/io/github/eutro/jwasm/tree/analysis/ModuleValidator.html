@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":9,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10};
+var methods = {"i0":9,"i1":9,"i2":9,"i3":9,"i4":10};
 var tabs = {65535:["t0","All Methods"],1:["t1","Static Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -48,7 +48,7 @@ var activeTableTab = "activeTableTab";
 <div class="subNav">
 <ul class="navList">
 <li><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ExprValidator.CtrlFrame.html" title="class in io.github.eutro.jwasm.tree.analysis"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
-<li><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/StackDumper.html" title="class in io.github.eutro.jwasm.tree.analysis"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/VerifCtx.html" title="class in io.github.eutro.jwasm.tree.analysis"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../../../index.html?io/github/eutro/jwasm/tree/analysis/ModuleValidator.html" target="_top">Frames</a></li>
@@ -73,13 +73,13 @@ var activeTableTab = "activeTableTab";
 <ul class="subNavList">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li><a href="#field.summary">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="#fields.inherited.from.class.io.github.eutro.jwasm.BaseVisitor">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
-<li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.detail">Method</a></li>
 </ul>
@@ -104,12 +104,7 @@ var activeTableTab = "activeTableTab";
 <li><a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html" title="class in io.github.eutro.jwasm">io.github.eutro.jwasm.ModuleVisitor</a></li>
 <li>
 <ul class="inheritance">
-<li><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">io.github.eutro.jwasm.tree.ModuleNode</a></li>
-<li>
-<ul class="inheritance">
 <li>io.github.eutro.jwasm.tree.analysis.ModuleValidator</li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -120,14 +115,10 @@ var activeTableTab = "activeTableTab";
 <div class="description">
 <ul class="blockList">
 <li class="blockList">
-<dl>
-<dt>Direct Known Subclasses:</dt>
-<dd><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/StackDumper.html" title="class in io.github.eutro.jwasm.tree.analysis">StackDumper</a></dd>
-</dl>
 <hr>
 <br>
 <pre>public class <span class="typeNameLabel">ModuleValidator</span>
-extends <a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></pre>
+extends <a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html" title="class in io.github.eutro.jwasm">ModuleVisitor</a></pre>
 <div class="block">An <a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html" title="class in io.github.eutro.jwasm"><code>ModuleVisitor</code></a> that verifies whether the module is
  <a href="https://webassembly.github.io/spec/core/valid/index.html">well-formed</a>.</div>
 </li>
@@ -142,24 +133,6 @@ extends <a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html" t
 <!--   -->
 </a>
 <h3>Field Summary</h3>
-<table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Field Summary table, listing fields, and an explanation">
-<caption><span>Fields</span><span class="tabEnd">&nbsp;</span></caption>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colLast" scope="col">Field and Description</th>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="../../../../../../io/github/eutro/jwasm/tree/FuncNode.html" title="class in io.github.eutro.jwasm.tree">FuncNode</a>&gt;</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ModuleValidator.html#referencableFuncs">referencableFuncs</a></span></code>&nbsp;</td>
-</tr>
-</table>
-<ul class="blockList">
-<li class="blockList"><a name="fields.inherited.from.class.io.github.eutro.jwasm.tree.ModuleNode">
-<!--   -->
-</a>
-<h3>Fields inherited from class&nbsp;io.github.eutro.jwasm.tree.<a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></h3>
-<code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#codes">codes</a>, <a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#customs">customs</a>, <a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#dataCount">dataCount</a>, <a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#datas">datas</a>, <a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#elems">elems</a>, <a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#exports">exports</a>, <a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#funcs">funcs</a>, <a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#globals">globals</a>, <a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#imports">imports</a>, <a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#mems">mems</a>, <a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#start">start</a>, <a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#tables">tables</a>, <a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#types">types</a>, <a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#version">version</a></code></li>
-</ul>
 <ul class="blockList">
 <li class="blockList"><a name="fields.inherited.from.class.io.github.eutro.jwasm.BaseVisitor">
 <!--   -->
@@ -203,118 +176,42 @@ extends <a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html" t
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code>static void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ModuleValidator.html#assertExists-int-int-java.lang.String-">assertExists</a></span>(int&nbsp;list,
+            int&nbsp;index,
+            <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;name)</code>&nbsp;</td>
+</tr>
+<tr id="i1" class="rowColor">
+<td class="colFirst"><code>static &lt;T&gt;&nbsp;T</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ModuleValidator.html#assertExists-java.util.List-int-java.lang.String-">assertExists</a></span>(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;T&gt;&nbsp;list,
+            int&nbsp;index,
+            <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;name)</code>&nbsp;</td>
+</tr>
+<tr id="i2" class="altColor">
+<td class="colFirst"><code>static void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ModuleValidator.html#assertMsg-boolean-java.lang.String-java.lang.Object...-">assertMsg</a></span>(boolean&nbsp;cond,
          <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;fmt,
          <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>...&nbsp;args)</code>&nbsp;</td>
 </tr>
-<tr id="i1" class="rowColor">
-<td class="colFirst"><code>@Nullable <a href="../../../../../../io/github/eutro/jwasm/CodesVisitor.html" title="class in io.github.eutro.jwasm">CodesVisitor</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ModuleValidator.html#visitCode--">visitCode</a></span>()</code>
-<div class="block">Visit the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#code-section">code section</a>
- of a module.</div>
-</td>
-</tr>
-<tr id="i2" class="altColor">
-<td class="colFirst"><code>@Nullable <a href="../../../../../../io/github/eutro/jwasm/DataSegmentsVisitor.html" title="class in io.github.eutro.jwasm">DataSegmentsVisitor</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ModuleValidator.html#visitDatas--">visitDatas</a></span>()</code>
-<div class="block">Visit the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#data-section">data section</a>
- of a module.</div>
-</td>
-</tr>
 <tr id="i3" class="rowColor">
-<td class="colFirst"><code>@Nullable <a href="../../../../../../io/github/eutro/jwasm/ElementSegmentsVisitor.html" title="class in io.github.eutro.jwasm">ElementSegmentsVisitor</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ModuleValidator.html#visitElems--">visitElems</a></span>()</code>
-<div class="block">Visit the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#element-section">element section</a>
- of a module.</div>
-</td>
+<td class="colFirst"><code>static void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ModuleValidator.html#assertMsg1-boolean-java.lang.String-java.lang.String-java.lang.Object...-">assertMsg1</a></span>(boolean&nbsp;cond,
+          <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;msg,
+          <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;fmt,
+          <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>...&nbsp;args)</code>&nbsp;</td>
 </tr>
 <tr id="i4" class="altColor">
-<td class="colFirst"><code>@Nullable <a href="../../../../../../io/github/eutro/jwasm/ExportsVisitor.html" title="class in io.github.eutro.jwasm">ExportsVisitor</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ModuleValidator.html#visitExports--">visitExports</a></span>()</code>
-<div class="block">Visit the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#export-section">export section</a>
- of a module.</div>
-</td>
-</tr>
-<tr id="i5" class="rowColor">
-<td class="colFirst"><code>@Nullable <a href="../../../../../../io/github/eutro/jwasm/FunctionsVisitor.html" title="class in io.github.eutro.jwasm">FunctionsVisitor</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ModuleValidator.html#visitFuncs--">visitFuncs</a></span>()</code>
-<div class="block">Visit the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#function-section">function section</a>
- of a module.</div>
-</td>
-</tr>
-<tr id="i6" class="altColor">
-<td class="colFirst"><code>@Nullable <a href="../../../../../../io/github/eutro/jwasm/GlobalsVisitor.html" title="class in io.github.eutro.jwasm">GlobalsVisitor</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ModuleValidator.html#visitGlobals--">visitGlobals</a></span>()</code>
-<div class="block">Visit the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#global-section">global section</a>
- of a module.</div>
-</td>
-</tr>
-<tr id="i7" class="rowColor">
-<td class="colFirst"><code>@Nullable <a href="../../../../../../io/github/eutro/jwasm/ImportsVisitor.html" title="class in io.github.eutro.jwasm">ImportsVisitor</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ModuleValidator.html#visitImports--">visitImports</a></span>()</code>
-<div class="block">Visit the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#import-section">import section</a>
- of a module.</div>
-</td>
-</tr>
-<tr id="i8" class="altColor">
-<td class="colFirst"><code>@Nullable <a href="../../../../../../io/github/eutro/jwasm/MemoriesVisitor.html" title="class in io.github.eutro.jwasm">MemoriesVisitor</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ModuleValidator.html#visitMems--">visitMems</a></span>()</code>
-<div class="block">Visit the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#memory-section">memory section</a>
- of a module.</div>
-</td>
-</tr>
-<tr id="i9" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ModuleValidator.html#visitStart-int-">visitStart</a></span>(int&nbsp;func)</code>
-<div class="block">Visit the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#start-section">start section</a>
- of a module.</div>
-</td>
-</tr>
-<tr id="i10" class="altColor">
-<td class="colFirst"><code>@Nullable <a href="../../../../../../io/github/eutro/jwasm/TablesVisitor.html" title="class in io.github.eutro.jwasm">TablesVisitor</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ModuleValidator.html#visitTables--">visitTables</a></span>()</code>
-<div class="block">Visit the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#table-section">table section</a>
- of a module.</div>
-</td>
-</tr>
-<tr id="i11" class="rowColor">
-<td class="colFirst"><code>@Nullable <a href="../../../../../../io/github/eutro/jwasm/TypesVisitor.html" title="class in io.github.eutro.jwasm">TypesVisitor</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ModuleValidator.html#visitTypes--">visitTypes</a></span>()</code>
-<div class="block">Visit the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#type-section">type section</a>
- of a module.</div>
-</td>
-</tr>
-<tr id="i12" class="altColor">
-<td class="colFirst"><code>protected <a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html" title="class in io.github.eutro.jwasm">ExprVisitor</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ModuleValidator.html#wrapExprVisitor-io.github.eutro.jwasm.tree.analysis.ExprValidator-">wrapExprVisitor</a></span>(<a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ExprValidator.html" title="class in io.github.eutro.jwasm.tree.analysis">ExprValidator</a>&nbsp;ev)</code>
-<div class="block">Wrap the given <a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ExprValidator.html" title="class in io.github.eutro.jwasm.tree.analysis"><code>ExprValidator</code></a> by some subclass-dependent <a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html" title="class in io.github.eutro.jwasm"><code>ExprVisitor</code></a>.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ModuleValidator.html#visitEnd--">visitEnd</a></span>()</code>
+<div class="block">Finish visiting this visitor.</div>
 </td>
 </tr>
 </table>
 <ul class="blockList">
-<li class="blockList"><a name="methods.inherited.from.class.io.github.eutro.jwasm.tree.ModuleNode">
+<li class="blockList"><a name="methods.inherited.from.class.io.github.eutro.jwasm.ModuleVisitor">
 <!--   -->
 </a>
-<h3>Methods inherited from class&nbsp;io.github.eutro.jwasm.tree.<a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></h3>
-<code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#accept-io.github.eutro.jwasm.ModuleVisitor-">accept</a>, <a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#getCustoms-byte-">getCustoms</a>, <a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#visitCustom-java.lang.String-byte:A-">visitCustom</a>, <a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#visitDataCount-int-">visitDataCount</a>, <a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#visitHeader-int-">visitHeader</a></code></li>
-</ul>
-<ul class="blockList">
-<li class="blockList"><a name="methods.inherited.from.class.io.github.eutro.jwasm.BaseVisitor">
-<!--   -->
-</a>
-<h3>Methods inherited from class&nbsp;io.github.eutro.jwasm.<a href="../../../../../../io/github/eutro/jwasm/BaseVisitor.html" title="class in io.github.eutro.jwasm">BaseVisitor</a></h3>
-<code><a href="../../../../../../io/github/eutro/jwasm/BaseVisitor.html#visitEnd--">visitEnd</a></code></li>
+<h3>Methods inherited from class&nbsp;io.github.eutro.jwasm.<a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html" title="class in io.github.eutro.jwasm">ModuleVisitor</a></h3>
+<code><a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitCode--">visitCode</a>, <a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitCustom-java.lang.String-byte:A-">visitCustom</a>, <a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitDataCount-int-">visitDataCount</a>, <a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitDatas--">visitDatas</a>, <a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitElems--">visitElems</a>, <a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitExports--">visitExports</a>, <a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitFuncs--">visitFuncs</a>, <a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitGlobals--">visitGlobals</a>, <a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitHeader-int-">visitHeader</a>, <a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitImports--">visitImports</a>, <a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitMems--">visitMems</a>, <a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitStart-int-">visitStart</a>, <a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitTables--">visitTables</a>, <a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitTypes--">visitTypes</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
@@ -331,46 +228,29 @@ extends <a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html" t
 <div class="details">
 <ul class="blockList">
 <li class="blockList">
-<!-- ============ FIELD DETAIL =========== -->
-<ul class="blockList">
-<li class="blockList"><a name="field.detail">
-<!--   -->
-</a>
-<h3>Field Detail</h3>
-<a name="referencableFuncs">
-<!--   -->
-</a>
-<ul class="blockListLast">
-<li class="blockList">
-<h4>referencableFuncs</h4>
-<pre>public&nbsp;<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="../../../../../../io/github/eutro/jwasm/tree/FuncNode.html" title="class in io.github.eutro.jwasm.tree">FuncNode</a>&gt; referencableFuncs</pre>
-</li>
-</ul>
-</li>
-</ul>
 <!-- ========= CONSTRUCTOR DETAIL ======== -->
 <ul class="blockList">
 <li class="blockList"><a name="constructor.detail">
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="ModuleValidator--">
+<a name="ModuleValidator-io.github.eutro.jwasm.ModuleVisitor-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>ModuleValidator</h4>
-<pre>public&nbsp;ModuleValidator()</pre>
+<pre>public&nbsp;ModuleValidator(@Nullable
+                       @Nullable <a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html" title="class in io.github.eutro.jwasm">ModuleVisitor</a>&nbsp;dl)</pre>
 </li>
 </ul>
-<a name="ModuleValidator-io.github.eutro.jwasm.ModuleVisitor-">
+<a name="ModuleValidator--">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>ModuleValidator</h4>
-<pre>public&nbsp;ModuleValidator(@Nullable
-                       @Nullable <a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html" title="class in io.github.eutro.jwasm">ModuleVisitor</a>&nbsp;dl)</pre>
+<pre>public&nbsp;ModuleValidator()</pre>
 </li>
 </ul>
 </li>
@@ -381,24 +261,6 @@ extends <a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html" t
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="wrapExprVisitor-io.github.eutro.jwasm.tree.analysis.ExprValidator-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>wrapExprVisitor</h4>
-<pre>protected&nbsp;<a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html" title="class in io.github.eutro.jwasm">ExprVisitor</a>&nbsp;wrapExprVisitor(<a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ExprValidator.html" title="class in io.github.eutro.jwasm.tree.analysis">ExprValidator</a>&nbsp;ev)</pre>
-<div class="block">Wrap the given <a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ExprValidator.html" title="class in io.github.eutro.jwasm.tree.analysis"><code>ExprValidator</code></a> by some subclass-dependent <a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html" title="class in io.github.eutro.jwasm"><code>ExprVisitor</code></a>.
- <p>
- This can be used to augment the behaviour of the <a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ExprValidator.html" title="class in io.github.eutro.jwasm.tree.analysis"><code>ExprValidator</code></a> in subclasses.</div>
-<dl>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>ev</code> - The <a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ExprValidator.html" title="class in io.github.eutro.jwasm.tree.analysis"><code>ExprValidator</code></a> to wrap.</dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>The wrapped <a href="../../../../../../io/github/eutro/jwasm/ExprVisitor.html" title="class in io.github.eutro.jwasm"><code>ExprVisitor</code></a>.</dd>
-</dl>
-</li>
-</ul>
 <a name="assertMsg-boolean-java.lang.String-java.lang.Object...-">
 <!--   -->
 </a>
@@ -411,232 +273,55 @@ public static&nbsp;void&nbsp;assertMsg(boolean&nbsp;cond,
                                                                     <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>...&nbsp;args)</pre>
 </li>
 </ul>
-<a name="visitTypes--">
+<a name="assertExists-java.util.List-int-java.lang.String-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>visitTypes</h4>
-<pre>@Nullable
-public&nbsp;@Nullable <a href="../../../../../../io/github/eutro/jwasm/TypesVisitor.html" title="class in io.github.eutro.jwasm">TypesVisitor</a>&nbsp;visitTypes()</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitTypes--">ModuleVisitor</a></code></span></div>
-<div class="block">Visit the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#type-section">type section</a>
- of a module.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#visitTypes--">visitTypes</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></code></dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>The visitor to visit the section with, or
- <code>null</code> if this visitor is not interested in visiting this section.</dd>
-</dl>
+<h4>assertExists</h4>
+<pre>public static&nbsp;&lt;T&gt;&nbsp;T&nbsp;assertExists(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;T&gt;&nbsp;list,
+                                 int&nbsp;index,
+                                 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;name)</pre>
 </li>
 </ul>
-<a name="visitTables--">
+<a name="assertExists-int-int-java.lang.String-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>visitTables</h4>
-<pre>@Nullable
-public&nbsp;@Nullable <a href="../../../../../../io/github/eutro/jwasm/TablesVisitor.html" title="class in io.github.eutro.jwasm">TablesVisitor</a>&nbsp;visitTables()</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitTables--">ModuleVisitor</a></code></span></div>
-<div class="block">Visit the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#table-section">table section</a>
- of a module.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#visitTables--">visitTables</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></code></dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>The visitor to visit the section with, or
- <code>null</code> if this visitor is not interested in visiting this section.</dd>
-</dl>
+<h4>assertExists</h4>
+<pre>public static&nbsp;void&nbsp;assertExists(int&nbsp;list,
+                                int&nbsp;index,
+                                <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;name)</pre>
 </li>
 </ul>
-<a name="visitMems--">
+<a name="assertMsg1-boolean-java.lang.String-java.lang.String-java.lang.Object...-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>visitMems</h4>
-<pre>@Nullable
-public&nbsp;@Nullable <a href="../../../../../../io/github/eutro/jwasm/MemoriesVisitor.html" title="class in io.github.eutro.jwasm">MemoriesVisitor</a>&nbsp;visitMems()</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitMems--">ModuleVisitor</a></code></span></div>
-<div class="block">Visit the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#memory-section">memory section</a>
- of a module.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#visitMems--">visitMems</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></code></dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>The visitor to visit the section with, or
- <code>null</code> if this visitor is not interested in visiting this section.</dd>
-</dl>
+<h4>assertMsg1</h4>
+<pre>@Contract(value="false, _, _, _ -&gt; fail")
+public static&nbsp;void&nbsp;assertMsg1(boolean&nbsp;cond,
+                                                                        <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;msg,
+                                                                        <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;fmt,
+                                                                        <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>...&nbsp;args)</pre>
 </li>
 </ul>
-<a name="visitGlobals--">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>visitGlobals</h4>
-<pre>@Nullable
-public&nbsp;@Nullable <a href="../../../../../../io/github/eutro/jwasm/GlobalsVisitor.html" title="class in io.github.eutro.jwasm">GlobalsVisitor</a>&nbsp;visitGlobals()</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitGlobals--">ModuleVisitor</a></code></span></div>
-<div class="block">Visit the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#global-section">global section</a>
- of a module.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#visitGlobals--">visitGlobals</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></code></dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>The visitor to visit the section with, or
- <code>null</code> if this visitor is not interested in visiting this section.</dd>
-</dl>
-</li>
-</ul>
-<a name="visitFuncs--">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>visitFuncs</h4>
-<pre>@Nullable
-public&nbsp;@Nullable <a href="../../../../../../io/github/eutro/jwasm/FunctionsVisitor.html" title="class in io.github.eutro.jwasm">FunctionsVisitor</a>&nbsp;visitFuncs()</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitFuncs--">ModuleVisitor</a></code></span></div>
-<div class="block">Visit the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#function-section">function section</a>
- of a module.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#visitFuncs--">visitFuncs</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></code></dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>The visitor to visit the section with, or
- <code>null</code> if this visitor is not interested in visiting this section.</dd>
-</dl>
-</li>
-</ul>
-<a name="visitCode--">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>visitCode</h4>
-<pre>@Nullable
-public&nbsp;@Nullable <a href="../../../../../../io/github/eutro/jwasm/CodesVisitor.html" title="class in io.github.eutro.jwasm">CodesVisitor</a>&nbsp;visitCode()</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitCode--">ModuleVisitor</a></code></span></div>
-<div class="block">Visit the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#code-section">code section</a>
- of a module.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#visitCode--">visitCode</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></code></dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>The visitor to visit the section with, or
- <code>null</code> if this visitor is not interested in visiting this section.</dd>
-</dl>
-</li>
-</ul>
-<a name="visitDatas--">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>visitDatas</h4>
-<pre>@Nullable
-public&nbsp;@Nullable <a href="../../../../../../io/github/eutro/jwasm/DataSegmentsVisitor.html" title="class in io.github.eutro.jwasm">DataSegmentsVisitor</a>&nbsp;visitDatas()</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitDatas--">ModuleVisitor</a></code></span></div>
-<div class="block">Visit the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#data-section">data section</a>
- of a module.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#visitDatas--">visitDatas</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></code></dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>The visitor to visit the section with, or
- <code>null</code> if this visitor is not interested in visiting this section.</dd>
-</dl>
-</li>
-</ul>
-<a name="visitElems--">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>visitElems</h4>
-<pre>@Nullable
-public&nbsp;@Nullable <a href="../../../../../../io/github/eutro/jwasm/ElementSegmentsVisitor.html" title="class in io.github.eutro.jwasm">ElementSegmentsVisitor</a>&nbsp;visitElems()</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitElems--">ModuleVisitor</a></code></span></div>
-<div class="block">Visit the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#element-section">element section</a>
- of a module.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#visitElems--">visitElems</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></code></dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>The visitor to visit the section with, or
- <code>null</code> if this visitor is not interested in visiting this section.</dd>
-</dl>
-</li>
-</ul>
-<a name="visitStart-int-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>visitStart</h4>
-<pre>public&nbsp;void&nbsp;visitStart(int&nbsp;func)</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitStart-int-">ModuleVisitor</a></code></span></div>
-<div class="block">Visit the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#start-section">start section</a>
- of a module.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#visitStart-int-">visitStart</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></code></dd>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>func</code> - The start function of the module.</dd>
-</dl>
-</li>
-</ul>
-<a name="visitImports--">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>visitImports</h4>
-<pre>@Nullable
-public&nbsp;@Nullable <a href="../../../../../../io/github/eutro/jwasm/ImportsVisitor.html" title="class in io.github.eutro.jwasm">ImportsVisitor</a>&nbsp;visitImports()</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitImports--">ModuleVisitor</a></code></span></div>
-<div class="block">Visit the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#import-section">import section</a>
- of a module.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#visitImports--">visitImports</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></code></dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>The visitor to visit the section with, or
- <code>null</code> if this visitor is not interested in visiting this section.</dd>
-</dl>
-</li>
-</ul>
-<a name="visitExports--">
+<a name="visitEnd--">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
-<h4>visitExports</h4>
-<pre>@Nullable
-public&nbsp;@Nullable <a href="../../../../../../io/github/eutro/jwasm/ExportsVisitor.html" title="class in io.github.eutro.jwasm">ExportsVisitor</a>&nbsp;visitExports()</pre>
-<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html#visitExports--">ModuleVisitor</a></code></span></div>
-<div class="block">Visit the
- <a href="https://webassembly.github.io/spec/core/binary/modules.html#export-section">export section</a>
- of a module.</div>
+<h4>visitEnd</h4>
+<pre>public&nbsp;void&nbsp;visitEnd()</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/BaseVisitor.html#visitEnd--">BaseVisitor</a></code></span></div>
+<div class="block">Finish visiting this visitor.
+ <p>
+ This should be the last <code>visit*</code> method called.</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
-<dd><code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html#visitExports--">visitExports</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/tree/ModuleNode.html" title="class in io.github.eutro.jwasm.tree">ModuleNode</a></code></dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>The visitor to visit the section with, or
- <code>null</code> if this visitor is not interested in visiting this section.</dd>
+<dd><code><a href="../../../../../../io/github/eutro/jwasm/BaseVisitor.html#visitEnd--">visitEnd</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../../io/github/eutro/jwasm/BaseVisitor.html" title="class in io.github.eutro.jwasm">BaseVisitor</a>&lt;<a href="../../../../../../io/github/eutro/jwasm/ModuleVisitor.html" title="class in io.github.eutro.jwasm">ModuleVisitor</a>&gt;</code></dd>
 </dl>
 </li>
 </ul>
@@ -668,7 +353,7 @@ public&nbsp;@Nullable <a href="../../../../../../io/github/eutro/jwasm/ExportsVi
 <div class="subNav">
 <ul class="navList">
 <li><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/ExprValidator.CtrlFrame.html" title="class in io.github.eutro.jwasm.tree.analysis"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
-<li><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/StackDumper.html" title="class in io.github.eutro.jwasm.tree.analysis"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../../../../io/github/eutro/jwasm/tree/analysis/VerifCtx.html" title="class in io.github.eutro.jwasm.tree.analysis"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../../../index.html?io/github/eutro/jwasm/tree/analysis/ModuleValidator.html" target="_top">Frames</a></li>
@@ -693,13 +378,13 @@ public&nbsp;@Nullable <a href="../../../../../../io/github/eutro/jwasm/ExportsVi
 <ul class="subNavList">
 <li>Summary:&nbsp;</li>
 <li>Nested&nbsp;|&nbsp;</li>
-<li><a href="#field.summary">Field</a>&nbsp;|&nbsp;</li>
+<li><a href="#fields.inherited.from.class.io.github.eutro.jwasm.BaseVisitor">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor.summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.summary">Method</a></li>
 </ul>
 <ul class="subNavList">
 <li>Detail:&nbsp;</li>
-<li><a href="#field.detail">Field</a>&nbsp;|&nbsp;</li>
+<li>Field&nbsp;|&nbsp;</li>
 <li><a href="#constructor.detail">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method.detail">Method</a></li>
 </ul>

@@ -1,46 +1,32 @@
 package io.github.eutro.jwasm.tree.analysis;
 
 import io.github.eutro.jwasm.*;
-import io.github.eutro.jwasm.tree.ElementNode;
-import io.github.eutro.jwasm.tree.FuncNode;
-import io.github.eutro.jwasm.tree.ModuleNode;
-import io.github.eutro.jwasm.tree.TypeNode;
+import io.github.eutro.jwasm.tree.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Supplier;
 
-import static io.github.eutro.jwasm.tree.analysis.ExprValidator.isRef;
-import static io.github.eutro.jwasm.tree.analysis.ExprValidator.isValType;
+import static io.github.eutro.jwasm.tree.analysis.ExprValidator.*;
 
 /**
  * An {@link ModuleVisitor} that verifies whether the module is
  * <a href="https://webassembly.github.io/spec/core/valid/index.html">well-formed</a>.
  */
-public class ModuleValidator extends ModuleNode {
-    public List<FuncNode> referencableFuncs = new ArrayList<>();
-
-    public ModuleValidator() {
-        super();
-    }
+public class ModuleValidator extends ModuleVisitor {
+    @NotNull
+    private final ModuleNode module;
 
     public ModuleValidator(@Nullable ModuleVisitor dl) {
-        super(dl);
+        super(new ModuleNode(dl));
+        assert this.dl instanceof ModuleNode;
+        module = (ModuleNode) this.dl;
     }
 
-    /**
-     * Wrap the given {@link ExprValidator} by some subclass-dependent {@link ExprVisitor}.
-     * <p>
-     * This can be used to augment the behaviour of the {@link ExprValidator} in subclasses.
-     *
-     * @param ev The {@link ExprValidator} to wrap.
-     * @return The wrapped {@link ExprVisitor}.
-     */
-    protected ExprVisitor wrapExprVisitor(ExprValidator ev) {
-        return ev;
+    public ModuleValidator() {
+        this(null);
     }
 
     @Contract("false, _, _ -> fail")
@@ -50,12 +36,34 @@ public class ModuleValidator extends ModuleNode {
         }
     }
 
-    private void checkLimit(int min, @Nullable Integer max, int k) {
-        assertMsg(min >= 0, "min must be positive");
-        assertMsg(min <= k, "min must not exceed %d", k);
+    public static <T> T assertExists(List<T> list, int index, String name) {
+        assertExists(list.size(), index, name);
+        return list.get(index);
+    }
+
+    public static void assertExists(int list, int index, String name) {
+        if (list > index) {
+            return;
+        }
+        throw new ValidationException(String.format("%s at index %d does not exist", name, index),
+                new RuntimeException("unknown " + name));
+    }
+
+    @Contract("false, _, _, _ -> fail")
+    public static void assertMsg1(boolean cond, String msg, String fmt, Object... args) {
+        if (!cond) {
+            throw new ValidationException(String.format(fmt, args),
+                    new RuntimeException(msg));
+        }
+    }
+
+    private void checkLimit(int min, @Nullable Integer max, int k, String limitMsg) {
+        assertMsg(Integer.compareUnsigned(min, 0) >= 0, "min must be positive");
+        assertMsg1(Integer.compareUnsigned(min, k) <= 0, limitMsg, "min must not exceed %d", k);
         if (max != null) {
-            assertMsg(min <= max, "min must be no greater than max");
-            assertMsg(max <= k, "max must not exceed %d", k);
+            assertMsg(Integer.compareUnsigned(min, max) <= 0,
+                    "size minimum must not be greater than maximum");
+            assertMsg1(Integer.compareUnsigned(max, k) <= 0, limitMsg, "max must not exceed %d", k);
         }
     }
 
@@ -64,285 +72,281 @@ public class ModuleValidator extends ModuleNode {
         checkTypes(returns);
     }
 
+    private void checkFuncType(TypeNode ty) {
+        checkFuncType(ty.params, ty.returns);
+    }
+
     private void checkTypes(byte... tys) {
         for (byte ty : tys) {
             assertMsg(isValType(ty), "0x%02x is not a value type", ty);
         }
     }
 
-    private void checkGlobal(byte mut, byte type) {
-        assertMsg(mut == Opcodes.MUT_CONST || mut == Opcodes.MUT_VAR,
+    private void checkGlobalTy(GlobalTypeNode ty) {
+        assertMsg(ty.mut == Opcodes.MUT_CONST || ty.mut == Opcodes.MUT_VAR,
                 "mut is neither const nor var");
-        checkTypes(type);
+        checkTypes(ty.type);
     }
 
-    private void checkMem(int min, @Nullable Integer max) {
-        checkLimit(min, max, 1 << 16);
+    private void checkMemTy(Limits limits) {
+        checkLimit(limits.min, limits.max, 1 << 16, "memory size must be at most 65536 pages (4GiB)");
     }
 
-    private void checkTable(int min, @Nullable Integer max, byte type) {
-        checkLimit(min, max, Integer.MAX_VALUE);
+    private void checkTableTy(Limits limits, byte type) {
+        checkLimit(limits.min, limits.max, -1, "table size must be at most 2^32 - 1");
         assertMsg(isRef(type), "0x%02x is not a reference type", type);
     }
 
-    private FuncNode getFunc(int func, boolean includeImports) {
-        if (includeImports) {
-            assertMsg(referencableFuncs.size() > func, "func %d does not exist", func);
-            return referencableFuncs.get(func);
-        } else {
-            assertMsg(funcs != null && funcs.funcs != null && funcs.funcs.size() > func,
-                    "func %d does not exist", func);
-            return funcs.funcs.get(func);
+    @Override
+    public void visitEnd() {
+        VerifCtx ctx = new VerifCtx();
+        VerifCtx ctx2 = new VerifCtx();
+        if (module.types != null && module.types.types != null) {
+            ctx.types.addAll(module.types.types);
+            for (TypeNode type : ctx.types) {
+                checkFuncType(type);
+            }
+        }
+
+        if (module.imports != null) {
+            for (AbstractImportNode theImport : module.imports) {
+                switch (theImport.importType()) {
+                    case Opcodes.IMPORTS_FUNC: {
+                        FuncImportNode fin = (FuncImportNode) theImport;
+                        ctx.funcs.add(ctx.resolveType(fin.type));
+                        break;
+                    }
+                    case Opcodes.IMPORTS_TABLE: {
+                        TableImportNode tin = (TableImportNode) theImport;
+                        checkTableTy(tin.limits, tin.type);
+                        ctx.tables.add(new TableNode(tin.limits, tin.type));
+                        break;
+                    }
+                    case Opcodes.IMPORTS_MEM: {
+                        MemImportNode min = (MemImportNode) theImport;
+                        checkMemTy(min.limits);
+                        ctx.mems.add(new MemoryNode(min.limits));
+                        break;
+                    }
+                    case Opcodes.IMPORTS_GLOBAL: {
+                        GlobalImportNode gin = (GlobalImportNode) theImport;
+                        checkGlobalTy(gin.type);
+                        ctx.globals.add(gin.type);
+                        ctx2.globals.add(gin.type);
+                        break;
+                    }
+                    default:
+                        throw new IllegalStateException();
+                }
+            }
+        }
+
+        if (module.funcs != null) {
+            for (FuncNode func : module.funcs) {
+                ctx.funcs.add(ctx.resolveType(func.type));
+            }
+        }
+        if (module.tables != null) {
+            for (TableNode table : module.tables) {
+                ctx.tables.add(table);
+            }
+        }
+        if (module.mems != null) {
+            for (MemoryNode mem : module.mems) {
+                ctx.mems.add(mem);
+            }
+        }
+        if (module.globals != null) {
+            for (GlobalNode global : module.globals) {
+                ctx.globals.add(global.type);
+            }
+        }
+
+        if (module.elems != null) {
+            for (ElementNode elem : module.elems) {
+                ctx.elems.add(elem.type);
+            }
+        }
+
+        ctx.datas = module.datas == null ? 0 : module.datas.datas == null ? 0 : module.datas.datas.size();
+
+        collectRefs(ctx);
+
+        ctx2.funcs.addAll(ctx.funcs);
+        ctx2.refs.addAll(ctx.refs);
+
+        { // under ctx
+            int funcCount = 0, codeCount = 0;
+            if (module.funcs != null && module.funcs.funcs != null) funcCount = module.funcs.funcs.size();
+            if (module.codes != null && module.codes.codes != null) codeCount = module.codes.codes.size();
+            assertMsg(funcCount == codeCount, "function count (%d) does not match code count (%d)", funcCount, codeCount);
+
+            if (module.codes != null && module.funcs != null && module.funcs.funcs != null) {
+                ListIterator<FuncNode> fi = module.funcs.funcs.listIterator();
+                Iterator<CodeNode> ci = module.codes.iterator();
+                while (fi.hasNext()) {
+                    TypeNode ty = ctx.resolveType(fi.next().type);
+                    CodeNode code = ci.next();
+                    verifyFunc(ctx, fi.previousIndex(), ty, code);
+                }
+            }
+            if (module.start != null) {
+                TypeNode ty = assertExists(ctx.funcs, module.start, "function");
+                assertMsg1(new TypeNode(new byte[0], new byte[0]).equals(ty), "start function",
+                        "start function %d does not have type [] -> []", module.start);
+            }
+
+            // we've already checked our imports
+            if (module.exports != null) {
+                for (ExportNode export : module.exports) {
+                    String name;
+                    List<?> list;
+                    switch (export.type) {
+                        case Opcodes.EXPORTS_FUNC: name = "function"; list = ctx.funcs; break;
+                        case Opcodes.EXPORTS_TABLE: name = "table"; list = ctx.tables; break;
+                        case Opcodes.EXPORTS_MEM: name = "memory"; list = ctx.mems; break;
+                        case Opcodes.EXPORTS_GLOBAL: name = "global"; list = ctx.globals; break;
+                        default:
+                            throw new ValidationException("Unrecognised export type");
+                    }
+                    assertExists(list, export.index, name);
+                }
+            }
+        }
+
+        { // under ctx2
+            if (module.tables != null) {
+                for (TableNode table : module.tables) {
+                    checkTableTy(table.limits, table.type);
+                }
+            }
+            if (module.mems != null) {
+                for (MemoryNode mem : module.mems) {
+                    checkMemTy(mem.limits);
+                }
+            }
+            if (module.globals != null) {
+                for (GlobalNode global : module.globals) {
+                    checkGlobalTy(global.type);
+                    global.init.accept(new ConstantExprValidator(ctx2,
+                            new ExprValidator(ctx2,
+                                    Collections.singletonList(global.type.type),
+                                    null)));
+                }
+            }
+            if (module.elems != null) {
+                for (ElementNode elem : module.elems) {
+                    Supplier<ExprVisitor> evSupplier = () -> new ConstantExprValidator(ctx2,
+                            new ExprValidator(ctx2, Collections.singletonList(elem.type), null));
+                    if (elem.indices != null) {
+                        for (int index : elem.indices) {
+                            ExprVisitor ev = evSupplier.get();
+                            ev.visitFuncRefInsn(index);
+                            ev.visitEndInsn();
+                            ev.visitEnd();
+                        }
+                    } else {
+                        for (ExprNode expr : elem.init) {
+                            expr.accept(evSupplier.get());
+                        }
+                    }
+
+                    if (elem.offset != null) {
+                        // active
+                        // NB: see below about active datas
+                        assertExists(ctx.tables, elem.table, "table");
+                        elem.offset.accept(new ConstantExprValidator(ctx2,
+                                new ExprValidator(ctx2, Collections.singletonList(Opcodes.I32), null)));
+                    } // declarative and passive are always ok
+                }
+            }
+            if (module.datas != null) {
+                for (DataNode data : module.datas) {
+                    if (data.offset != null) {
+                        // NB: the spec has us validate this whole thing in C prime,
+                        // but mems and tables aren't visible there, so this should fail
+                        assertExists(ctx.mems, data.memory, "memory");
+                        data.offset.accept(new ConstantExprValidator(ctx2,
+                                new ExprValidator(ctx2, Collections.singletonList(Opcodes.I32),
+                                        null)));
+                    }
+                }
+            }
+        }
+
+        assertMsg1(ctx.mems.size() <= 1, "multiple memories",
+                "Too many memories (%d)", ctx.mems.size());
+
+        if (module.exports != null) {
+            Set<String> names = new HashSet<>();
+            for (ExportNode export : module.exports) {
+                if (!names.add(export.name)) {
+                    throw new ValidationException(String.format("Duplicate export name: \"%s\"", export.name),
+                            new RuntimeException("duplicate export name"));
+                }
+            }
         }
     }
 
-    private TypeNode checkFuncType(int type) {
-        assertMsg(types != null && types.types != null && types.types.size() > type,
-                "type %d does not exist", type);
-        return types.types.get(type);
-    }
-
-    @Override
-    public @Nullable TypesVisitor visitTypes() {
-        return new TypesVisitor(super.visitTypes()) {
+    private void collectRefs(VerifCtx ctx) {
+        ExprVisitor refCollector = new ExprVisitor() {
             @Override
-            public void visitFuncType(byte @NotNull [] params, byte @NotNull [] returns) {
-                checkFuncType(params, returns);
-                super.visitFuncType(params, returns);
+            public void visitFuncRefInsn(int function) {
+                assertExists(ctx.funcs, function, "function");
+                ctx.refs.add(function);
             }
         };
-    }
-
-    @Override
-    public @Nullable TablesVisitor visitTables() {
-        return new TablesVisitor(super.visitTables()) {
-            @Override
-            public void visitTable(int min, @Nullable Integer max, byte type) {
-                checkTable(min, max, type);
-                super.visitTable(min, max, type);
+        if (module.globals != null) {
+            for (GlobalNode global : module.globals) {
+                global.init.accept(refCollector);
             }
-        };
-    }
-
-    @Override
-    public @Nullable MemoriesVisitor visitMems() {
-        return new MemoriesVisitor(super.visitMems()) {
-            @Override
-            public void visitMemory(int min, @Nullable Integer max) {
-                checkMem(min, max);
-                super.visitMemory(min, max);
-            }
-        };
-    }
-
-    @Override
-    public @Nullable GlobalsVisitor visitGlobals() {
-        return new GlobalsVisitor(super.visitGlobals()) {
-            @Override
-            public ExprVisitor visitGlobal(byte mut, byte type) {
-                checkGlobal(mut, type);
-                return wrapExprVisitor(new ExprValidator(
-                        ModuleValidator.this,
-                        new byte[0],
-                        null,
-                        new byte[]{type},
-                        new ConstantExprValidator(
-                                ModuleValidator.this,
-                                super.visitGlobal(mut, type)
-                        )
-                ));
-            }
-        };
-    }
-
-    @Override
-    public @Nullable FunctionsVisitor visitFuncs() {
-        return new FunctionsVisitor(super.visitFuncs()) {
-            @Override
-            public void visitFunc(int type) {
-                super.visitFunc(type);
-                checkFuncType(type);
-                Objects.requireNonNull(funcs);
-                Objects.requireNonNull(funcs.funcs);
-                referencableFuncs.add(funcs.funcs.get(funcs.funcs.size() - 1));
-            }
-        };
-    }
-
-    @Override
-    public @Nullable CodesVisitor visitCode() {
-        return new CodesVisitor(super.visitCode()) {
-            int func = 0;
-
-            @Override
-            public ExprVisitor visitCode(byte @NotNull [] locals) {
-                FuncNode fn = getFunc(func++, false);
-                TypeNode tn = checkFuncType(fn.type);
-                byte[] allLocals = new byte[tn.params.length + locals.length];
-                System.arraycopy(tn.params, 0, allLocals, 0, tn.params.length);
-                System.arraycopy(locals, 0, allLocals, tn.params.length, locals.length);
-                return wrapExprVisitor(new ExprValidator(
-                        ModuleValidator.this,
-                        allLocals,
-                        tn.returns,
-                        tn.returns,
-                        super.visitCode(locals)
-                ));
-            }
-        };
-    }
-
-    @Override
-    public @Nullable DataSegmentsVisitor visitDatas() {
-        return new DataSegmentsVisitor(super.visitDatas()) {
-            int dc = 0;
-
-            @Override
-            public DataVisitor visitData() {
-                dc++;
-                return new DataVisitor(super.visitData()) {
-                    @Override
-                    public ExprVisitor visitActive(int memory) {
-                        assertMsg(mems != null && mems.memories != null && mems.memories.size() > memory,
-                                "memory %d does not exist", memory);
-                        return wrapExprVisitor(new ExprValidator(
-                                ModuleValidator.this,
-                                new byte[0],
-                                null,
-                                new byte[]{Opcodes.I32},
-                                new ConstantExprValidator(
-                                        ModuleValidator.this,
-                                        super.visitActive(memory)
-                                )
-                        ));
-                    }
-                };
-            }
-
-            @Override
-            public void visitEnd() {
-                if (dataCount != null) {
-                    assertMsg(dc == dataCount, "data count mismatch");
+        }
+        if (module.exports != null) {
+            for (ExportNode export : module.exports) {
+                if (export.type == Opcodes.EXPORTS_FUNC) {
+                    assertExists(ctx.funcs, export.index, "function");
+                    ctx.refs.add(export.index);
                 }
-                super.visitEnd();
             }
-        };
-    }
-
-    @Override
-    public @Nullable ElementSegmentsVisitor visitElems() {
-        return new ElementSegmentsVisitor(super.visitElems()) {
-            @Override
-            public ElementVisitor visitElem() {
-                return new ElementNode(super.visitElem()) {
-                    private void checkRefType(byte type) {
-                        assertMsg(isRef(type), "elem type must be reference type");
-                    }
-
-                    @Override
-                    public void visitType(byte type) {
-                        super.visitType(type);
-                        checkRefType(type);
-                    }
-
-                    @Override
-                    public ExprVisitor visitInit() {
-                        checkRefType(type);
-                        return wrapExprVisitor(new ExprValidator(
-                                ModuleValidator.this,
-                                new byte[0],
-                                null,
-                                new byte[]{type},
-                                new ConstantExprValidator(
-                                        ModuleValidator.this,
-                                        super.visitInit()
-                                )
-                        ));
-                    }
-
-                    @Override
-                    public ExprVisitor visitActiveMode(int table) {
-                        return wrapExprVisitor(new ExprValidator(
-                                ModuleValidator.this,
-                                new byte[0],
-                                null,
-                                new byte[]{Opcodes.I32},
-                                new ConstantExprValidator(
-                                        ModuleValidator.this,
-                                        super.visitActiveMode(table)
-                                )
-                        ));
-                    }
-                };
-            }
-        };
-    }
-
-    @Override
-    public void visitStart(int func) {
-        super.visitStart(func);
-        FuncNode start = getFunc(func, true);
-        TypeNode type = checkFuncType(start.type);
-        assertMsg(type.params.length == 0 && type.returns.length == 0,
-                "start function must be of type [] -> []");
-    }
-
-    @Override
-    public @Nullable ImportsVisitor visitImports() {
-        return new ImportsVisitor(super.visitImports()) {
-            @Override
-            public void visitFuncImport(@NotNull String module, @NotNull String name, int type) {
-                super.visitFuncImport(module, name, type);
-                checkFuncType(type);
-                referencableFuncs.add(new FuncNode(type));
-            }
-
-            @Override
-            public void visitTableImport(@NotNull String module, @NotNull String name, int min, @Nullable Integer max, byte type) {
-                super.visitTableImport(module, name, min, max, type);
-                checkTable(min, max, type);
-            }
-
-            @Override
-            public void visitMemImport(@NotNull String module, @NotNull String name, int min, @Nullable Integer max) {
-                super.visitMemImport(module, name, min, max);
-                checkMem(min, max);
-            }
-
-            @Override
-            public void visitGlobalImport(@NotNull String module, @NotNull String name, byte mut, byte type) {
-                super.visitGlobalImport(module, name, mut, type);
-                checkGlobal(mut, type);
-            }
-        };
-    }
-
-    @Override
-    public @Nullable ExportsVisitor visitExports() {
-        return new ExportsVisitor(super.visitExports()) {
-            @Override
-            public void visitExport(@NotNull String name, byte type, int index) {
-                switch (type) {
-                    case Opcodes.EXPORTS_FUNC:
-                        getFunc(index, true);
-                        break;
-                    case Opcodes.EXPORTS_TABLE:
-                        assertMsg(tables != null && tables.tables != null && tables.tables.size() > index,
-                                "table %d does not exist", index);
-                        break;
-                    case Opcodes.EXPORTS_MEM:
-                        assertMsg(mems != null && mems.memories != null && mems.memories.size() > index,
-                                "mem %d does not exist", index);
-                        break;
-                    case Opcodes.EXPORTS_GLOBAL:
-                        assertMsg(globals != null && globals.globals != null && globals.globals.size() > index,
-                                "global %d does not exist", index);
-                        break;
-                    default:
-                        throw new ValidationException(String.format("Export type %d does not exist", type), null);
+        }
+        if (module.datas != null) {
+            for (DataNode data : module.datas) {
+                if (data.offset != null) {
+                    data.offset.accept(refCollector);
                 }
-                super.visitExport(name, type, index);
             }
-        };
+        }
+        if (module.elems != null) {
+            for (ElementNode elem : module.elems) {
+                if (elem.indices != null) {
+                    for (int index : elem.indices) {
+                        assertExists(ctx.funcs, index, "function");
+                        ctx.refs.add(index);
+                    }
+                } else {
+                    for (ExprNode expr : elem.init) {
+                        expr.accept(refCollector);
+                    }
+                }
+                if (elem.offset != null) {
+                    elem.offset.accept(refCollector);
+                }
+            }
+        }
+    }
+
+    private void verifyFunc(VerifCtx ctx, int index, TypeNode ty, CodeNode code) {
+        byte[] locals = Arrays.copyOf(ty.params, ty.params.length + code.locals.length);
+        System.arraycopy(code.locals, 0, locals, ty.params.length, code.locals.length);
+        VerifCtx ctx1 = ctx.deriveLocals(
+                new ByteList(locals),
+                new ByteList(ty.returns)
+        );
+        try {
+            code.expr.accept(new ExprValidator(ctx1, ctx1.returns, null));
+        } catch (Throwable t) {
+            t.addSuppressed(new RuntimeException("in func " + index + " (local index)"));
+            throw t;
+        }
     }
 }

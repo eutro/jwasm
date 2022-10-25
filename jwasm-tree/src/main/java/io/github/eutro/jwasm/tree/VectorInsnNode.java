@@ -16,6 +16,6 @@ public class VectorInsnNode extends AbstractInsnNode {
 
     @Override
     public void accept(ExprVisitor ev) {
-        ev.visitVectorInsn(opcode);
+        ev.visitVectorInsn(intOpcode);
     }
 }
