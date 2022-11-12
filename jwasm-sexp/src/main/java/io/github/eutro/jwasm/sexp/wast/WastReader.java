@@ -176,7 +176,7 @@ public class WastReader {
                     av.visitInvoke(
                             lp.maybeParseId().orElse(null),
                             parseUtf8(lp.expect()),
-                            parseXs(lp, WastReader::parseConst)
+                            parseXs(lp, WastReader::parseConst).toArray()
                     );
                     break;
                 case "get":

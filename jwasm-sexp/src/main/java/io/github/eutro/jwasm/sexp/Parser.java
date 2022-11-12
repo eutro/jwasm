@@ -701,13 +701,15 @@ public class Parser {
 
         for (String exportName : exportNames) {
             fields.add(new ModuleField() {
+                int idx;
+
                 @Override
                 public void idc(IdCtx idcx) {
+                    idx = idcx.f(field).size() - 1;
                 }
 
                 @Override
                 public void mod(IdCtx idcx, ModuleNode module) {
-                    int idx = idcx.f(field).size() - 1;
                     if (module.exports == null) module.exports = new ExportsNode();
                     module.exports.visitExport(exportName, exportType, idx);
                 }
