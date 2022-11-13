@@ -7,25 +7,90 @@ import io.github.eutro.jwasm.sexp.internal.ListParser;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandle;
+import java.lang.reflect.Array;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 
 import static io.github.eutro.jwasm.sexp.internal.ListParser.*;
 
 public class WastReader {
-    public static class ExternRef {
+    public interface Checkable {
+        boolean check(Object other);
+
+        static boolean check(Object expected, Object actual) {
+            return of(expected).check(actual);
+        }
+
+        static Checkable of(Object obj) {
+            if (obj == null) return Objects::isNull;
+            if (obj instanceof Checkable) return (Checkable) obj;
+            if (obj.getClass().isArray()) {
+                return other -> {
+                    if (other == null || !other.getClass().isArray()) return false;
+                    if (Array.getLength(obj) != Array.getLength(other)) return false;
+                    int len = Array.getLength(obj);
+                    for (int i = 0; i < len; i++) {
+                        if (!check(Array.get(obj, i), Array.get(other, i))) return false;
+                    }
+                    return true;
+                };
+            }
+            if (obj instanceof List) {
+                List<?> self = (List<?>) obj;
+                return other -> {
+                    if (!(other instanceof List)) return false;
+                    if (self.size() != ((List<?>) other).size()) return false;
+                    Iterator<?> si = self.iterator();
+                    Iterator<?> oi = ((List<?>) other).iterator();
+                    while (si.hasNext()) {
+                        if (!check(si.next(), oi.next())) return false;
+                    }
+                    return true;
+                };
+            }
+            return obj::equals;
+        }
+    }
+
+    public static class ExternRef implements Checkable {
         public final BigInteger value;
 
         public ExternRef(BigInteger value) {
             this.value = value;
         }
+
+        @Override
+        public boolean check(Object other) {
+            return other instanceof Checkable && (value == null || equals(other));
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ExternRef externRef = (ExternRef) o;
+            return Objects.equals(value, externRef.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(value);
+        }
+
+        @Override
+        public String toString() {
+            return "ExternRef{" + value + "}";
+        }
     }
 
-    public static class FuncRef {
+    public static class FuncRef implements Checkable {
+        @Override
+        public boolean check(Object other) {
+            return other instanceof MethodHandle;
+        }
     }
 
 
