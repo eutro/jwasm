@@ -64,6 +64,10 @@ class ReaderTest {
         assertEquals(
                 Arrays.asList(BigInteger.valueOf(0x1), BigInteger.valueOf(0x2)),
                 Reader.readAll("0x1 0x2")
+                        .stream()
+                        .map(Reader.ParsedNumber.class::cast)
+                        .map(Reader.ParsedNumber::toBigInt)
+                        .collect(Collectors.toList())
         );
 
         assertEquals(
@@ -80,6 +84,10 @@ class ReaderTest {
                         BigInteger.valueOf(-2147483649L)
                 ),
                 Reader.readAll("-0x80000001 -2147483649")
+                        .stream()
+                        .map(Reader.ParsedNumber.class::cast)
+                        .map(Reader.ParsedNumber::toBigInt)
+                        .collect(Collectors.toList())
         );
 
         assertEquals(
@@ -88,6 +96,10 @@ class ReaderTest {
                         new BigInteger("-9223372036854775809")
                 ),
                 Reader.readAll("18446744073709551616 -9223372036854775809")
+                        .stream()
+                        .map(Reader.ParsedNumber.class::cast)
+                        .map(Reader.ParsedNumber::toBigInt)
+                        .collect(Collectors.toList())
         );
 
         assertEquals(
@@ -99,6 +111,36 @@ class ReaderTest {
                 Reader.readAll("0123456789e019 0123456789e+019 0123456789e-019")
                         .stream()
                         .map(it -> ((Reader.ParsedNumber) it).toDouble(false))
+                        .collect(Collectors.toList())
+        );
+
+        assertEquals(
+                Arrays.asList(
+                        Double.longBitsToDouble(0x7FF0_0000_0000_0000L),
+                        Double.longBitsToDouble(0xFFF0_0000_0000_0000L),
+                        Double.longBitsToDouble(0x7FF8_0000_0000_0000L),
+                        Double.longBitsToDouble(0xFFF8_0000_0000_0000L),
+                        Double.longBitsToDouble(0x7FF4_0000_0000_0000L),
+                        Double.longBitsToDouble(0xFFF4_0000_0000_0000L)
+                ),
+                Reader.readAll("inf -inf nan -nan nan:0x4000000000000 -nan:0x4000000000000")
+                        .stream()
+                        .map(it -> ((Reader.ParsedNumber) it).doubleValue())
+                        .collect(Collectors.toList())
+        );
+
+        assertEquals(
+                Arrays.asList(
+                        Float.intBitsToFloat(0x7F80_0000),
+                        Float.intBitsToFloat(0xFF80_0000),
+                        Float.intBitsToFloat(0x7FC0_0000),
+                        Float.intBitsToFloat(0xFFC0_0000),
+                        Float.intBitsToFloat(0x7FA0_0000),
+                        Float.intBitsToFloat(0xFFA0_0000)
+                ),
+                Reader.readAll("inf -inf nan -nan nan:0x200000 -nan:0x200000")
+                        .stream()
+                        .map(it -> ((Reader.ParsedNumber) it).floatValue())
                         .collect(Collectors.toList())
         );
 

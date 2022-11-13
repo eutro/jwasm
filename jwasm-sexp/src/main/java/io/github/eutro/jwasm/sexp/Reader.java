@@ -44,8 +44,8 @@ public class Reader {
      * Read all s-expressions from an input stream.
      *
      * @param stream The stream to read from.
+     * @param <E>    The stream's exception type.
      * @return The list of s-expressions parsed from the string.
-     * @param <E> The stream's exception type.
      * @throws E If reading from the stream fails.
      */
     public static <E extends Exception> List<Object> readAll(ByteInputStream<E> stream) throws E {
@@ -251,10 +251,14 @@ public class Reader {
                         int FLOAT_SIGNIF = 23;
                         if (mantissa.equals(BigInteger.ZERO)
                                 || mantissa.compareTo(BigInteger.valueOf(1L << FLOAT_SIGNIF)) >= 0) {
-                            throw new Parser.ParseException("Value out of range for float NaN", this,
+                            throw new Parser.ParseException("Value out of range for float NaN payload", this,
                                     new RuntimeException("constant out of range"));
                         }
-                        v = Float.intBitsToFloat(mantissa.intValue());
+                        return Float.intBitsToFloat(((sign < 0
+                                ? 0x0000_0000
+                                : 0x8000_0000)
+                                | 0x7FC0_0000
+                                | mantissa.intValue()));
                     }
                     break;
                 case DEC: {
@@ -291,10 +295,14 @@ public class Reader {
                         int DOUBLE_SIGNIF = 52;
                         if (mantissa.equals(BigInteger.ZERO)
                                 || mantissa.compareTo(BigInteger.valueOf(1L << DOUBLE_SIGNIF)) >= 0) {
-                            throw new Parser.ParseException("Value out of range for double NaN", this,
+                            throw new Parser.ParseException("Value out of range for double NaN payload", this,
                                     new RuntimeException("constant out of range"));
                         }
-                        v = Double.longBitsToDouble(mantissa.longValue());
+                        return Double.longBitsToDouble((sign < 0
+                                ? 0x0000_0000_0000_0000L
+                                : 0x8000_0000_0000_0000L)
+                                | 0x7FF8_0000_0000_0000L
+                                | mantissa.longValue());
                     }
                     break;
                 case DEC: {
