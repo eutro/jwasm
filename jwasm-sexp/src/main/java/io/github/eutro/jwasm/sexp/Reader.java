@@ -219,9 +219,25 @@ public class Reader {
         }
 
         public enum NanType {
-            CANONICAL,
-            ARITHMETIC,
+            CANONICAL(Float.NaN, Double.NaN),
+            ARITHMETIC(-Float.NaN, -Double.NaN),
             ;
+
+            private final float floatValue;
+            private final double doubleValue;
+
+            NanType(float floatValue, double doubleValue) {
+                this.floatValue = floatValue;
+                this.doubleValue = doubleValue;
+            }
+
+            public float getFloat() {
+                return floatValue;
+            }
+
+            public double getDouble() {
+                return doubleValue;
+            }
 
             @Override
             public String toString() {
@@ -246,7 +262,7 @@ public class Reader {
                             throw new Parser.ParseException(nanType + " NaN forbidden outside of scripts", this,
                                     new RuntimeException("unexpected token"));
                         }
-                        v = Float.NaN;
+                        v = (nanType == null ? NanType.CANONICAL : nanType).getFloat();
                     } else {
                         int FLOAT_SIGNIF = 23;
                         if (mantissa.equals(BigInteger.ZERO)
@@ -255,8 +271,8 @@ public class Reader {
                                     new RuntimeException("constant out of range"));
                         }
                         return Float.intBitsToFloat(((sign < 0
-                                ? 0x0000_0000
-                                : 0x8000_0000)
+                                ? 0x8000_0000
+                                : 0x0000_0000)
                                 | 0x7FC0_0000
                                 | mantissa.intValue()));
                     }
@@ -302,7 +318,7 @@ public class Reader {
                             throw new Parser.ParseException(nanType + " NaN forbidden outside of scripts", this,
                                     new RuntimeException("unexpected token"));
                         }
-                        v = Double.NaN;
+                        v = (nanType == null ? NanType.CANONICAL : nanType).getDouble();
                     } else {
                         int DOUBLE_SIGNIF = 52;
                         if (mantissa.equals(BigInteger.ZERO)
@@ -311,8 +327,8 @@ public class Reader {
                                     new RuntimeException("constant out of range"));
                         }
                         return Double.longBitsToDouble((sign < 0
-                                ? 0x0000_0000_0000_0000L
-                                : 0x8000_0000_0000_0000L)
+                                ? 0x8000_0000_0000_0000L
+                                : 0x0000_0000_0000_0000L)
                                 | 0x7FF8_0000_0000_0000L
                                 | mantissa.longValue());
                     }
