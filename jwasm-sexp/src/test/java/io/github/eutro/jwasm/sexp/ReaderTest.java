@@ -144,6 +144,25 @@ class ReaderTest {
                         .collect(Collectors.toList())
         );
 
+        assertEquals(
+                Arrays.asList(
+                        3.3f,
+                        34.8f
+                ),
+                Reader.readAll("3.3 34.8")
+                        .stream()
+                        .map(it -> ((Reader.ParsedNumber) it).floatValue())
+                        .collect(Collectors.toList())
+        );
+
+        assertEquals(
+                Collections.singletonList(-0x0.0000000000001p-1022),
+                Reader.readAll("-0x0.0000000000001p-1022")
+                        .stream()
+                        .map(it -> ((Reader.ParsedNumber) it).doubleValue())
+                        .collect(Collectors.toList())
+        );
+
         Object val = Reader.readAll("nan:0x80_0000").get(0);
         assertEquals(Reader.ParsedNumber.class, val.getClass());
         assertThrows(RuntimeException.class, () ->

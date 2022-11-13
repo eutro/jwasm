@@ -261,12 +261,24 @@ public class Reader {
                                 | mantissa.intValue()));
                     }
                     break;
-                case DEC: {
-                    v = mantissa.floatValue() * (float) Math.pow(10., exponent.doubleValue());
-                    break;
-                }
+                case DEC:
                 case HEX: {
-                    v = mantissa.floatValue() * (float) Math.pow(2., exponent.doubleValue());
+                    double base = expType == ExpType.DEC ? 10. : 2.;
+                    double maxExp = expType == ExpType.DEC ? 38 : 127;
+                    v = mantissa.floatValue();
+                    double exp = exponent.doubleValue();
+                    if (exponent.compareTo(BigInteger.ZERO) < 0) {
+                        exp *= -1;
+                        do {
+                            v /= (float) Math.pow(base, Math.min(exp, maxExp));
+                            exp -= maxExp;
+                        } while (exp > 0);
+                    } else {
+                        do {
+                            v *= (float) Math.pow(base, Math.min(exp, maxExp));
+                            exp -= maxExp;
+                        } while (exp > 0);
+                    }
                     break;
                 }
                 default:
@@ -305,12 +317,24 @@ public class Reader {
                                 | mantissa.longValue());
                     }
                     break;
-                case DEC: {
-                    v = mantissa.doubleValue() * Math.pow(10., exponent.doubleValue());
-                    break;
-                }
+                case DEC:
                 case HEX: {
-                    v = mantissa.doubleValue() * Math.pow(2., exponent.doubleValue());
+                    double base = expType == ExpType.DEC ? 10. : 2.;
+                    double maxExp = expType == ExpType.DEC ? 308 : 1023;
+                    v = mantissa.doubleValue();
+                    double exp = exponent.doubleValue();
+                    if (exponent.compareTo(BigInteger.ZERO) < 0) {
+                        exp *= -1;
+                        do {
+                            v /= Math.pow(base, Math.min(exp, maxExp));
+                            exp -= maxExp;
+                        } while (exp > 0);
+                    } else {
+                        do {
+                            v *= Math.pow(base, Math.min(exp, maxExp));
+                            exp -= maxExp;
+                        } while (exp > 0);
+                    }
                     break;
                 }
                 default:
