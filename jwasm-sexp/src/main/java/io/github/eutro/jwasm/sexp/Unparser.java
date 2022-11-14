@@ -416,6 +416,8 @@ public class Unparser {
                 return "f32";
             case Opcodes.F64:
                 return "f64";
+            case Opcodes.V128:
+                return "v128";
             case Opcodes.FUNCREF:
                 return "funcref";
             case Opcodes.EXTERNREF:

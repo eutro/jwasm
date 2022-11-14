@@ -101,11 +101,36 @@ public class ExprValidator extends ExprVisitor {
         return vals.remove(vals.size() - 1);
     }
 
+    private static String typeName(byte type) {
+        switch (type) {
+            case Opcodes.I32:
+                return "i32";
+            case Opcodes.I64:
+                return "i64";
+            case Opcodes.F32:
+                return "f32";
+            case Opcodes.F64:
+                return "f64";
+            case Opcodes.V128:
+                return "v128";
+            case Opcodes.FUNCREF:
+                return "funcref";
+            case Opcodes.EXTERNREF:
+                return "externref";
+            default:
+                return String.format("0x%02x", type);
+        }
+    }
+
     private @Nullable Byte popV(Byte expect) {
         Byte actual = popV();
         if (actual != null && expect != null && (byte) actual != expect) {
-            throw new ValidationException(String.format("Mismatched types, expected 0x%02x, got 0x%02x", expect, actual),
-                    typeMismatch());
+            throw new ValidationException(
+                    String.format("Mismatched types, expected %s, got %s",
+                            typeName(expect),
+                            typeName(actual)),
+                    typeMismatch()
+            );
         }
         return actual;
     }
