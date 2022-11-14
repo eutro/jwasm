@@ -287,7 +287,7 @@ public class ExprValidator extends ExprVisitor {
         super.visitFuncRefInsn(function);
         if (!ctx.refs.contains(function)) {
             if (ctx.funcs.size() > function) {
-                throw new ValidationException("Function reference %d not declared",
+                throw new ValidationException(String.format("Function reference %d not declared", function),
                         new RuntimeException("undeclared function reference"));
             } else {
                 throw new ValidationException("unknown function " + function);
