@@ -1444,7 +1444,7 @@ public class Parser {
                     MemoryNode mem;
                     @Nullable ModuleField maybeDataField = null;
                     if (maybeInlineData.isPresent()) {
-                        byte[] init = parseDataString(lp);
+                        byte[] init = parseDataString(new ListParser(expectList(maybeInlineData.get()), 1));
                         int m = init.length == 0 ? 0
                                 : (init.length - 1) / PAGE_SIZE + 1; // ceil division
                         mem = new MemoryNode(new Limits(m, m));
