@@ -212,10 +212,21 @@ public class Reader {
         }
 
         public enum ExpType {
-            INF,
-            NAN,
-            HEX,
-            DEC,
+            INF(-1, -1, -1),
+            NAN(-1, -1, -1),
+            HEX(2, 150, 1100),
+            DEC(10, 50, 350),
+            ;
+
+            public final int base;
+            // actual values depend on base and exponent sign, but we can be liberal here
+            public final int floatLimit, doubleLimit;
+
+            ExpType(int base, int floatLimit, int doubleLimit) {
+                this.base = base;
+                this.floatLimit = floatLimit;
+                this.doubleLimit = doubleLimit;
+            }
         }
 
         public enum NanType {
@@ -263,6 +274,7 @@ public class Reader {
                                     new RuntimeException("unexpected token"));
                         }
                         v = (nanType == null ? NanType.CANONICAL : nanType).getFloat();
+                        if (sign < 0) v = -v;
                     } else {
                         int FLOAT_SIGNIF = 23;
                         if (mantissa.equals(BigInteger.ZERO)
@@ -273,28 +285,13 @@ public class Reader {
                         return Float.intBitsToFloat(((sign < 0
                                 ? 0x8000_0000
                                 : 0x0000_0000)
-                                | 0x7FC0_0000
+                                | 0x7F80_0000
                                 | mantissa.intValue()));
                     }
                     break;
                 case DEC:
                 case HEX: {
-                    double base = expType == ExpType.DEC ? 10. : 2.;
-                    double maxExp = expType == ExpType.DEC ? 38 : 127;
-                    v = mantissa.floatValue();
-                    double exp = exponent.doubleValue();
-                    if (exponent.compareTo(BigInteger.ZERO) < 0) {
-                        exp *= -1;
-                        do {
-                            v /= (float) Math.pow(base, Math.min(exp, maxExp));
-                            exp -= maxExp;
-                        } while (exp > 0);
-                    } else {
-                        do {
-                            v *= (float) Math.pow(base, Math.min(exp, maxExp));
-                            exp -= maxExp;
-                        } while (exp > 0);
-                    }
+                    v = Float.parseFloat(toParsableString());
                     break;
                 }
                 default:
@@ -304,7 +301,7 @@ public class Reader {
                 throw new Parser.ParseException("Value out of range for float", this,
                         new RuntimeException("constant out of range"));
             }
-            return sign < 0 ? -v : v;
+            return v;
         }
 
         public double toDouble(boolean acceptScriptNan) {
@@ -319,6 +316,7 @@ public class Reader {
                                     new RuntimeException("unexpected token"));
                         }
                         v = (nanType == null ? NanType.CANONICAL : nanType).getDouble();
+                        if (sign < 0) v = -v;
                     } else {
                         int DOUBLE_SIGNIF = 52;
                         if (mantissa.equals(BigInteger.ZERO)
@@ -329,28 +327,13 @@ public class Reader {
                         return Double.longBitsToDouble((sign < 0
                                 ? 0x8000_0000_0000_0000L
                                 : 0x0000_0000_0000_0000L)
-                                | 0x7FF8_0000_0000_0000L
+                                | 0x7FF0_0000_0000_0000L
                                 | mantissa.longValue());
                     }
                     break;
                 case DEC:
                 case HEX: {
-                    double base = expType == ExpType.DEC ? 10. : 2.;
-                    double maxExp = expType == ExpType.DEC ? 308 : 1023;
-                    v = mantissa.doubleValue();
-                    double exp = exponent.doubleValue();
-                    if (exponent.compareTo(BigInteger.ZERO) < 0) {
-                        exp *= -1;
-                        do {
-                            v /= Math.pow(base, Math.min(exp, maxExp));
-                            exp -= maxExp;
-                        } while (exp > 0);
-                    } else {
-                        do {
-                            v *= Math.pow(base, Math.min(exp, maxExp));
-                            exp -= maxExp;
-                        } while (exp > 0);
-                    }
+                    v = Double.parseDouble(toParsableString());
                     break;
                 }
                 default:
@@ -360,7 +343,15 @@ public class Reader {
                 throw new Parser.ParseException("Value out of range for double", this,
                         new RuntimeException("constant out of range"));
             }
-            return sign < 0 ? -v : v;
+            return v;
+        }
+
+        private String toParsableString() {
+            if (expType == ExpType.HEX && token.indexOf('p') == -1 && token.indexOf('P') == -1) {
+                return token + "p0";
+            } else {
+                return token;
+            }
         }
 
         @Override

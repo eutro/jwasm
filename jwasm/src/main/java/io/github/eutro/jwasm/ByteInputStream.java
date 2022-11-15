@@ -146,7 +146,7 @@ public interface ByteInputStream<E extends Exception> {
      * @throws ValidationException If there are less than 8 bytes left in the stream.
      */
     default double getFloat64() throws E {
-        return Double.longBitsToDouble(getUInt32() | (long) getUInt32() << 32);
+        return Double.longBitsToDouble(Integer.toUnsignedLong(getUInt32()) | (long) getUInt32() << 32);
     }
 
     /**

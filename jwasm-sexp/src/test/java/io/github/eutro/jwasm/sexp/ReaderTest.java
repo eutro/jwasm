@@ -60,7 +60,7 @@ class ReaderTest {
     }
 
     @Test
-    void testNumbers() {
+    void testHexInts() {
         assertEquals(
                 Arrays.asList(BigInteger.valueOf(0x1), BigInteger.valueOf(0x2)),
                 Reader.readAll("0x1 0x2")
@@ -69,7 +69,10 @@ class ReaderTest {
                         .map(Reader.ParsedNumber::toBigInt)
                         .collect(Collectors.toList())
         );
+    }
 
+    @Test
+    void testHexFloats() {
         assertEquals(
                 Collections.singletonList(0xa0ff + (double) 0xf141a59aL / 0x100000000L),
                 Reader.readAll("0xa0_ff.f141_a59a")
@@ -77,7 +80,10 @@ class ReaderTest {
                         .map(it -> ((Reader.ParsedNumber) it).toDouble(false))
                         .collect(Collectors.toList())
         );
+    }
 
+    @Test
+    void testHexLongs() {
         assertEquals(
                 Arrays.asList(
                         BigInteger.valueOf(-0x80000001L),
@@ -89,7 +95,10 @@ class ReaderTest {
                         .map(Reader.ParsedNumber::toBigInt)
                         .collect(Collectors.toList())
         );
+    }
 
+    @Test
+    void testHexVeryLongs() {
         assertEquals(
                 Arrays.asList(
                         new BigInteger("18446744073709551616"),
@@ -101,7 +110,10 @@ class ReaderTest {
                         .map(Reader.ParsedNumber::toBigInt)
                         .collect(Collectors.toList())
         );
+    }
 
+    @Test
+    void testWeirdDoubles() {
         assertEquals(
                 Arrays.asList(
                         0123456789e019D,
@@ -113,37 +125,46 @@ class ReaderTest {
                         .map(it -> ((Reader.ParsedNumber) it).toDouble(false))
                         .collect(Collectors.toList())
         );
+    }
 
+    @Test
+    void testDoubleNans() {
         assertEquals(
                 Arrays.asList(
-                        Double.longBitsToDouble(0x7FF0_0000_0000_0000L),
-                        Double.longBitsToDouble(0xFFF0_0000_0000_0000L),
-                        Double.longBitsToDouble(0x7FF8_0000_0000_0000L),
-                        Double.longBitsToDouble(0xFFF8_0000_0000_0000L),
-                        Double.longBitsToDouble(0x7FF4_0000_0000_0000L),
-                        Double.longBitsToDouble(0xFFF4_0000_0000_0000L)
+                        0x7FF0_0000_0000_0000L,
+                        0xFFF0_0000_0000_0000L,
+                        0x7FF8_0000_0000_0000L,
+                        0xFFF8_0000_0000_0000L,
+                        0x7FF4_0000_0000_0000L,
+                        0xFFF4_0000_0000_0000L
                 ),
                 Reader.readAll("inf -inf nan -nan nan:0x4000000000000 -nan:0x4000000000000")
                         .stream()
-                        .map(it -> ((Reader.ParsedNumber) it).doubleValue())
+                        .map(it -> Double.doubleToRawLongBits(((Reader.ParsedNumber) it).doubleValue()))
                         .collect(Collectors.toList())
         );
+    }
 
+    @Test
+    void testFloatNans() {
         assertEquals(
                 Arrays.asList(
-                        Float.intBitsToFloat(0x7F80_0000),
-                        Float.intBitsToFloat(0xFF80_0000),
-                        Float.intBitsToFloat(0x7FC0_0000),
-                        Float.intBitsToFloat(0xFFC0_0000),
-                        Float.intBitsToFloat(0x7FA0_0000),
-                        Float.intBitsToFloat(0xFFA0_0000)
+                        0x7F80_0000,
+                        0xFF80_0000,
+                        0x7FC0_0000,
+                        0xFFC0_0000,
+                        0x7FA0_0000,
+                        0xFFA0_0000
                 ),
                 Reader.readAll("inf -inf nan -nan nan:0x200000 -nan:0x200000")
                         .stream()
-                        .map(it -> ((Reader.ParsedNumber) it).floatValue())
+                        .map(it -> Float.floatToRawIntBits(((Reader.ParsedNumber) it).floatValue()))
                         .collect(Collectors.toList())
         );
+    }
 
+    @Test
+    void testFloatRounding() {
         assertEquals(
                 Arrays.asList(
                         3.3f,
@@ -154,7 +175,10 @@ class ReaderTest {
                         .map(it -> ((Reader.ParsedNumber) it).floatValue())
                         .collect(Collectors.toList())
         );
+    }
 
+    @Test
+    void testDoubleSmallRounding() {
         assertEquals(
                 Collections.singletonList(-0x0.0000000000001p-1022),
                 Reader.readAll("-0x0.0000000000001p-1022")
@@ -162,11 +186,40 @@ class ReaderTest {
                         .map(it -> ((Reader.ParsedNumber) it).doubleValue())
                         .collect(Collectors.toList())
         );
+    }
 
+    @Test
+    void testAnnoyingFloats() {
+        assertEquals(
+                Arrays.asList(1.1754944e-38f, 0x1.921fb6p+2f),
+                Reader.readAll("1.1754944e-38 0x1.921fb6p+2")
+                        .stream()
+                        .map(it -> ((Reader.ParsedNumber) it).floatValue())
+                        .collect(Collectors.toList())
+        );
+    }
+
+    @Test
+    void testHexNanUnderscore() {
         Object val = Reader.readAll("nan:0x80_0000").get(0);
         assertEquals(Reader.ParsedNumber.class, val.getClass());
         assertThrows(RuntimeException.class, () ->
                 ((Reader.ParsedNumber) val).toFloat(false));
+    }
+
+    @Test
+    void testRange() {
+        assertEquals(
+                Collections.singletonList(+0x1.fffffefffffffffffp127f),
+                Reader.readAll("+0x1.fffffefffffffffffp127")
+                .stream()
+                .map(it -> ((Reader.ParsedNumber) it).floatValue())
+                .collect(Collectors.toList()));
+        assertThrows(RuntimeException.class, () -> Reader
+                .readAll("0x1p1024 -0x1p1024 0x1.fffffffffffff8p1023 -0x1.fffffffffffff8p1023")
+                .stream()
+                .map(it -> ((Reader.ParsedNumber) it).doubleValue())
+                .forEach(it -> {}));
     }
 
     interface SuiteRunner {
@@ -178,6 +231,7 @@ class ReaderTest {
             return ModuleTestBase.openTestSuite()
                     .filter(entry -> entry.getName().indexOf('/') == -1
                             && entry.getName().endsWith(".wast"))
+                    .filter(it -> it.getName().equals("float_literals.wast"))
                     .map(entry -> DynamicTest.dynamicTest(entry.getName(), () ->
                             runner.accept(entry.getName(), new BufferedInputStream(entry.getStream()))))
                     // will be closed!
