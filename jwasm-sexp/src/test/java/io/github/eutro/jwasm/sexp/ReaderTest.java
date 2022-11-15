@@ -231,7 +231,6 @@ class ReaderTest {
             return ModuleTestBase.openTestSuite()
                     .filter(entry -> entry.getName().indexOf('/') == -1
                             && entry.getName().endsWith(".wast"))
-                    .filter(it -> it.getName().equals("float_literals.wast"))
                     .map(entry -> DynamicTest.dynamicTest(entry.getName(), () ->
                             runner.accept(entry.getName(), new BufferedInputStream(entry.getStream()))))
                     // will be closed!
