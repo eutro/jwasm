@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import static io.github.eutro.jwasm.sexp.internal.Token.Type.T_BR_CLOSE;
 
@@ -212,20 +213,28 @@ public class Reader {
         }
 
         public enum ExpType {
-            INF(-1, -1, -1),
-            NAN(-1, -1, -1),
-            HEX(2, 150, 1100),
-            DEC(10, 50, 350),
+            DEC(10, 10, 50, 350, Pattern.compile("[eE]")),
+            HEX(16, 2, 150, 1100, Pattern.compile("[pP]")),
+            INF,
+            NAN,
             ;
 
+            public final int radix;
             public final int base;
             // actual values depend on base and exponent sign, but we can be liberal here
             public final int floatLimit, doubleLimit;
+            public final Pattern expMarker;
 
-            ExpType(int base, int floatLimit, int doubleLimit) {
+            ExpType(int radix, int base, int floatLimit, int doubleLimit, Pattern expMarker) {
+                this.radix = radix;
                 this.base = base;
                 this.floatLimit = floatLimit;
                 this.doubleLimit = doubleLimit;
+                this.expMarker = expMarker;
+            }
+
+            ExpType() {
+                this(-1, -1, -1, -1, null);
             }
         }
 

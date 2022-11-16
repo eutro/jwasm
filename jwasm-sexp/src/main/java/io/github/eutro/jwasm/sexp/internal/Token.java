@@ -8,7 +8,6 @@ import java.math.BigInteger;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Token {
     public final Type ty;
@@ -20,7 +19,7 @@ public class Token {
     }
 
     public static ParsedNumber parseNumber(String num) {
-        num = num.replaceAll("_", "");
+        num = num.indexOf('_') == -1 ? num : num.replaceAll("_", "");
 
         int i = 0;
         boolean hasSign = false;
@@ -33,10 +32,10 @@ public class Token {
             i++;
             hasSign = true;
         }
-        int radix = 10;
+        ParsedNumber.ExpType expType = ParsedNumber.ExpType.DEC;
         if (num.startsWith("0x", i)) {
             i += 2;
-            radix = 16;
+            expType = ParsedNumber.ExpType.HEX;
         }
 
         if (num.startsWith("inf", i)) {
@@ -66,10 +65,8 @@ public class Token {
             }
         }
 
-        Matcher matcher = Pattern.compile(radix == 10 ? "[eE]" : "[pP]")
-                .matcher(num);
+        Matcher matcher = expType.expMarker.matcher(num);
         String base;
-        Reader.ParsedNumber.ExpType expType = radix == 10 ? Reader.ParsedNumber.ExpType.DEC : ParsedNumber.ExpType.HEX;
         BigInteger exponent;
         if (matcher.region(i, num.length()).find()) {
             base = num.substring(i, matcher.start());
@@ -82,12 +79,12 @@ public class Token {
         String[] parts = base.split("\\.", 2);
         String whole = parts[0];
 
-        BigInteger mantissa = new BigInteger(whole, radix);
+        BigInteger mantissa = new BigInteger(whole, expType.radix);
         if (parts.length == 2) {
             String frac = parts[1];
             if (frac.length() != 0) {
-                BigInteger fracPart = new BigInteger(frac, radix);
-                if (radix == 10) {
+                BigInteger fracPart = new BigInteger(frac, expType.radix);
+                if (expType == ParsedNumber.ExpType.DEC) {
                     mantissa = mantissa.multiply(BigInteger.TEN.pow(frac.length()));
                     exponent = exponent.subtract(BigInteger.valueOf(frac.length()));
                 } else {
