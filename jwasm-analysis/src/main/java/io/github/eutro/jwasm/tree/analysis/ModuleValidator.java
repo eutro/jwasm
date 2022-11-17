@@ -235,6 +235,7 @@ public class ModuleValidator extends ModuleVisitor {
                 }
             }
             if (module.elems != null) {
+                int i = 0;
                 for (ElementNode elem : module.elems) {
                     Supplier<ExprVisitor> evSupplier = () -> new ConstantExprValidator(ctx2,
                             new ExprValidator(ctx2, Collections.singletonList(elem.type), null));
@@ -254,10 +255,17 @@ public class ModuleValidator extends ModuleVisitor {
                     if (elem.offset != null) {
                         // active
                         // NB: see below about active datas
-                        assertExists(ctx.tables, elem.table, "table");
+                        TableNode table = assertExists(ctx.tables, elem.table, "table");
+                        if (table.type != elem.type) {
+                            throw new ValidationException(
+                                    String.format("Table %d and element %d types don't match", elem.table, i),
+                                    new RuntimeException(TYPE_MISMATCH)
+                            );
+                        }
                         elem.offset.accept(new ConstantExprValidator(ctx2,
                                 new ExprValidator(ctx2, Collections.singletonList(Opcodes.I32), null)));
                     } // declarative and passive are always ok
+                    i++;
                 }
             }
             if (module.datas != null) {

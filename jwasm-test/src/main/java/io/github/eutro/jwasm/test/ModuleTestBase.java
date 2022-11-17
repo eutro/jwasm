@@ -5,14 +5,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.net.URL;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Spliterator;
-import java.util.Spliterators;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 /**
  * A base class for tests that read a module from resources.
@@ -40,67 +35,43 @@ public class ModuleTestBase {
     }
 
     public static class TestSuiteEntry {
-        private final ZipEntry entry;
-        private final ZipInputStream stream;
+        private final String name;
+        private final URL url;
 
-        public TestSuiteEntry(ZipEntry entry, ZipInputStream stream) {
-            this.entry = entry;
-            this.stream = stream;
+        public TestSuiteEntry(String name, URL resource) {
+            this.name = name;
+            this.url = resource;
         }
 
         public String getName() {
-            return entry.getName();
+            return name;
         }
 
         public String toString() {
             return getName();
         }
 
-        public InputStream getStream() {
-            return new FilterInputStream(stream) {
-                @Override
-                public void close() throws IOException {
-                    stream.closeEntry();
-                }
-            };
+        public InputStream getStream() throws IOException {
+            return url.openStream();
         }
     }
 
     @MustBeInvokedByOverriders
     public static Stream<TestSuiteEntry> openTestSuite() throws IOException {
-        URL testSuiteUrl = getResourceUrl("testsuite.zip");
-        ZipInputStream zis = new ZipInputStream(testSuiteUrl.openStream());
-        Spliterator<TestSuiteEntry> spliterator = Spliterators.spliteratorUnknownSize(
-                new Iterator<TestSuiteEntry>() {
-                    ZipEntry next = null;
-
-                    @Override
-                    public boolean hasNext() {
-                        try {
-                            if (next == null) next = zis.getNextEntry();
-                        } catch (IOException e) {
-                            throw new UncheckedIOException(e);
-                        }
-                        return next != null;
-                    }
-
-                    @Override
-                    public TestSuiteEntry next() {
-                        if (!hasNext()) throw new NoSuchElementException();
-                        ZipEntry last = next;
-                        next = null;
-                        return new TestSuiteEntry(last, zis);
-                    }
-                },
-                0);
-        return StreamSupport
-                .stream(spliterator, false)
-                .onClose(() -> {
-                    try {
-                        zis.close();
-                    } catch (IOException e) {
-                        throw new UncheckedIOException(e);
-                    }
+        URL testSuiteUrl = getResourceUrl("testsuite/manifest.txt");
+        List<String> entries;
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(testSuiteUrl.openStream()))) {
+            entries = br.lines().collect(Collectors.toList());
+        }
+        return entries
+                .stream()
+                .map(name -> {
+                    String resName = "/testsuite/" + name;
+                    return new TestSuiteEntry(name,
+                            Objects.requireNonNull(
+                                    ModuleTestBase.class.getResource(resName),
+                                    resName
+                            ));
                 });
     }
 }
