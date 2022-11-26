@@ -13,8 +13,8 @@ public class WastVisitor extends BaseVisitor<WastVisitor> {
         super(dl);
     }
 
-    public @Nullable WastModuleVisitor visitModule() {
-        if (dl != null) return dl.visitModule();
+    public @Nullable WastModuleVisitor visitModule(@Nullable String name) {
+        if (dl != null) return dl.visitModule(name);
         return null;
     }
 

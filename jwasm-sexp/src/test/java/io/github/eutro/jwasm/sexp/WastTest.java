@@ -5,6 +5,7 @@ import io.github.eutro.jwasm.sexp.wast.WastReader;
 import io.github.eutro.jwasm.sexp.wast.WastVisitor;
 import io.github.eutro.jwasm.tree.ModuleNode;
 import io.github.eutro.jwasm.tree.analysis.ModuleValidator;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
@@ -42,7 +43,7 @@ public class WastTest {
 
                 int tmc = 0;
                 @Override
-                public WastModuleVisitor visitModule() {
+                public WastModuleVisitor visitModule(@Nullable String name) {
                     tmc++;
                     return new WastModuleVisitor(visitModule0()) {
                         @Override

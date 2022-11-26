@@ -106,7 +106,7 @@ public class WastReader {
             String macro = expectClass(String.class, lp.expect());
             switch (macro) {
                 case "module": {
-                    acceptModule(new ListParser(lp.list), wv.visitModule());
+                    acceptModule(new ListParser(lp.list), wv.visitModule(lp.maybeParseId().orElse(null)));
                     break;
                 }
                 case "register":
