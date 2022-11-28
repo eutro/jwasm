@@ -406,7 +406,7 @@ public class Unparser {
                 : Arrays.asList(limits.min, limits.max);
     }
 
-    private static String unparseType(byte type) {
+    public static String unparseType(byte type) {
         switch (type) {
             case Opcodes.I32:
                 return "i32";
