@@ -1364,9 +1364,12 @@ public class Parser {
 
                         table = new TableNode(new Limits(n, n), refTy);
                         maybeElem = new ModuleField() {
+                            int table;
+
                             @Override
                             public void idc(IdCtx idcx) {
                                 idcx.addIdx(ELEM, null);
+                                table = idcx.f(TABLE).size() - 1;
                             }
 
                             @Override
@@ -1376,7 +1379,7 @@ public class Parser {
 
                                 ElementNode node = en.resolve(module, idcx);
 
-                                node.table = idcx.f(TABLE).size() - 1;
+                                node.table = table;
                                 node.type = refTy;
 
                                 node.offset = new ExprNode();
