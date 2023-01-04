@@ -197,6 +197,7 @@ public interface ByteInputStream<E extends Exception> {
                         new RuntimeException("integer too large"));
             }
             v |= (long) (b & 0x7F) << (count * 7);
+            return v;
         }
         throw new ValidationException(String.format("VarUInt: 0x%02x... exceeded %d bytes", v, bytes),
                 new RuntimeException("integer representation too long"));

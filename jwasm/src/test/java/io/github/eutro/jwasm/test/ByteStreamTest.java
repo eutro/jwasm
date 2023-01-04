@@ -22,9 +22,9 @@ public class ByteStreamTest {
     @Test
     void put_get_varUInt() {
         ByteOutputStream.BaosByteOutputStream out = new ByteOutputStream.BaosByteOutputStream();
-        out.putVarUInt(Long.MAX_VALUE);
+        out.putVarUInt(-1);
         ByteInputStream.ByteBufferByteInputStream in = new ByteInputStream.ByteBufferByteInputStream(ByteBuffer.wrap(out.toByteArray()));
-        assertEquals(Long.MAX_VALUE, in.getVarUIntX(64));
+        assertEquals(-1, in.getVarUIntX(10));
         in.expectEmpty();
     }
 
@@ -34,7 +34,7 @@ public class ByteStreamTest {
             ByteOutputStream.BaosByteOutputStream out = new ByteOutputStream.BaosByteOutputStream();
             out.putVarUInt(l);
             ByteInputStream.ByteBufferByteInputStream in = new ByteInputStream.ByteBufferByteInputStream(ByteBuffer.wrap(out.toByteArray()));
-            assertEquals(l, in.getVarUIntX(64));
+            assertEquals(l, in.getVarUIntX(10));
         });
     }
 

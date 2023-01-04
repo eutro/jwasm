@@ -730,8 +730,8 @@ public class ModuleReader<E extends Exception> {
                 }
                 default:
                     if (Byte.toUnsignedInt(opcode)
-                            > Byte.toUnsignedInt(Opcodes.I64_EXTEND_I32_S)) {
-                        throw new ValidationException(String.format("Unrecognised single-byte opcode %02x", opcode),
+                            > Byte.toUnsignedInt(Opcodes.I64_EXTEND32_S)) {
+                        throw new ValidationException(String.format("Unrecognised single-byte opcode 0x%02x", opcode),
                                 new RuntimeException("illegal opcode"));
                     }
                     ev.visitInsn(opcode);
