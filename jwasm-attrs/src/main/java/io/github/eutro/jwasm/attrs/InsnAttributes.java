@@ -30,6 +30,10 @@ public class InsnAttributes {
         return lookup(new Opcode(INSN_PREFIX, intOpcode));
     }
 
+    public static InsnAttributes lookupVector(int intOpcode) {
+        return lookup(new Opcode(VECTOR_PREFIX, intOpcode));
+    }
+
     public String getMnemonic() {
         return mnemonic;
     }

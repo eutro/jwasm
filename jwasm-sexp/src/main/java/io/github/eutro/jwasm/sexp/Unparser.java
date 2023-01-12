@@ -62,7 +62,7 @@ public class Unparser {
                     case Opcodes.IMPORTS_FUNC: {
                         descList.add("func");
                         FuncImportNode fNode = (FuncImportNode) theImport;
-                        descList.add(Arrays.asList("type", BigInteger.valueOf(fNode.type)));
+                        descList.add(Arrays.asList("type", Reader.ParsedNumber.of(fNode.type)));
                         break;
                     }
                     case Opcodes.IMPORTS_TABLE: {
@@ -148,7 +148,7 @@ public class Unparser {
         }
 
         if (node.start != null) {
-            moduleList.add(Arrays.asList("start", BigInteger.valueOf(node.start)));
+            moduleList.add(Arrays.asList("start", Reader.ParsedNumber.of(node.start)));
         }
 
         if (node.elems != null) {
@@ -163,7 +163,7 @@ public class Unparser {
                     } // passive otherwise
                 } else {
                     // active
-                    elemList.add(Arrays.asList("table", BigInteger.valueOf(elem.table)));
+                    elemList.add(Arrays.asList("table", Reader.ParsedNumber.of(elem.table)));
                     List<Object> offsetList = new ArrayList<>();
                     offsetList.add("offset");
                     unparseExpr(offsetList, elem.offset);
@@ -173,7 +173,7 @@ public class Unparser {
                 if (elem.init == null) {
                     elemList.add("func");
                     for (int index : elem.indices) {
-                        elemList.add(BigInteger.valueOf(index));
+                        elemList.add(Reader.ParsedNumber.of(index));
                     }
                 } else {
                     elemList.add(unparseType(elem.type));
@@ -204,7 +204,7 @@ public class Unparser {
                 CodeNode cn = ci.next();
                 List<Object> funcList = new ArrayList<>();
                 funcList.add("func");
-                funcList.add(BigInteger.valueOf(fn.type));
+                funcList.add(Reader.ParsedNumber.of(fn.type));
 
                 if (cn.locals.length != 0) {
                     List<Object> localsList = new ArrayList<>();
@@ -227,7 +227,7 @@ public class Unparser {
                 List<Object> dataList = new ArrayList<>();
                 dataList.add("data");
                 if (data.offset != null) {
-                    dataList.add(Arrays.asList("memory", BigInteger.valueOf(data.memory)));
+                    dataList.add(Arrays.asList("memory", Reader.ParsedNumber.of(data.memory)));
 
                     List<Object> offsetList = new ArrayList<>();
                     offsetList.add("offset");
@@ -264,10 +264,10 @@ public class Unparser {
 
             @Override
             public void visitConstInsn(Object v) {
-                if (v instanceof Integer) t.add(Arrays.asList("i32.const", BigInteger.valueOf((int) v)));
-                else if (v instanceof Long) t.add(Arrays.asList("i64.const", BigInteger.valueOf((long) v)));
-                else if (v instanceof Float) t.add(Arrays.asList("f32.const", (double) (float) v));
-                else if (v instanceof Double) t.add(Arrays.asList("f64.const", (double) v));
+                if (v instanceof Integer) t.add(Arrays.asList("i32.const", Reader.ParsedNumber.of(v)));
+                else if (v instanceof Long) t.add(Arrays.asList("i64.const", Reader.ParsedNumber.of(v)));
+                else if (v instanceof Float) t.add(Arrays.asList("f32.const", Reader.ParsedNumber.of(v)));
+                else if (v instanceof Double) t.add(Arrays.asList("f64.const", Reader.ParsedNumber.of(v)));
                 else throw new IllegalArgumentException();
             }
 
@@ -278,7 +278,7 @@ public class Unparser {
 
             @Override
             public void visitFuncRefInsn(int function) {
-                t.add(Arrays.asList("ref.func", BigInteger.valueOf(function)));
+                t.add(Arrays.asList("ref.func", Reader.ParsedNumber.of(function)));
             }
 
             @Override
@@ -291,25 +291,25 @@ public class Unparser {
 
             @Override
             public void visitVariableInsn(byte opcode, int variable) {
-                t.add(Arrays.asList(InsnAttributes.lookup(opcode).getMnemonic(), BigInteger.valueOf(variable)));
+                t.add(Arrays.asList(InsnAttributes.lookup(opcode).getMnemonic(), Reader.ParsedNumber.of(variable)));
             }
 
             @Override
             public void visitTableInsn(byte opcode, int table) {
-                t.add(Arrays.asList(InsnAttributes.lookup(opcode).getMnemonic(), BigInteger.valueOf(table)));
+                t.add(Arrays.asList(InsnAttributes.lookup(opcode).getMnemonic(), Reader.ParsedNumber.of(table)));
             }
 
             @Override
             public void visitPrefixTableInsn(int opcode, int table) {
                 t.add(Arrays.asList(InsnAttributes.lookupPrefix(opcode).getMnemonic(),
-                        BigInteger.valueOf(table)));
+                        Reader.ParsedNumber.of(table)));
             }
 
             @Override
             public void visitPrefixBinaryTableInsn(int opcode, int firstIndex, int secondIndex) {
                 t.add(Arrays.asList(InsnAttributes.lookupPrefix(opcode).getMnemonic(),
-                        BigInteger.valueOf(firstIndex),
-                        BigInteger.valueOf(secondIndex)));
+                        Reader.ParsedNumber.of(firstIndex),
+                        Reader.ParsedNumber.of(secondIndex)));
             }
 
             @Override
@@ -326,7 +326,7 @@ public class Unparser {
             @Override
             public void visitIndexedMemInsn(int opcode, int index) {
                 t.add(Arrays.asList(InsnAttributes.lookupPrefix(opcode).getMnemonic(),
-                        BigInteger.valueOf(index)));
+                        Reader.ParsedNumber.of(index)));
             }
 
             @Override
@@ -345,7 +345,7 @@ public class Unparser {
                         t.add(Arrays.asList("result", unparseType((byte) blockType.type)));
                     }
                 } else {
-                    t.add(Arrays.asList("type", BigInteger.valueOf(blockType.type)));
+                    t.add(Arrays.asList("type", Reader.ParsedNumber.of(blockType.type)));
                 }
             }
 
@@ -361,7 +361,7 @@ public class Unparser {
 
             @Override
             public void visitBreakInsn(byte opcode, int label) {
-                t.add(Arrays.asList("br", BigInteger.valueOf(label)));
+                t.add(Arrays.asList("br", Reader.ParsedNumber.of(label)));
             }
 
             @Override
@@ -369,20 +369,68 @@ public class Unparser {
                 List<Object> l = new ArrayList<>();
                 l.add("br_table");
                 for (int label : labels) {
-                    l.add(BigInteger.valueOf(label));
+                    l.add(Reader.ParsedNumber.of(label));
                 }
-                l.add(BigInteger.valueOf(defaultLabel));
+                l.add(Reader.ParsedNumber.of(defaultLabel));
                 t.add(l);
             }
 
             @Override
             public void visitCallInsn(int function) {
-                t.add(Arrays.asList("call", BigInteger.valueOf(function)));
+                t.add(Arrays.asList("call", Reader.ParsedNumber.of(function)));
             }
 
             @Override
             public void visitCallIndirectInsn(int table, int type) {
-                t.add(Arrays.asList("call_indirect", BigInteger.valueOf(table), BigInteger.valueOf(type)));
+                t.add(Arrays.asList("call_indirect", Reader.ParsedNumber.of(table), Reader.ParsedNumber.of(type)));
+            }
+
+            @Override
+            public void visitVectorInsn(int opcode) {
+                t.add(InsnAttributes.lookupVector(opcode).getMnemonic());
+            }
+
+            @Override
+            public void visitVectorMemInsn(int opcode, int align, int offset) {
+                List<Object> insnList = new ArrayList<>();
+                insnList.add(InsnAttributes.lookupVector(opcode).getMnemonic());
+                if (offset != 0) {
+                    insnList.add(new Reader.MemArgPart(Reader.MemArgPart.Type.OFFSET, BigInteger.valueOf(offset)));
+                }
+                insnList.add(new Reader.MemArgPart(Reader.MemArgPart.Type.ALIGN, BigInteger.valueOf(align)));
+                t.add(insnList);
+            }
+
+            @Override
+            public void visitVectorMemLaneInsn(int opcode, int align, int offset, byte lane) {
+                List<Object> insnList = new ArrayList<>();
+                insnList.add(InsnAttributes.lookupVector(opcode).getMnemonic());
+                if (offset != 0) {
+                    insnList.add(new Reader.MemArgPart(Reader.MemArgPart.Type.OFFSET, BigInteger.valueOf(offset)));
+                }
+                insnList.add(new Reader.MemArgPart(Reader.MemArgPart.Type.ALIGN, BigInteger.valueOf(align)));
+                insnList.add(lane);
+                t.add(insnList);
+            }
+
+            @Override
+            public void visitVectorConstOrShuffleInsn(int opcode, byte[] bytes) {
+                List<Object> insnList = new ArrayList<>();
+                if (opcode == Opcodes.V128_CONST) {
+                    insnList.add("v128.const");
+                    insnList.add("i8x16");
+                } else {
+                    insnList.add("i8x16.shuffle");
+                }
+                for (byte b : bytes) {
+                    insnList.add(Reader.ParsedNumber.of(b));
+                }
+                t.add(insnList);
+            }
+
+            @Override
+            public void visitVectorLaneInsn(int opcode, byte lane) {
+                t.add(Arrays.asList(InsnAttributes.lookupVector(opcode).getMnemonic(), Reader.ParsedNumber.of(lane)));
             }
         };
 
@@ -395,7 +443,7 @@ public class Unparser {
             int prevSize = t.size();
             insn.accept(ev);
             if (prevSize == t.size()) {
-                throw new IllegalStateException();
+                throw new IllegalStateException(String.format("%s not recognised", insn.getClass().getName()));
             }
         }
     }

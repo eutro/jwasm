@@ -355,6 +355,67 @@ public class Reader {
             return v;
         }
 
+        public static ParsedNumber of(Object obj) {
+            if (obj instanceof String) {
+                return Token.parseNumber((String) obj);
+            } else if (obj instanceof Float) {
+                float f = (float) obj;
+                if (Float.isInfinite(f)) {
+                    return f < 0 ? of("-inf") : of("inf");
+                }
+                int asInt = Float.floatToRawIntBits(f);
+                if (Float.isNaN(f)) {
+                    int canonicalBits = Float.floatToRawIntBits(Float.NaN);
+                    // Java optimises -Float.NaN to just NaN, so no toRawIntBits(-Float.NaN)
+                    int negCanonicalBits = canonicalBits | 0x8000_0000;
+                    if (asInt == canonicalBits) {
+                        return of("nan");
+                    } else if (asInt == negCanonicalBits) {
+                        return of("-nan");
+                    } else {
+                        return of(String.format(
+                                      "%snan:0x%x",
+                                      asInt < 0 ? "-" : "",
+                                      asInt & ~negCanonicalBits
+                                  ));
+                    }
+                }
+                ParsedNumber ret = of(obj.toString());
+                if (Float.floatToRawIntBits(ret.floatValue()) == asInt) return ret;
+                ret = of(String.format("%g", obj));
+                if (Float.floatToRawIntBits(ret.floatValue()) == asInt) return ret;
+                throw new IllegalStateException();
+            } else if (obj instanceof Double) {
+                double f = (double) obj;
+                if (Double.isInfinite(f)) {
+                    return f < 0 ? of("-inf") : of("inf");
+                }
+                long asInt = Double.doubleToRawLongBits(f);
+                if (Double.isNaN(f)) {
+                    long canonicalBits = Double.doubleToRawLongBits(Double.NaN);
+                    long negCanonicalBits = canonicalBits | 0x80000000_00000000L;
+                    if (asInt == canonicalBits) {
+                        return of("nan");
+                    } else if (asInt == negCanonicalBits) { 
+                        return of("-nan");
+                    } else {
+                        return of(String.format(
+                                      "%snan:0x%x",
+                                      asInt < 0 ? "-" : "",
+                                      asInt & ~negCanonicalBits
+                                  ));
+                    }
+                }
+                ParsedNumber ret = of(obj.toString());
+                if (Double.doubleToRawLongBits(ret.doubleValue()) == asInt) return ret;
+                ret = of(String.format("%g", obj));
+                if (Double.doubleToRawLongBits(ret.doubleValue()) == asInt) return ret;
+                throw new IllegalStateException();
+            } else {
+                return of(obj.toString());
+            }
+        }
+
         private String toParsableString() {
             if (expType == ExpType.HEX && token.indexOf('p') == -1 && token.indexOf('P') == -1) {
                 return token + "p0";
