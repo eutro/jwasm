@@ -670,6 +670,7 @@ public class Parser {
     ) {
         List<String> exportNames = new ArrayList<>();
 
+        boolean shouldParseLocal = true;
         Optional<Object> maybeExportOrImport;
         while ((maybeExportOrImport = lp.maybeParse(it -> isMacroList(it, "import", "export").isPresent()))
                 .isPresent()) {
@@ -684,7 +685,8 @@ public class Parser {
 
                     eiLp.expectEnd();
                     fields.add(new ImportField(field, maybeId, lp.list, theImport));
-                    return;
+                    shouldParseLocal = false;
+                    break;
                 }
                 case "export":
                     exportNames.add(parseUtf8(eiLp.expect()));
@@ -695,7 +697,9 @@ public class Parser {
             }
         }
 
-        parseLocal.run();
+        if (shouldParseLocal) {
+            parseLocal.run();
+        }
 
         for (String exportName : exportNames) {
             fields.add(new ModuleField() {
