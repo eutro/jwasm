@@ -31,6 +31,8 @@ public class LineCountingPushbackByteInputStream<E extends Exception> {
             line++;
             lastCol = col;
             col = 0;
+        } else {
+            col++;
         }
         return c;
     }
@@ -42,7 +44,7 @@ public class LineCountingPushbackByteInputStream<E extends Exception> {
             col = lastCol;
             lastCol = -1;
         } else {
-            col++;
+            col--;
         }
         hasPushback = true;
         pushback = b;

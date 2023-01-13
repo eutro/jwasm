@@ -64,7 +64,9 @@ public class Writer {
     private void write(byte[] bytes) {
         ps.write('"');
         for (byte b : bytes) {
-            if (' ' <= b && b < 0x7F) ps.write(b);
+            if (' ' <= b && b < 0x7F
+                    && b != '"'
+                    && b != '\\') ps.write(b);
             else {
                 ps.printf("\\%02X", b);
             }

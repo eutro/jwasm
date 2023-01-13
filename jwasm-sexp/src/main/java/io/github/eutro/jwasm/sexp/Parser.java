@@ -655,7 +655,7 @@ public class Parser {
                 return il.getIndex(id);
             };
         } else {
-            throw new ParseException("expected idx (list or identifier)", o);
+            throw new ParseException("expected idx (integer or identifier)", o);
         }
     }
 
