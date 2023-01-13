@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,9 +20,9 @@ import java.util.List;
  */
 public class CodesNode extends CodesVisitor implements Iterable<CodeNode> {
     /**
-     * The vector of {@link CodeNode}s, or {@code null} if there aren't any.
+     * The vector of {@link CodeNode}s.
      */
-    public @Nullable List<CodeNode> codes;
+    public @NotNull List<CodeNode> codes = new ArrayList<>();
 
     /**
      * Construct a visitor with no delegate.
@@ -46,11 +45,9 @@ public class CodesNode extends CodesVisitor implements Iterable<CodeNode> {
      * @param cv The visitor to visit.
      */
     public void accept(CodesVisitor cv) {
-        if (codes != null) {
-            for (CodeNode code : codes) {
-                ExprVisitor ev = cv.visitCode(code.locals);
-                if (ev != null) code.expr.accept(ev);
-            }
+        for (CodeNode code : codes) {
+            ExprVisitor ev = cv.visitCode(code.locals);
+            if (ev != null) code.expr.accept(ev);
         }
         cv.visitEnd();
     }
@@ -58,7 +55,6 @@ public class CodesNode extends CodesVisitor implements Iterable<CodeNode> {
     @Override
     public @Nullable ExprVisitor visitCode(byte @NotNull [] locals) {
         super.visitCode(locals);
-        if (codes == null) codes = new ArrayList<>();
         ExprNode en = new ExprNode();
         codes.add(new CodeNode(locals, en));
         return en;
@@ -67,6 +63,6 @@ public class CodesNode extends CodesVisitor implements Iterable<CodeNode> {
     @NotNull
     @Override
     public Iterator<CodeNode> iterator() {
-        return codes == null ? Collections.emptyIterator() : codes.iterator();
+        return codes.iterator();
     }
 }

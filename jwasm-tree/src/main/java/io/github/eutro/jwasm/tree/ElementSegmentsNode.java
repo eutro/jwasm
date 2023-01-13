@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,9 +20,9 @@ import java.util.List;
  */
 public class ElementSegmentsNode extends ElementSegmentsVisitor implements Iterable<ElementNode> {
     /**
-     * The vector of {@link ElementNode}s, or {@code null} if there aren't any.
+     * The vector of {@link ElementNode}s.
      */
-    public @Nullable List<ElementNode> elems;
+    public @NotNull List<ElementNode> elems = new ArrayList<>();
 
     /**
      * Construct a visitor with no delegate.
@@ -46,18 +45,15 @@ public class ElementSegmentsNode extends ElementSegmentsVisitor implements Itera
      * @param ev The visitor to visit.
      */
     public void accept(ElementSegmentsVisitor ev) {
-        if (elems != null) {
-            for (ElementNode elem : elems) {
-                ElementVisitor eev = ev.visitElem();
-                if (eev != null) elem.accept(eev);
-            }
+        for (ElementNode elem : elems) {
+            ElementVisitor eev = ev.visitElem();
+            if (eev != null) elem.accept(eev);
         }
         ev.visitEnd();
     }
 
     @Override
     public ElementVisitor visitElem() {
-        if (elems == null) elems = new ArrayList<>();
         ElementNode en = new ElementNode(super.visitElem());
         elems.add(en);
         return en;
@@ -66,6 +62,6 @@ public class ElementSegmentsNode extends ElementSegmentsVisitor implements Itera
     @NotNull
     @Override
     public Iterator<ElementNode> iterator() {
-        return elems == null ? Collections.emptyIterator() : elems.iterator();
+        return elems.iterator();
     }
 }

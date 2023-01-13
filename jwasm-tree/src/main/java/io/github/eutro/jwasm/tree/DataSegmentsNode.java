@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,9 +20,9 @@ import java.util.List;
  */
 public class DataSegmentsNode extends DataSegmentsVisitor implements Iterable<DataNode> {
     /**
-     * The vector of {@link DataNode}s, or {@code null} if there aren't any.
+     * The vector of {@link DataNode}s.
      */
-    public @Nullable List<DataNode> datas;
+    public @NotNull List<DataNode> datas = new ArrayList<>();
 
     /**
      * Construct a visitor with no delegate.
@@ -46,18 +45,15 @@ public class DataSegmentsNode extends DataSegmentsVisitor implements Iterable<Da
      * @param dv The visitor to visit.
      */
     public void accept(DataSegmentsVisitor dv) {
-        if (datas != null) {
-            for (DataNode data : datas) {
-                DataVisitor ddv = dv.visitData();
-                if (ddv != null) data.accept(ddv);
-            }
+        for (DataNode data : datas) {
+            DataVisitor ddv = dv.visitData();
+            if (ddv != null) data.accept(ddv);
         }
         dv.visitEnd();
     }
 
     @Override
     public DataVisitor visitData() {
-        if (datas == null) datas = new ArrayList<>();
         DataNode dn = new DataNode(super.visitData());
         datas.add(dn);
         return dn;
@@ -66,6 +62,6 @@ public class DataSegmentsNode extends DataSegmentsVisitor implements Iterable<Da
     @NotNull
     @Override
     public Iterator<DataNode> iterator() {
-        return datas == null ? Collections.emptyIterator() : datas.iterator();
+        return datas.iterator();
     }
 }

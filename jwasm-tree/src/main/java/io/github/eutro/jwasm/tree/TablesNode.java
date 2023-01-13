@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,9 +19,9 @@ import java.util.List;
  */
 public class TablesNode extends TablesVisitor implements Iterable<TableNode> {
     /**
-     * The vector of {@link TableNode}s, or {@code null} if there aren't any.
+     * The vector of {@link TableNode}s.
      */
-    public @Nullable List<TableNode> tables;
+    public @NotNull List<TableNode> tables = new ArrayList<>();
 
     /**
      * Construct a visitor with no delegate.
@@ -45,10 +44,8 @@ public class TablesNode extends TablesVisitor implements Iterable<TableNode> {
      * @param tv The visitor to visit.
      */
     public void accept(TablesVisitor tv) {
-        if (tables != null) {
-            for (TableNode table : tables) {
-                table.accept(tv);
-            }
+        for (TableNode table : tables) {
+            table.accept(tv);
         }
         tv.visitEnd();
     }
@@ -56,13 +53,12 @@ public class TablesNode extends TablesVisitor implements Iterable<TableNode> {
     @Override
     public void visitTable(int min, Integer max, byte type) {
         super.visitTable(min, max, type);
-        if (tables == null) tables = new ArrayList<>();
         tables.add(new TableNode(new Limits(min, max), type));
     }
 
     @NotNull
     @Override
     public Iterator<TableNode> iterator() {
-        return tables == null ? Collections.emptyIterator() : tables.iterator();
+        return tables.iterator();
     }
 }

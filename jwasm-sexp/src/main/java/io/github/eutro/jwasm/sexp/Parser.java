@@ -64,7 +64,7 @@ public class Parser {
                 field.mod(idcx, module);
             }
 
-            if (module.datas != null && module.datas.datas != null) {
+            if (module.datas != null) {
                 module.dataCount = module.datas.datas.size();
             }
 
@@ -464,7 +464,6 @@ public class Parser {
             @Override
             public void mod(IdCtx idcx, ModuleNode module) {
                 if (module.types == null) module.types = new TypesNode();
-                if (module.types.types == null) module.types.types = new ArrayList<>();
                 module.types.types.add(ft);
             }
 
@@ -567,7 +566,7 @@ public class Parser {
             }
 
             int resolved = underlying.resolve(module, idcx);
-            if (module.types == null || module.types.types == null || module.types.types.size() <= resolved) {
+            if (module.types == null || module.types.types.size() <= resolved) {
                 throw new ValidationException("Type index out of bounds: " + resolved,
                         new RuntimeException("unknown type"));
             }
@@ -606,7 +605,7 @@ public class Parser {
                 IdVal<Integer> oldId = id;
                 id = (m, idcx) -> {
                     int resolved = oldId.resolve(m, idcx);
-                    if (m.types == null || m.types.types == null || m.types.types.size() <= resolved) {
+                    if (m.types == null || m.types.types.size() <= resolved) {
                         throw new ParseException("Type index does not exist", lp.list,
                                 new RuntimeException("unknown type"));
                     }
@@ -628,7 +627,6 @@ public class Parser {
                     return idcx.typedefs.getIndex(type);
                 } else {
                     if (module.types == null) module.types = new TypesNode();
-                    if (module.types.types == null) module.types.types = new ArrayList<>();
                     int idx = idcx.f(TYPE).size();
                     idcx.addIdx(TYPE, null);
                     idcx.typedefs.add(type);
@@ -766,14 +764,12 @@ public class Parser {
                         @Override
                         public void mod(IdCtx idcx, ModuleNode module) {
                             if (module.funcs == null) module.funcs = new FunctionsNode();
-                            if (module.funcs.funcs == null) module.funcs.funcs = new ArrayList<>();
 
                             if (module.codes == null) module.codes = new CodesNode();
-                            if (module.codes.codes == null) module.codes.codes = new ArrayList<>();
 
                             int type = tu.resolve(module, idcx);
 
-                            if (module.types == null || module.types.types == null) throw new IllegalStateException();
+                            if (module.types == null) throw new IllegalStateException();
 
                             TypeNode funcType = module.types.types.get(type);
 
@@ -1375,7 +1371,6 @@ public class Parser {
                             @Override
                             public void mod(IdCtx idcx, ModuleNode module) {
                                 if (module.elems == null) module.elems = new ElementSegmentsNode();
-                                if (module.elems.elems == null) module.elems.elems = new ArrayList<>();
 
                                 ElementNode node = en.resolve(module, idcx);
 
@@ -1405,7 +1400,6 @@ public class Parser {
                         @Override
                         public void mod(IdCtx idcx, ModuleNode module) {
                             if (module.tables == null) module.tables = new TablesNode();
-                            if (module.tables.tables == null) module.tables.tables = new ArrayList<>();
                             module.tables.tables.add(table);
                         }
                     });
@@ -1460,7 +1454,6 @@ public class Parser {
                             @Override
                             public void mod(IdCtx idcx, ModuleNode module) {
                                 if (module.datas == null) module.datas = new DataSegmentsNode();
-                                if (module.datas.datas == null) module.datas.datas = new ArrayList<>();
                                 int idx = idcx.f(MEMORY).size() - 1;
                                 ExprNode offset = new ExprNode();
                                 offset.instructions = new ArrayList<>(Arrays.asList(
@@ -1482,7 +1475,6 @@ public class Parser {
                         @Override
                         public void mod(IdCtx idcx, ModuleNode module) {
                             if (module.mems == null) module.mems = new MemoriesNode();
-                            if (module.mems.memories == null) module.mems.memories = new ArrayList<>();
                             module.mems.memories.add(mem);
                         }
                     });
@@ -1522,7 +1514,6 @@ public class Parser {
                         @Override
                         public void mod(IdCtx idcx, ModuleNode module) {
                             if (module.globals == null) module.globals = new GlobalsNode();
-                            if (module.globals.globals == null) module.globals.globals = new ArrayList<>();
                             module.globals.globals.add(new GlobalNode(type, expr.resolve(module, idcx)));
                         }
                     });
@@ -1573,7 +1564,6 @@ public class Parser {
             @Override
             public void mod(IdCtx idcx, ModuleNode module) {
                 if (module.exports == null) module.exports = new ExportsNode();
-                if (module.exports.exports == null) module.exports.exports = new ArrayList<>();
                 module.exports.exports.add(new ExportNode(nm, type, idx.resolve(module, idcx)));
             }
         });
@@ -1678,7 +1668,6 @@ public class Parser {
             @Override
             public void mod(IdCtx idcx, ModuleNode module) {
                 if (module.elems == null) module.elems = new ElementSegmentsNode();
-                if (module.elems.elems == null) module.elems.elems = new ArrayList<>();
                 ElementNode elem = finalEn.resolve(module, idcx);
                 module.elems.elems.add(elem);
             }
@@ -1728,7 +1717,6 @@ public class Parser {
             @Override
             public void mod(IdCtx idcx, ModuleNode module) {
                 if (module.datas == null) module.datas = new DataSegmentsNode();
-                if (module.datas.datas == null) module.datas.datas = new ArrayList<>();
                 module.datas.datas.add(data.resolve(module, idcx));
             }
         });
@@ -1800,7 +1788,6 @@ public class Parser {
                 );
             }
             if (module.imports == null) module.imports = new ImportsNode();
-            if (module.imports.imports == null) module.imports.imports = new ArrayList<>();
             module.imports.imports.add(theImport.resolve(module, idcx));
         }
     }

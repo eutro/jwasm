@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,9 +19,9 @@ import java.util.List;
  */
 public class GlobalsNode extends GlobalsVisitor implements Iterable<GlobalNode> {
     /**
-     * The vector of {@link GlobalNode}s, or {@code null} if there aren't any.
+     * The vector of {@link GlobalNode}s.
      */
-    public @Nullable List<GlobalNode> globals;
+    public @NotNull List<GlobalNode> globals = new ArrayList<>();
 
     /**
      * Construct a visitor with no delegate.
@@ -45,17 +44,14 @@ public class GlobalsNode extends GlobalsVisitor implements Iterable<GlobalNode> 
      * @param gv The visitor to visit.
      */
     public void accept(GlobalsVisitor gv) {
-        if (globals != null) {
-            for (GlobalNode global : globals) {
-                global.accept(gv);
-            }
+        for (GlobalNode global : globals) {
+            global.accept(gv);
         }
         gv.visitEnd();
     }
 
     @Override
     public ExprVisitor visitGlobal(byte mut, byte type) {
-        if (globals == null) globals = new ArrayList<>();
         ExprNode ev = new ExprNode(super.visitGlobal(mut, type));
         globals.add(new GlobalNode(new GlobalTypeNode(mut, type), ev));
         return ev;
@@ -64,6 +60,6 @@ public class GlobalsNode extends GlobalsVisitor implements Iterable<GlobalNode> 
     @NotNull
     @Override
     public Iterator<GlobalNode> iterator() {
-        return globals == null ? Collections.emptyIterator() : globals.iterator();
+        return globals.iterator();
     }
 }

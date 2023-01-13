@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -19,9 +18,9 @@ import java.util.List;
  */
 public class TypesNode extends TypesVisitor implements Iterable<TypeNode> {
     /**
-     * The vector of {@link TypeNode}s, or {@code null} if there aren't any.
+     * The vector of {@link TypeNode}s.
      */
-    public @Nullable List<TypeNode> types;
+    public @NotNull List<TypeNode> types = new ArrayList<>();
 
     /**
      * Construct a visitor with no delegate.
@@ -44,10 +43,8 @@ public class TypesNode extends TypesVisitor implements Iterable<TypeNode> {
      * @param tv The visitor to visit.
      */
     public void accept(TypesVisitor tv) {
-        if (types != null) {
-            for (TypeNode type : types) {
-                type.accept(tv);
-            }
+        for (TypeNode type : types) {
+            type.accept(tv);
         }
         tv.visitEnd();
     }
@@ -55,13 +52,12 @@ public class TypesNode extends TypesVisitor implements Iterable<TypeNode> {
     @Override
     public void visitFuncType(byte @NotNull [] params, byte @NotNull [] returns) {
         super.visitFuncType(params, returns);
-        if (types == null) types = new ArrayList<>();
         types.add(new TypeNode(params, returns));
     }
 
     @NotNull
     @Override
     public Iterator<TypeNode> iterator() {
-        return types == null ? Collections.emptyIterator() : types.iterator();
+        return types.iterator();
     }
 }

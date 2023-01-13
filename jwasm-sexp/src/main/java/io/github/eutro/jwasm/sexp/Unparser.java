@@ -195,7 +195,7 @@ public class Unparser {
             }
         }
 
-        if (node.codes != null && node.codes.codes != null && !node.codes.codes.isEmpty()) {
+        if (node.codes != null && !node.codes.codes.isEmpty()) {
             assert node.funcs != null;
 
             Iterator<FuncNode> fi = node.funcs.iterator();

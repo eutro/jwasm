@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -19,9 +18,9 @@ import java.util.List;
  */
 public class ExportsNode extends ExportsVisitor implements Iterable<ExportNode> {
     /**
-     * The vector of {@link ExportNode}s, or {@code null} if there aren't any.
+     * The vector of {@link ExportNode}s.
      */
-    public @Nullable List<ExportNode> exports;
+    public @NotNull List<ExportNode> exports = new ArrayList<>();
 
     /**
      * Construct a visitor with no delegate.
@@ -44,10 +43,8 @@ public class ExportsNode extends ExportsVisitor implements Iterable<ExportNode> 
      * @param ev The visitor to visit.
      */
     public void accept(ExportsVisitor ev) {
-        if (exports != null) {
-            for (ExportNode export : exports) {
-                export.accept(ev);
-            }
+        for (ExportNode export : exports) {
+            export.accept(ev);
         }
         ev.visitEnd();
     }
@@ -55,13 +52,12 @@ public class ExportsNode extends ExportsVisitor implements Iterable<ExportNode> 
     @Override
     public void visitExport(@NotNull String name, byte type, int index) {
         super.visitExport(name, type, index);
-        if (exports == null) exports = new ArrayList<>();
         exports.add(new ExportNode(name, type, index));
     }
 
     @NotNull
     @Override
     public Iterator<ExportNode> iterator() {
-        return exports == null ? Collections.emptyIterator() : exports.iterator();
+        return exports.iterator();
     }
 }

@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,9 +19,9 @@ import java.util.List;
  */
 public class ImportsNode extends ImportsVisitor implements Iterable<AbstractImportNode> {
     /**
-     * The vector of {@link AbstractImportNode}s, or {@code null} if there aren't any.
+     * The vector of {@link AbstractImportNode}s.
      */
-    public @Nullable List<AbstractImportNode> imports;
+    public @NotNull List<AbstractImportNode> imports = new ArrayList<>();
 
     /**
      * Construct a visitor with no delegate.
@@ -45,16 +44,14 @@ public class ImportsNode extends ImportsVisitor implements Iterable<AbstractImpo
      * @param iv The visitor to visit.
      */
     public void accept(ImportsVisitor iv) {
-        if (imports != null) {
-            for (AbstractImportNode anImport : imports) {
-                anImport.accept(iv);
-            }
+        for (AbstractImportNode anImport : imports) {
+            anImport.accept(iv);
         }
         iv.visitEnd();
     }
 
     private List<AbstractImportNode> imports() {
-        return imports == null ? imports = new ArrayList<>() : imports;
+        return imports;
     }
 
     @Override
@@ -84,6 +81,6 @@ public class ImportsNode extends ImportsVisitor implements Iterable<AbstractImpo
     @NotNull
     @Override
     public Iterator<AbstractImportNode> iterator() {
-        return imports == null ? Collections.emptyIterator() : imports.iterator();
+        return imports.iterator();
     }
 }

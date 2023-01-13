@@ -101,7 +101,7 @@ public class ModuleValidator extends ModuleVisitor {
     public void visitEnd() {
         VerifCtx ctx = new VerifCtx();
         VerifCtx ctx2 = new VerifCtx();
-        if (module.types != null && module.types.types != null) {
+        if (module.types != null) {
             ctx.types.addAll(module.types.types);
             for (TypeNode type : ctx.types) {
                 checkFuncType(type);
@@ -168,7 +168,7 @@ public class ModuleValidator extends ModuleVisitor {
             }
         }
 
-        ctx.datas = module.datas == null ? 0 : module.datas.datas == null ? 0 : module.datas.datas.size();
+        ctx.datas = module.datas == null ? 0 : module.datas.datas.size();
 
         collectRefs(ctx);
 
@@ -177,11 +177,11 @@ public class ModuleValidator extends ModuleVisitor {
 
         { // under ctx
             int funcCount = 0, codeCount = 0;
-            if (module.funcs != null && module.funcs.funcs != null) funcCount = module.funcs.funcs.size();
-            if (module.codes != null && module.codes.codes != null) codeCount = module.codes.codes.size();
+            if (module.funcs != null) funcCount = module.funcs.funcs.size();
+            if (module.codes != null) codeCount = module.codes.codes.size();
             assertMsg(funcCount == codeCount, "function count (%d) does not match code count (%d)", funcCount, codeCount);
 
-            if (module.codes != null && module.funcs != null && module.funcs.funcs != null) {
+            if (module.codes != null && module.funcs != null) {
                 ListIterator<FuncNode> fi = module.funcs.funcs.listIterator();
                 Iterator<CodeNode> ci = module.codes.iterator();
                 while (fi.hasNext()) {

@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,9 +20,9 @@ import java.util.List;
  */
 public class MemoriesNode extends MemoriesVisitor implements Iterable<MemoryNode> {
     /**
-     * The vector of {@link MemoryNode}s, or {@code null} if there aren't any.
+     * The vector of {@link MemoryNode}s.
      */
-    public @Nullable List<MemoryNode> memories;
+    public @NotNull List<MemoryNode> memories = new ArrayList<>();
 
     /**
      * Construct a visitor with no delegate.
@@ -46,10 +45,8 @@ public class MemoriesNode extends MemoriesVisitor implements Iterable<MemoryNode
      * @param mmv The visitor to visit.
      */
     public void accept(MemoriesVisitor mmv) {
-        if (memories != null) {
-            for (MemoryNode memory : memories) {
-                memory.accept(mmv);
-            }
+        for (MemoryNode memory : memories) {
+            memory.accept(mmv);
         }
         mmv.visitEnd();
     }
@@ -57,13 +54,12 @@ public class MemoriesNode extends MemoriesVisitor implements Iterable<MemoryNode
     @Override
     public void visitMemory(int min, Integer max) {
         super.visitMemory(min, max);
-        if (memories == null) memories = new ArrayList<>();
         memories.add(new MemoryNode(new Limits(min, max)));
     }
 
     @NotNull
     @Override
     public Iterator<MemoryNode> iterator() {
-        return memories == null ? Collections.emptyIterator() : memories.iterator();
+        return memories.iterator();
     }
 }
