@@ -22,8 +22,7 @@ public class ParserTest {
         return ReaderTest.runForTestSuite((name, src) -> {
             List<Object> script = Reader.readAll(src);
 
-            List<ModuleNode> modules = parseAllModules(script);
-            System.out.println(modules);
+            parseAllModules(script);
         });
     }
 

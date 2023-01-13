@@ -283,7 +283,10 @@ public class Reader {
                                     new RuntimeException("unexpected token"));
                         }
                         v = (nanType == null ? NanType.CANONICAL : nanType).getFloat();
-                        if (sign < 0) v = -v;
+                        if (sign < 0) {
+                            // JLS does not guarantee that -v actually flips the sign on NaN
+                            v = Float.intBitsToFloat(Float.floatToRawIntBits(v) | 0x8000_0000);
+                        }
                     } else {
                         int FLOAT_SIGNIF = 23;
                         if (mantissa.equals(BigInteger.ZERO)
@@ -325,7 +328,10 @@ public class Reader {
                                     new RuntimeException("unexpected token"));
                         }
                         v = (nanType == null ? NanType.CANONICAL : nanType).getDouble();
-                        if (sign < 0) v = -v;
+                        if (sign < 0) {
+                            // JLS does not guarantee that -v actually flips the sign on NaN
+                            v = Double.longBitsToDouble(Double.doubleToRawLongBits(v) | 0x8000_0000_0000_0000L);
+                        }
                     } else {
                         int DOUBLE_SIGNIF = 52;
                         if (mantissa.equals(BigInteger.ZERO)
@@ -374,10 +380,10 @@ public class Reader {
                         return of("-nan");
                     } else {
                         return of(String.format(
-                                      "%snan:0x%x",
-                                      asInt < 0 ? "-" : "",
-                                      asInt & ~negCanonicalBits
-                                  ));
+                                "%snan:0x%x",
+                                asInt < 0 ? "-" : "",
+                                asInt & ~negCanonicalBits
+                        ));
                     }
                 }
                 ParsedNumber ret = of(obj.toString());
@@ -393,17 +399,17 @@ public class Reader {
                 long asInt = Double.doubleToRawLongBits(f);
                 if (Double.isNaN(f)) {
                     long canonicalBits = Double.doubleToRawLongBits(Double.NaN);
-                    long negCanonicalBits = canonicalBits | 0x80000000_00000000L;
+                    long negCanonicalBits = canonicalBits | 0x8000_0000_0000_0000L;
                     if (asInt == canonicalBits) {
                         return of("nan");
-                    } else if (asInt == negCanonicalBits) { 
+                    } else if (asInt == negCanonicalBits) {
                         return of("-nan");
                     } else {
                         return of(String.format(
-                                      "%snan:0x%x",
-                                      asInt < 0 ? "-" : "",
-                                      asInt & ~negCanonicalBits
-                                  ));
+                                "%snan:0x%x",
+                                asInt < 0 ? "-" : "",
+                                asInt & ~negCanonicalBits
+                        ));
                     }
                 }
                 ParsedNumber ret = of(obj.toString());
