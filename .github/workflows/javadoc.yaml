@@ -1,0 +1,38 @@
+name: Javadoc
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('build.gradle') }}
+
+      - name: Run Javadoc
+        run: |
+          rm -r ./docs
+          ./gradlew javadoc --no-daemon
+
+      - name: Add and push
+        run: |
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+          git config user.name "Automation"
+          git add -v docs
+          git commit -avm "Build Javadocs" && git push -v
