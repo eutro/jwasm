@@ -1,3 +1,6 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 plugins {
     `java-library`
     `maven-publish`
@@ -37,6 +40,12 @@ subprojects {
 
     tasks.test {
         useJUnitPlatform()
+
+        testLogging {
+            events(TestLogEvent.STARTED)
+            exceptionFormat = TestExceptionFormat.FULL
+            showStackTraces = true
+        }
     }
 
     tasks.register<Jar>("sourceJar") {
@@ -75,5 +84,3 @@ tasks.javadoc {
         )
     }
 }
-
-defaultTasks("build", "javadoc")

@@ -16,19 +16,16 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          distribution: temurin
-          java-version: 17
+          distribution: 'temurin'
+          java-version: '17'
 
-      - name: Cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('build.gradle') }}
+      - name: Delete old docs
+        run: rm -r ./docs
 
       - name: Run Javadoc
-        run: |
-          rm -r ./docs
-          ./gradlew javadoc --no-daemon
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: javadoc
 
       - name: Add and push
         run: |
