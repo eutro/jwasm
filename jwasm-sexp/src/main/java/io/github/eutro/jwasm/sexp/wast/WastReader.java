@@ -1,8 +1,8 @@
 package io.github.eutro.jwasm.sexp.wast;
 
 import io.github.eutro.jwasm.ByteInputStream;
-import io.github.eutro.jwasm.sexp.Parser;
-import io.github.eutro.jwasm.sexp.Reader;
+import io.github.eutro.jwasm.sexp.WatParser;
+import io.github.eutro.jwasm.sexp.WatReader;
 import io.github.eutro.jwasm.sexp.internal.ListParser;
 
 import java.io.IOException;
@@ -166,7 +166,7 @@ public class WastReader {
         Consumer<Object> addResult = results::add;
         while (lp.iter.hasNext()) {
             if (!f.test(lp.iter.next(), addResult)) {
-                throw new Parser.ParseException("unrecognised value", lp.iter.previous());
+                throw new WatParser.ParseException("unrecognised value", lp.iter.previous());
             }
         }
         return results;
@@ -262,11 +262,11 @@ public class WastReader {
     }
 
     public static WastReader fromSource(CharSequence source) {
-        return fromSexps(Reader.readAll(source));
+        return fromSexps(WatReader.readAll(source));
     }
 
     public static <E extends Exception> WastReader fromSource(ByteInputStream<E> stream) throws E {
-        return fromSexps(Reader.readAll(stream));
+        return fromSexps(WatReader.readAll(stream));
     }
 
     public static WastReader fromSource(InputStream stream) throws IOException {

@@ -16,11 +16,11 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
-public class ParserTest {
+public class WatParserTest {
     @TestFactory
     Stream<DynamicTest> evaluateTestSuite() {
-        return ReaderTest.runForTestSuite((name, src) -> {
-            List<Object> script = Reader.readAll(src);
+        return WatReaderTest.runForTestSuite((name, src) -> {
+            List<Object> script = WatReader.readAll(src);
 
             parseAllModules(script);
         });
@@ -37,9 +37,9 @@ public class ParserTest {
                         List<?> list = (List<?>) stmt;
                         if ("module".equals(list.get(0))) {
                             if (list.contains("binary")) {
-                                modules.add(Parser.parseBinaryModule(stmt));
+                                modules.add(WatParser.DEFAULT.parseBinaryModule(stmt));
                             } else {
-                                modules.add(Parser.parseModule(stmt));
+                                modules.add(WatParser.DEFAULT.parseModule(stmt));
                             }
                         }
                     } catch (RuntimeException e) {
@@ -55,11 +55,11 @@ public class ParserTest {
     @Test
     void parseWat() throws Throwable {
         String src = new String(Files.readAllBytes(
-                Paths.get(Objects.requireNonNull(ParserTest.class.getResource("/wat/basic.wat"))
+                Paths.get(Objects.requireNonNull(WatParserTest.class.getResource("/wat/basic.wat"))
                         .toURI())
         ), StandardCharsets.UTF_8);
-        List<Object> script = Reader.readAll(src);
+        List<Object> script = WatReader.readAll(src);
 
-        Parser.parseModule(script.get(0));
+        WatParser.DEFAULT.parseModule(script.get(0));
     }
 }

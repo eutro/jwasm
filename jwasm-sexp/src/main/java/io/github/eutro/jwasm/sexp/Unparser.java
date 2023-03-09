@@ -5,7 +5,7 @@ import io.github.eutro.jwasm.ExprVisitor;
 import io.github.eutro.jwasm.Limits;
 import io.github.eutro.jwasm.Opcodes;
 import io.github.eutro.jwasm.attrs.InsnAttributes;
-import io.github.eutro.jwasm.sexp.Reader.ParsedNumber;
+import io.github.eutro.jwasm.sexp.WatReader.ParsedNumber;
 import io.github.eutro.jwasm.tree.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,8 +16,8 @@ import java.util.*;
 /**
  * A class for converting a parsed {@link ModuleNode} into a Wat parsed s-expression.
  *
- * @see Parser
- * @see Writer
+ * @see WatParser
+ * @see WatWriter
  */
 public class Unparser {
     public static Object unparse(ModuleNode node) {
@@ -327,9 +327,9 @@ public class Unparser {
                 List<Object> insnList = new ArrayList<>();
                 insnList.add(opcode.getMnemonic());
                 if (offset != 0) {
-                    insnList.add(new Reader.MemArgPart(Reader.MemArgPart.Type.OFFSET, BigInteger.valueOf(Integer.toUnsignedLong(offset))));
+                    insnList.add(new WatReader.MemArgPart(WatReader.MemArgPart.Type.OFFSET, BigInteger.valueOf(Integer.toUnsignedLong(offset))));
                 }
-                insnList.add(new Reader.MemArgPart(Reader.MemArgPart.Type.ALIGN, BigInteger.ONE.shiftLeft(align)));
+                insnList.add(new WatReader.MemArgPart(WatReader.MemArgPart.Type.ALIGN, BigInteger.ONE.shiftLeft(align)));
                 return insnList;
             }
 

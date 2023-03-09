@@ -1,7 +1,8 @@
 package io.github.eutro.jwasm.sexp.internal;
 
-import io.github.eutro.jwasm.sexp.Reader;
-import io.github.eutro.jwasm.sexp.Reader.ParsedNumber;
+import io.github.eutro.jwasm.sexp.SrcLoc;
+import io.github.eutro.jwasm.sexp.WatReader;
+import io.github.eutro.jwasm.sexp.WatReader.ParsedNumber;
 
 import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
@@ -12,10 +13,12 @@ import java.util.regex.Matcher;
 public class Token {
     public final Type ty;
     public final String value;
+    public final SrcLoc loc;
 
-    public Token(Type ty, String value) {
+    public Token(Type ty, String value, SrcLoc loc) {
         this.ty = ty;
         this.value = value;
+        this.loc = loc;
     }
 
     public static ParsedNumber parseNumber(String num) {
@@ -50,7 +53,7 @@ public class Token {
             if (num.startsWith("0x", i)) {
                 i += 2;
                 long bits = Long.parseLong(num.substring(i), 16);
-                return new ParsedNumber(num, sign, BigInteger.valueOf(bits), null, Reader.ParsedNumber.ExpType.NAN, hasSign);
+                return new ParsedNumber(num, sign, BigInteger.valueOf(bits), null, WatReader.ParsedNumber.ExpType.NAN, hasSign);
             }
             String nanType = num.substring(i);
             switch (nanType) {
@@ -97,7 +100,7 @@ public class Token {
             }
         }
 
-        return new Reader.ParsedNumber(num, sign, mantissa, exponent, expType, hasSign);
+        return new WatReader.ParsedNumber(num, sign, mantissa, exponent, expType, hasSign);
     }
 
     public static Object parseString(String str) {
@@ -218,8 +221,8 @@ public class Token {
         }),
         T_BR_CLOSE(T_BR_OPEN.interpret),
         T_RESERVED(T_BR_OPEN.interpret),
-        T_OFFSET_EQ(Reader.MemArgPart.parseWith(Reader.MemArgPart.Type.OFFSET)),
-        T_ALIGN_EQ(Reader.MemArgPart.parseWith(Reader.MemArgPart.Type.ALIGN)),
+        T_OFFSET_EQ(WatReader.MemArgPart.parseWith(WatReader.MemArgPart.Type.OFFSET)),
+        T_ALIGN_EQ(WatReader.MemArgPart.parseWith(WatReader.MemArgPart.Type.ALIGN)),
 
         T_COMMENT_START,
         T_LINE_COMMENT,

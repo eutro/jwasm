@@ -6,7 +6,7 @@ import io.github.eutro.jwasm.ModuleReader;
 import io.github.eutro.jwasm.ValidationException;
 import io.github.eutro.jwasm.attrs.InsnAttributes;
 import io.github.eutro.jwasm.attrs.Opcode;
-import io.github.eutro.jwasm.sexp.Reader.MemArgPart;
+import io.github.eutro.jwasm.sexp.WatReader.MemArgPart;
 import io.github.eutro.jwasm.sexp.internal.ListParser;
 import io.github.eutro.jwasm.tree.*;
 import org.jetbrains.annotations.NotNull;
@@ -19,19 +19,24 @@ import java.util.*;
 import java.util.function.*;
 
 import static io.github.eutro.jwasm.Opcodes.*;
-import static io.github.eutro.jwasm.sexp.Parser.IdCtx.Field.*;
-import static io.github.eutro.jwasm.sexp.Parser.IdVal.pure;
+import static io.github.eutro.jwasm.sexp.WatParser.IdCtx.Field.*;
+import static io.github.eutro.jwasm.sexp.WatParser.IdVal.pure;
 import static io.github.eutro.jwasm.sexp.internal.ListParser.*;
 
 /**
  * A class with static methods for parsing {@link ModuleNode}s from parsed s-expressions.
  *
- * @see Reader
+ * @see WatReader
  * @see Unparser
  */
-public class Parser {
+public class WatParser {
     /**
-     * Parse a {@link ModuleNode} from a parsed s-expression as obtained from {@link Reader#readAll(CharSequence)}.
+     * The default WatParser, with no extensions enabled.
+     */
+    public static WatParser DEFAULT = new WatParser();
+
+    /**
+     * Parse a {@link ModuleNode} from a parsed s-expression as obtained from {@link WatReader#readAll(CharSequence)}.
      * <p>
      * Note that this does <b>not</b> <i>validate</i> the module, but will fail if the module is syntactically incorrect.
      *
@@ -39,7 +44,7 @@ public class Parser {
      * @return The parsed {@link ModuleNode}.
      * @throws ParseException If obj is not a syntactically valid module.
      */
-    public static ModuleNode parseModule(Object obj) throws ParseException {
+    public ModuleNode parseModule(Object obj) throws ParseException {
         return mark(obj, () -> {
             List<?> list = expectList(obj);
             ListParser lp = new ListParser(list);
@@ -81,7 +86,7 @@ public class Parser {
      * @return The parsed {@link ModuleNode}.
      * @throws ParseException If obj is not a syntactically valid module.
      */
-    public static ModuleNode parseBinaryModule(Object obj) throws ParseException {
+    public ModuleNode parseBinaryModule(Object obj) throws ParseException {
         return mark(obj, () -> {
             ListParser lp = new ListParser(expectList(obj));
             expectEq("module", lp.expect());
@@ -114,7 +119,7 @@ public class Parser {
      * @return The parsed {@link ModuleNode}.
      * @throws ParseException If obj is not a syntactically valid module.
      */
-    public static ModuleNode parseQuoteModule(Object obj) throws ParseException {
+    public ModuleNode parseQuoteModule(Object obj) throws ParseException {
         return mark(obj, () -> {
             ListParser lp = new ListParser(expectList(obj));
             expectEq("module", lp.expect());
@@ -130,7 +135,7 @@ public class Parser {
             String text = new String(baos.toByteArray(), StandardCharsets.UTF_8);
 
             Object module;
-            List<Object> read = Reader.readAll(text);
+            List<Object> read = WatReader.readAll(text);
             if (read.size() == 1
                     && read.get(0) instanceof List
                     && ((List<?>) read.get(0)).contains("module")) {
@@ -169,7 +174,7 @@ public class Parser {
         public final Object in;
 
         public ParseException(String message, Object in, Throwable cause) {
-            super(message + " in: " + Writer.writeToString(in), cause);
+            super(message + " in: " + WatWriter.writeToString(in), cause);
             this.in = in;
         }
 
@@ -189,7 +194,7 @@ public class Parser {
     }
 
     private static boolean couldBeId(Object it) {
-        return it instanceof Reader.ParsedNumber || isId(it);
+        return it instanceof WatReader.ParsedNumber || isId(it);
     }
 
     static class IdCtx {
@@ -639,8 +644,8 @@ public class Parser {
     }
 
     private static IdVal<Integer> parseIdx(IdCtx.Field field, Object o) {
-        if (o instanceof Reader.ParsedNumber) {
-            int i = ((Reader.ParsedNumber) o).toBigInt().intValueExact();
+        if (o instanceof WatReader.ParsedNumber) {
+            int i = ((WatReader.ParsedNumber) o).toBigInt().intValueExact();
             return (m, idcx) -> i;
         } else if (o instanceof String) {
             String id = parseId(o);
@@ -834,7 +839,7 @@ public class Parser {
         OPCODES.put("br_table", lp -> {
             Optional<Object> maybeLabel;
             List<IdVal<Integer>> labels = new ArrayList<>();
-            while ((maybeLabel = lp.maybeParse(Parser::couldBeId)).isPresent()) {
+            while ((maybeLabel = lp.maybeParse(WatParser::couldBeId)).isPresent()) {
                 labels.add(parseLabelIdx(maybeLabel.get()));
             }
             if (labels.size() < 1) throw new ParseException("Expected at least one lable for br_table", lp.list);
@@ -886,8 +891,8 @@ public class Parser {
         OPCODES.put("table.fill", lp -> maybeParseIdx(TABLE, lp).fmap(idx -> new PrefixTableInsnNode(TABLE_FILL, idx)));
         OPCODES.put("table.copy", lp -> maybeParseIdx(TABLE, lp).ap(maybeParseIdx(TABLE, lp), (x, y) -> new PrefixBinaryTableInsnNode(TABLE_COPY, x, y)));
         OPCODES.put("table.init", lp -> {
-            Optional<Object> firstId = lp.maybeParse(Parser::couldBeId);
-            Optional<Object> secondId = lp.maybeParse(Parser::couldBeId);
+            Optional<Object> firstId = lp.maybeParse(WatParser::couldBeId);
+            Optional<Object> secondId = lp.maybeParse(WatParser::couldBeId);
 
             IdVal<Integer> table, elem;
             if (secondId.isPresent()) {
@@ -971,7 +976,7 @@ public class Parser {
     }
 
     static byte parseLaneU8(ListParser lp) {
-        Reader.ParsedNumber num = expectClass(Reader.ParsedNumber.class, lp.expect());
+        WatReader.ParsedNumber num = expectClass(WatReader.ParsedNumber.class, lp.expect());
         if (num.hasSign || !num.isInteger()) {
             throw new ParseException("Expected natural", num,
                     new RuntimeException("malformed lane index"));
@@ -1022,10 +1027,10 @@ public class Parser {
     private static <T> T parseMemArg(int n, ListParser lp, MemArgConsumer<T> c) {
         Function<Object, BigInteger> extractValue = it -> ((MemArgPart) it).value;
         int offset = lp.maybeParse(it -> it instanceof MemArgPart && ((MemArgPart) it).type == MemArgPart.Type.OFFSET)
-                .map(extractValue.andThen(Parser::truncToU32))
+                .map(extractValue.andThen(WatParser::truncToU32))
                 .orElse(0);
         int align = lp.maybeParse(it -> it instanceof MemArgPart && ((MemArgPart) it).type == MemArgPart.Type.ALIGN)
-                .map(extractValue.andThen(Parser::truncToU32))
+                .map(extractValue.andThen(WatParser::truncToU32))
                 .map(a -> {
                     if (a == 0 || (a & (a - 1)) != 0) {
                         throw new ParseException("Align not a power of two", lp.iter.previous(),
@@ -1050,7 +1055,7 @@ public class Parser {
 
     @NotNull
     private static IdVal<Integer> maybeParseIdx(IdCtx.Field field, ListParser lp) {
-        return lp.maybeParse(Parser::couldBeId)
+        return lp.maybeParse(WatParser::couldBeId)
                 .map(it -> parseIdx(field, it))
                 .orElse((mod, idcx) -> 0);
     }
@@ -1320,7 +1325,7 @@ public class Parser {
                 () -> {
                     // tabletype (= limits reftype) starts with a number, so if it's not that we have a valtype,
                     // thus it's an elem abbrev
-                    Optional<Object> maybeValType = lp.maybeParse(it -> !(it instanceof Reader.ParsedNumber));
+                    Optional<Object> maybeValType = lp.maybeParse(it -> !(it instanceof WatReader.ParsedNumber));
                     @Nullable ModuleField maybeElem = null;
                     TableNode table;
                     if (maybeValType.isPresent()) {
@@ -1331,7 +1336,7 @@ public class Parser {
                         expectEq("elem", eLp.expect());
 
                         IdVal<ElementNode> en;
-                        if (eLp.peek().map(Parser::couldBeId).orElse(true)) {
+                        if (eLp.peek().map(WatParser::couldBeId).orElse(true)) {
                             List<IdVal<Integer>> inits = new ArrayList<>();
                             while (eLp.iter.hasNext()) {
                                 inits.add(parseIdx(FUNCTION, eLp.iter.next()));
@@ -1419,9 +1424,9 @@ public class Parser {
 
     private static Limits parseLimits(ListParser lp) {
         BigInteger min = expectBigInt(lp.expect());
-        BigInteger max = lp.maybeParse(Reader.ParsedNumber.class::isInstance)
-                .map(Reader.ParsedNumber.class::cast)
-                .map(Reader.ParsedNumber::toBigInt)
+        BigInteger max = lp.maybeParse(WatReader.ParsedNumber.class::isInstance)
+                .map(WatReader.ParsedNumber.class::cast)
+                .map(WatReader.ParsedNumber::toBigInt)
                 .orElse(null);
         return new Limits(truncToU32(min), max == null ? null : truncToU32(max));
     }
@@ -1632,7 +1637,7 @@ public class Parser {
 
         if (lp.maybeParse("func"::equals).isPresent()
                 || (tableOmitted &&
-                lp.peek().map(Parser::couldBeId).orElse(true))) {
+                lp.peek().map(WatParser::couldBeId).orElse(true))) {
             List<IdVal<Integer>> funcs = new ArrayList<>();
             while (lp.iter.hasNext()) {
                 funcs.add(parseIdx(FUNCTION, lp.iter.next()));

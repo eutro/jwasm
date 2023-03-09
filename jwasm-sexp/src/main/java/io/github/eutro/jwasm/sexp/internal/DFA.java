@@ -64,7 +64,7 @@ public class DFA {
             ve.addSuppressed(e);
             throw ve;
         }
-        return new Token(type, decoded.toString());
+        return new Token(type, decoded.toString(), pis.srcLoc());
     }
 
     public static class State {

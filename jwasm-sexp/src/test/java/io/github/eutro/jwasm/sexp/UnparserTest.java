@@ -13,12 +13,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class UnparserTest {
     Stream<DynamicTest> runTestSuite(Consumer<ModuleNode> task) {
-        return ReaderTest.runForTestSuite((name, src) -> {
-            List<Object> script = Reader.readAll(src);
+        return WatReaderTest.runForTestSuite((name, src) -> {
+            List<Object> script = WatReader.readAll(src);
 
             List<ModuleNode> modules;
             try {
-                modules = ParserTest.parseAllModules(script);
+                modules = WatParserTest.parseAllModules(script);
             } catch (Error ignored) {
                 return;
             }
@@ -36,18 +36,18 @@ public class UnparserTest {
 
     @TestFactory
     Stream<DynamicTest> unparseReparseTestSuite() {
-        return runTestSuite(module -> Parser.parseModule(Unparser.unparse(module)));
+        return runTestSuite(module -> WatParser.DEFAULT.parseModule(Unparser.unparse(module)));
     }
 
     @TestFactory
     Stream<DynamicTest> unparseWriteReparseTestSuite() {
         return runTestSuite(module -> {
             Object unparsed = Unparser.unparse(module);
-            String written = Writer.writeToString(unparsed);
+            String written = WatWriter.writeToString(unparsed);
             try {
-                List<Object> read = Reader.readAll(written);
+                List<Object> read = WatReader.readAll(written);
                 assertEquals(read.size(), 1);
-                Parser.parseModule(unparsed);
+                WatParser.DEFAULT.parseModule(unparsed);
             } catch (Throwable t) {
                 System.err.println(written);
                 throw t;

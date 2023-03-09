@@ -1,7 +1,7 @@
 package io.github.eutro.jwasm.sexp.internal;
 
-import io.github.eutro.jwasm.sexp.Parser;
-import io.github.eutro.jwasm.sexp.Reader;
+import io.github.eutro.jwasm.sexp.WatParser;
+import io.github.eutro.jwasm.sexp.WatReader;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -40,7 +40,7 @@ public class ListParser {
 
     public static <T> T expectClass(Class<T> clazz, Object obj) {
         if (!clazz.isInstance(obj)) {
-            throw new Parser.ParseException("Expected " + clazz.getSimpleName(), obj,
+            throw new WatParser.ParseException("Expected " + clazz.getSimpleName(), obj,
                     new RuntimeException("unexpected token"));
         }
         return clazz.cast(obj);
@@ -48,7 +48,7 @@ public class ListParser {
 
     public static List<?> expectList(Object obj) {
         if (!(obj instanceof List)) {
-            throw new Parser.ParseException("Expected list", obj,
+            throw new WatParser.ParseException("Expected list", obj,
                     new RuntimeException("unexpected token"));
         }
         return (List<?>) obj;
@@ -56,21 +56,21 @@ public class ListParser {
 
     public static void expectEq(Object expected, Object val) {
         if (!Objects.equals(expected, val)) {
-            throw new Parser.ParseException("expected " + expected, val);
+            throw new WatParser.ParseException("expected " + expected, val);
         }
     }
 
     public static <T> T mark(Object obj, Supplier<T> f) {
         try {
             return f.get();
-        } catch (Parser.ParseException e) {
+        } catch (WatParser.ParseException e) {
             if (e.in != obj) {
-                throw new Parser.ParseException(e, obj);
+                throw new WatParser.ParseException(e, obj);
             } else {
                 throw e;
             }
         } catch (RuntimeException e) {
-            throw new Parser.ParseException("An error occurred", obj, e);
+            throw new WatParser.ParseException("An error occurred", obj, e);
         }
     }
 
@@ -84,7 +84,7 @@ public class ListParser {
                     .onUnmappableCharacter(CodingErrorAction.REPORT)
                     .decode(ByteBuffer.wrap(bytes));
         } catch (CharacterCodingException e) {
-            throw new Parser.ParseException("Error decoding string", e,
+            throw new WatParser.ParseException("Error decoding string", e,
                     new RuntimeException("malformed UTF-8 encoding"));
         }
         return buf.toString();
@@ -127,7 +127,7 @@ public class ListParser {
                 }
                 break;
             default:
-                throw new Parser.ParseException("Unrecognised vector shape", shape);
+                throw new WatParser.ParseException("Unrecognised vector shape", shape);
         }
         return value;
     }
@@ -136,14 +136,14 @@ public class ListParser {
         BigInteger bigInt = expectBigInt(obj);
         if (bigInt.compareTo(BigInteger.ONE.shiftLeft(x - 1).negate()) < 0
                 || bigInt.compareTo(BigInteger.ONE.shiftLeft(x).subtract(BigInteger.ONE)) > 0) {
-            throw new Parser.ParseException("i" + x + " constant out of range", bigInt,
+            throw new WatParser.ParseException("i" + x + " constant out of range", bigInt,
                     new RuntimeException("constant out of range"));
         }
         return bigInt.longValue();
     }
 
     public static BigInteger expectBigInt(Object obj) {
-        return expectClass(Reader.ParsedNumber.class, obj).toBigInt();
+        return expectClass(WatReader.ParsedNumber.class, obj).toBigInt();
     }
 
     public static int parseI32(Object obj) {
@@ -160,10 +160,10 @@ public class ListParser {
 
     public static float parseF32(Object val, boolean acceptScriptNan) {
         float f;
-        if (val instanceof Reader.ParsedNumber) {
-            f = ((Reader.ParsedNumber) val).toFloat(acceptScriptNan);
+        if (val instanceof WatReader.ParsedNumber) {
+            f = ((WatReader.ParsedNumber) val).toFloat(acceptScriptNan);
         } else {
-            throw new Parser.ParseException("Expected float", val,
+            throw new WatParser.ParseException("Expected float", val,
                     val instanceof String ? new RuntimeException("unknown operator") : null);
         }
         return f;
@@ -175,17 +175,17 @@ public class ListParser {
 
     public static double parseF64(Object val, boolean acceptScriptNan) {
         double f;
-        if (val instanceof Reader.ParsedNumber) {
-            f = ((Reader.ParsedNumber) val).toDouble(acceptScriptNan);
+        if (val instanceof WatReader.ParsedNumber) {
+            f = ((WatReader.ParsedNumber) val).toDouble(acceptScriptNan);
         } else {
-            throw new Parser.ParseException("Expected double", val,
+            throw new WatParser.ParseException("Expected double", val,
                     val instanceof String ? new RuntimeException("unknown operator") : null);
         }
         return f;
     }
 
     public Object expect(String msg) {
-        if (!iter.hasNext()) throw new Parser.ParseException("Expected more terms", list,
+        if (!iter.hasNext()) throw new WatParser.ParseException("Expected more terms", list,
                 new RuntimeException(msg));
         return iter.next();
     }
@@ -209,7 +209,7 @@ public class ListParser {
 
     public void expectEnd() {
         if (iter.hasNext()) {
-            throw new Parser.ParseException("too many terms", list);
+            throw new WatParser.ParseException("too many terms", list);
         }
     }
 

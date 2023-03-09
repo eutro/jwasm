@@ -6,16 +6,14 @@ import io.github.eutro.jwasm.sexp.internal.DFA;
 import io.github.eutro.jwasm.sexp.internal.LexerDFA;
 import io.github.eutro.jwasm.sexp.internal.LineCountingPushbackByteInputStream;
 import io.github.eutro.jwasm.sexp.internal.Token;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Locale;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
@@ -23,12 +21,81 @@ import static io.github.eutro.jwasm.sexp.internal.Token.Type.T_BR_CLOSE;
 
 /**
  * A class for reading s-expressions from text.
- * These can then be {@link Parser parsed} into something more meaningful.
+ * These can then be {@link WatParser parsed} into something more meaningful.
  *
- * @see Parser
- * @see Writer
+ * @see WatParser
+ * @see WatWriter
  */
-public class Reader {
+public class WatReader<E extends Exception> {
+    private final LineCountingPushbackByteInputStream<E> stream;
+
+    /**
+     * Map from object to position for things with identity.
+     */
+    private @Nullable Map<Object, SrcLoc> sources;
+
+    /**
+     * Construct a reader over the given stream.
+     *
+     * @param stream The stream to read s-expressions from.
+     */
+    public WatReader(ByteInputStream<E> stream) {
+        this.stream = new LineCountingPushbackByteInputStream<>(stream);
+    }
+
+    /**
+     * Construct a reader from the given source character sequence.
+     *
+     * @param source The source string to read from.
+     * @return A reader over the string.
+     */
+    public static WatReader<RuntimeException> fromCharSequence(CharSequence source) {
+        return new WatReader<>(new ByteInputStream.ByteBufferByteInputStream(
+                ByteBuffer.wrap(source.toString().getBytes(StandardCharsets.UTF_8))
+        ));
+    }
+
+    /**
+     * Construct a reader from the given input stream.
+     *
+     * @param stream The source stream to read from.
+     * @return A reader over the stream.
+     */
+    public static WatReader<IOException> fromInputStream(InputStream stream) {
+        return new WatReader<>(new ByteInputStream.InputStreamByteInputStream(stream));
+    }
+
+    /**
+     * Read all s-expressions from the stream.
+     *
+     * @return The list of s-expressions parsed from the stream.
+     * @throws E If reading from the stream fails.
+     */
+    public List<Object> readAll() throws E {
+        List<Object> res = new ArrayList<>();
+        while (true) {
+            List<Token> toks = tokenise(stream);
+            if (toks.isEmpty()) break;
+            ListIterator<Token> li = toks.listIterator();
+            while (li.hasNext()) {
+                res.add(read0(li));
+            }
+        }
+        return res;
+    }
+
+    /**
+     * Read a single s-expression from the stream, if there is one.
+     *
+     * @return The s-expression, or {@link Optional#empty()} if the end of the stream has been reached.
+     * @throws E If reading from the stream fails.
+     */
+    public Optional<Object> readNext() throws E {
+        List<Token> toks = tokenise(stream);
+        if (toks.isEmpty()) return Optional.empty();
+        return Optional.of(read0(toks.listIterator()));
+    }
+
     /**
      * Read all s-expressions from a source character sequence.
      *
@@ -36,9 +103,7 @@ public class Reader {
      * @return The list of s-expressions parsed from the string.
      */
     public static List<Object> readAll(CharSequence source) {
-        return readAll(new ByteInputStream.ByteBufferByteInputStream(
-                ByteBuffer.wrap(source.toString().getBytes(StandardCharsets.UTF_8))
-        ));
+        return fromCharSequence(source).readAll();
     }
 
     /**
@@ -50,12 +115,7 @@ public class Reader {
      * @throws E If reading from the stream fails.
      */
     public static <E extends Exception> List<Object> readAll(ByteInputStream<E> stream) throws E {
-        ListIterator<Token> li = tokenise(stream).listIterator();
-        List<Object> res = new ArrayList<>();
-        while (li.hasNext()) {
-            res.add(read0(li));
-        }
-        return res;
+        return new WatReader<E>(stream).readAll();
     }
 
     /**
@@ -66,12 +126,13 @@ public class Reader {
      * @throws IOException If reading from the stream fails.
      */
     public static List<Object> readAll(InputStream stream) throws IOException {
-        return readAll(new ByteInputStream.InputStreamByteInputStream(stream));
+        return fromInputStream(stream).readAll();
     }
 
-    static Object read0(ListIterator<Token> tokens) {
-        Token nextTok = tokens.next();
-        switch (nextTok.ty) {
+    Object read0(ListIterator<Token> tokens) {
+        Object result;
+        Token firstTok = tokens.next();
+        switch (firstTok.ty) {
             case T_BR_OPEN: {
                 ArrayList<Object> ls = new ArrayList<>();
                 done:
@@ -83,13 +144,38 @@ public class Reader {
                     }
                     throw new ValidationException("Unclosed list");
                 }
-                return ls;
+                result = ls;
+                break;
             }
             case T_BR_CLOSE:
                 throw new ValidationException("Unexpected )");
             default:
-                return nextTok.interpret();
+                result = firstTok.interpret();
+                break;
         }
+        if (sources != null) {
+            sources.put(result, firstTok.loc);
+        }
+        return result;
+    }
+
+    /**
+     * Retrieve the sources map last set with {@link #setSources(Map)}, or null if it hasn't been called.
+     *
+     * @return The sources map.
+     */
+    public @Nullable Map<Object, SrcLoc> getSources() {
+        return sources;
+    }
+
+    /**
+     * Set the sources map, further {@link #readNext() reads} will associate new lists, strings and numbers
+     * with their source.
+     *
+     * @param sources The sources map.
+     */
+    public void setSources(@Nullable Map<Object, SrcLoc> sources) {
+        this.sources = sources;
     }
 
     public static class MemArgPart {
@@ -118,12 +204,13 @@ public class Reader {
 
     private static final DFA LEXER_DFA = LexerDFA.getDFA();
 
-    static <E extends Exception> List<Token> tokenise(ByteInputStream<E> is) throws E {
-        LineCountingPushbackByteInputStream<E> pis = new LineCountingPushbackByteInputStream<>(is);
+    static <E extends Exception> List<Token> tokenise(LineCountingPushbackByteInputStream<E> pis) throws E {
         List<Token> tokens = new ArrayList<>();
         Token tok;
+        int depth = 0;
+        boolean hasTok = false;
         try {
-            while (true) {
+            do {
                 tok = LEXER_DFA.readNext(pis);
                 if (tok == null) break;
                 switch (tok.ty) {
@@ -138,11 +225,19 @@ public class Reader {
                         break;
                     case T_INVALID:
                         throw new ValidationException("Illegal token: " + tok.value);
+                    case T_BR_OPEN:
+                        tokens.add(tok);
+                        hasTok = true;
+                        depth++;
+                        break;
+                    case T_BR_CLOSE:
+                        depth--;
                     default:
                         tokens.add(tok);
+                        hasTok = true;
                         break;
                 }
-            }
+            } while (!hasTok || depth > 0);
         } catch (ValidationException e) {
             throw new ValidationException("Error on line: " + pis.getLine() + ", byte: " + pis.getCol(), e);
         }
@@ -266,7 +361,7 @@ public class Reader {
         }
 
         public BigInteger toBigInt() {
-            if (!isInteger()) throw new Parser.ParseException("Expected integer", this,
+            if (!isInteger()) throw new WatParser.ParseException("Expected integer", this,
                     new RuntimeException("unexpected token"));
             return mantissa.multiply(BigInteger.valueOf(sign));
         }
@@ -279,7 +374,7 @@ public class Reader {
                 case NAN:
                     if (mantissa == null) {
                         if (nanType != null && !acceptScriptNan) {
-                            throw new Parser.ParseException(nanType + " NaN forbidden outside of scripts", this,
+                            throw new WatParser.ParseException(nanType + " NaN forbidden outside of scripts", this,
                                     new RuntimeException("unexpected token"));
                         }
                         v = (nanType == null ? NanType.CANONICAL : nanType).getFloat();
@@ -291,7 +386,7 @@ public class Reader {
                         int FLOAT_SIGNIF = 23;
                         if (mantissa.equals(BigInteger.ZERO)
                                 || mantissa.compareTo(BigInteger.valueOf(1L << FLOAT_SIGNIF)) >= 0) {
-                            throw new Parser.ParseException("Value out of range for float NaN payload", this,
+                            throw new WatParser.ParseException("Value out of range for float NaN payload", this,
                                     new RuntimeException("constant out of range"));
                         }
                         return Float.intBitsToFloat(((sign < 0
@@ -310,7 +405,7 @@ public class Reader {
                     throw new AssertionError();
             }
             if (Float.isInfinite(v)) {
-                throw new Parser.ParseException("Value out of range for float", this,
+                throw new WatParser.ParseException("Value out of range for float", this,
                         new RuntimeException("constant out of range"));
             }
             return v;
@@ -324,7 +419,7 @@ public class Reader {
                 case NAN:
                     if (mantissa == null) {
                         if (nanType != null && !acceptScriptNan) {
-                            throw new Parser.ParseException(nanType + " NaN forbidden outside of scripts", this,
+                            throw new WatParser.ParseException(nanType + " NaN forbidden outside of scripts", this,
                                     new RuntimeException("unexpected token"));
                         }
                         v = (nanType == null ? NanType.CANONICAL : nanType).getDouble();
@@ -336,7 +431,7 @@ public class Reader {
                         int DOUBLE_SIGNIF = 52;
                         if (mantissa.equals(BigInteger.ZERO)
                                 || mantissa.compareTo(BigInteger.valueOf(1L << DOUBLE_SIGNIF)) >= 0) {
-                            throw new Parser.ParseException("Value out of range for double NaN payload", this,
+                            throw new WatParser.ParseException("Value out of range for double NaN payload", this,
                                     new RuntimeException("constant out of range"));
                         }
                         return Double.longBitsToDouble((sign < 0
@@ -355,7 +450,7 @@ public class Reader {
                     throw new AssertionError();
             }
             if (Double.isInfinite(v)) {
-                throw new Parser.ParseException("Value out of range for double", this,
+                throw new WatParser.ParseException("Value out of range for double", this,
                         new RuntimeException("constant out of range"));
             }
             return v;

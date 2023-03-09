@@ -1,6 +1,7 @@
 package io.github.eutro.jwasm.sexp;
 
 import io.github.eutro.jwasm.ByteInputStream;
+import io.github.eutro.jwasm.sexp.internal.LineCountingPushbackByteInputStream;
 import io.github.eutro.jwasm.sexp.internal.Token;
 import io.github.eutro.jwasm.test.ModuleTestBase;
 import org.junit.jupiter.api.DynamicTest;
@@ -26,18 +27,18 @@ import static io.github.eutro.jwasm.sexp.internal.Token.Type;
 import static io.github.eutro.jwasm.sexp.internal.Token.writeUTF8CodePoint;
 import static org.junit.jupiter.api.Assertions.*;
 
-class ReaderTest {
+class WatReaderTest {
     @Test
     void testLex() {
         assertEquals(
                 Arrays.asList(
-                        new Token(Type.T_BR_OPEN, "("),
-                        new Token(Type.T_KEYWORD, "ab"),
-                        new Token(Type.T_KEYWORD, "cd"),
-                        new Token(Type.T_BR_CLOSE, ")")
+                        new Token(Type.T_BR_OPEN, "(", null),
+                        new Token(Type.T_KEYWORD, "ab", null),
+                        new Token(Type.T_KEYWORD, "cd", null),
+                        new Token(Type.T_BR_CLOSE, ")", null)
                 ),
-                Reader.tokenise(new ByteInputStream.ByteBufferByteInputStream(
-                        ByteBuffer.wrap("(ab cd)".getBytes(StandardCharsets.UTF_8))))
+                WatReader.tokenise(new LineCountingPushbackByteInputStream<>(new ByteInputStream.ByteBufferByteInputStream(
+                        ByteBuffer.wrap("(ab cd)".getBytes(StandardCharsets.UTF_8)))))
         );
     }
 
@@ -47,7 +48,7 @@ class ReaderTest {
                 Collections.singletonList(
                         Arrays.asList("ab", "cd")
                 ),
-                Reader.readAll("(ab cd)")
+                WatReader.readAll("(ab cd)")
         );
     }
 
@@ -55,7 +56,7 @@ class ReaderTest {
     void testStrings() {
         assertArrayEquals(
                 new byte[]{0, 'a', 's', 'm', '\n', 'a'},
-                (byte[]) Reader.readAll("\"\\00asm\\na\"").get(0)
+                (byte[]) WatReader.readAll("\"\\00asm\\na\"").get(0)
         );
     }
 
@@ -63,10 +64,10 @@ class ReaderTest {
     void testHexInts() {
         assertEquals(
                 Arrays.asList(BigInteger.valueOf(0x1), BigInteger.valueOf(0x2)),
-                Reader.readAll("0x1 0x2")
+                WatReader.readAll("0x1 0x2")
                         .stream()
-                        .map(Reader.ParsedNumber.class::cast)
-                        .map(Reader.ParsedNumber::toBigInt)
+                        .map(WatReader.ParsedNumber.class::cast)
+                        .map(WatReader.ParsedNumber::toBigInt)
                         .collect(Collectors.toList())
         );
     }
@@ -75,9 +76,9 @@ class ReaderTest {
     void testHexFloats() {
         assertEquals(
                 Collections.singletonList(0xa0ff + (double) 0xf141a59aL / 0x100000000L),
-                Reader.readAll("0xa0_ff.f141_a59a")
+                WatReader.readAll("0xa0_ff.f141_a59a")
                         .stream()
-                        .map(it -> ((Reader.ParsedNumber) it).toDouble(false))
+                        .map(it -> ((WatReader.ParsedNumber) it).toDouble(false))
                         .collect(Collectors.toList())
         );
     }
@@ -89,10 +90,10 @@ class ReaderTest {
                         BigInteger.valueOf(-0x80000001L),
                         BigInteger.valueOf(-2147483649L)
                 ),
-                Reader.readAll("-0x80000001 -2147483649")
+                WatReader.readAll("-0x80000001 -2147483649")
                         .stream()
-                        .map(Reader.ParsedNumber.class::cast)
-                        .map(Reader.ParsedNumber::toBigInt)
+                        .map(WatReader.ParsedNumber.class::cast)
+                        .map(WatReader.ParsedNumber::toBigInt)
                         .collect(Collectors.toList())
         );
     }
@@ -104,10 +105,10 @@ class ReaderTest {
                         new BigInteger("18446744073709551616"),
                         new BigInteger("-9223372036854775809")
                 ),
-                Reader.readAll("18446744073709551616 -9223372036854775809")
+                WatReader.readAll("18446744073709551616 -9223372036854775809")
                         .stream()
-                        .map(Reader.ParsedNumber.class::cast)
-                        .map(Reader.ParsedNumber::toBigInt)
+                        .map(WatReader.ParsedNumber.class::cast)
+                        .map(WatReader.ParsedNumber::toBigInt)
                         .collect(Collectors.toList())
         );
     }
@@ -120,9 +121,9 @@ class ReaderTest {
                         0123456789e+019D,
                         0123456789e-019D
                 ),
-                Reader.readAll("0123456789e019 0123456789e+019 0123456789e-019")
+                WatReader.readAll("0123456789e019 0123456789e+019 0123456789e-019")
                         .stream()
-                        .map(it -> ((Reader.ParsedNumber) it).toDouble(false))
+                        .map(it -> ((WatReader.ParsedNumber) it).toDouble(false))
                         .collect(Collectors.toList())
         );
     }
@@ -138,9 +139,9 @@ class ReaderTest {
                         0x7FF4_0000_0000_0000L,
                         0xFFF4_0000_0000_0000L
                 ),
-                Reader.readAll("inf -inf nan -nan nan:0x4000000000000 -nan:0x4000000000000")
+                WatReader.readAll("inf -inf nan -nan nan:0x4000000000000 -nan:0x4000000000000")
                         .stream()
-                        .map(it -> Double.doubleToRawLongBits(((Reader.ParsedNumber) it).doubleValue()))
+                        .map(it -> Double.doubleToRawLongBits(((WatReader.ParsedNumber) it).doubleValue()))
                         .collect(Collectors.toList())
         );
     }
@@ -156,9 +157,9 @@ class ReaderTest {
                         0x7FA0_0000,
                         0xFFA0_0000
                 ),
-                Reader.readAll("inf -inf nan -nan nan:0x200000 -nan:0x200000")
+                WatReader.readAll("inf -inf nan -nan nan:0x200000 -nan:0x200000")
                         .stream()
-                        .map(it -> Float.floatToRawIntBits(((Reader.ParsedNumber) it).floatValue()))
+                        .map(it -> Float.floatToRawIntBits(((WatReader.ParsedNumber) it).floatValue()))
                         .collect(Collectors.toList())
         );
     }
@@ -170,9 +171,9 @@ class ReaderTest {
                         3.3f,
                         34.8f
                 ),
-                Reader.readAll("3.3 34.8")
+                WatReader.readAll("3.3 34.8")
                         .stream()
-                        .map(it -> ((Reader.ParsedNumber) it).floatValue())
+                        .map(it -> ((WatReader.ParsedNumber) it).floatValue())
                         .collect(Collectors.toList())
         );
     }
@@ -181,9 +182,9 @@ class ReaderTest {
     void testDoubleSmallRounding() {
         assertEquals(
                 Collections.singletonList(-0x0.0000000000001p-1022),
-                Reader.readAll("-0x0.0000000000001p-1022")
+                WatReader.readAll("-0x0.0000000000001p-1022")
                         .stream()
-                        .map(it -> ((Reader.ParsedNumber) it).doubleValue())
+                        .map(it -> ((WatReader.ParsedNumber) it).doubleValue())
                         .collect(Collectors.toList())
         );
     }
@@ -192,33 +193,33 @@ class ReaderTest {
     void testAnnoyingFloats() {
         assertEquals(
                 Arrays.asList(1.1754944e-38f, 0x1.921fb6p+2f),
-                Reader.readAll("1.1754944e-38 0x1.921fb6p+2")
+                WatReader.readAll("1.1754944e-38 0x1.921fb6p+2")
                         .stream()
-                        .map(it -> ((Reader.ParsedNumber) it).floatValue())
+                        .map(it -> ((WatReader.ParsedNumber) it).floatValue())
                         .collect(Collectors.toList())
         );
     }
 
     @Test
     void testHexNanUnderscore() {
-        Object val = Reader.readAll("nan:0x80_0000").get(0);
-        assertEquals(Reader.ParsedNumber.class, val.getClass());
+        Object val = WatReader.readAll("nan:0x80_0000").get(0);
+        assertEquals(WatReader.ParsedNumber.class, val.getClass());
         assertThrows(RuntimeException.class, () ->
-                ((Reader.ParsedNumber) val).toFloat(false));
+                ((WatReader.ParsedNumber) val).toFloat(false));
     }
 
     @Test
     void testRange() {
         assertEquals(
                 Collections.singletonList(+0x1.fffffefffffffffffp127f),
-                Reader.readAll("+0x1.fffffefffffffffffp127")
+                WatReader.readAll("+0x1.fffffefffffffffffp127")
                 .stream()
-                .map(it -> ((Reader.ParsedNumber) it).floatValue())
+                .map(it -> ((WatReader.ParsedNumber) it).floatValue())
                 .collect(Collectors.toList()));
-        assertThrows(RuntimeException.class, () -> Reader
+        assertThrows(RuntimeException.class, () -> WatReader
                 .readAll("0x1p1024 -0x1p1024 0x1.fffffffffffff8p1023 -0x1.fffffffffffff8p1023")
                 .stream()
-                .map(it -> ((Reader.ParsedNumber) it).doubleValue())
+                .map(it -> ((WatReader.ParsedNumber) it).doubleValue())
                 .forEach(it -> {}));
     }
 
@@ -242,7 +243,7 @@ class ReaderTest {
 
     @TestFactory
     Stream<DynamicTest> parseTestSuite() {
-        return runForTestSuite((name, src) -> Reader.readAll(src));
+        return runForTestSuite((name, src) -> WatReader.readAll(src));
     }
 
     @Test

@@ -17,7 +17,7 @@ import static io.github.eutro.jwasm.sexp.ErrorAlts.assertFailure;
 public class WastTest {
     @TestFactory
     Stream<DynamicTest> testWast() {
-        return ReaderTest.runForTestSuite((name, source) -> {
+        return WatReaderTest.runForTestSuite((name, source) -> {
             WastReader reader = WastReader.fromSource(source);
             Assertions.assertDoesNotThrow(() -> reader.accept(new WastVisitor() {
                 ModuleNode lastModule;
@@ -26,17 +26,17 @@ public class WastTest {
                     return new WastModuleVisitor() {
                         @Override
                         public void visitWatModule(Object module) {
-                            lastModule = Parser.parseModule(module);
+                            lastModule = WatParser.DEFAULT.parseModule(module);
                         }
 
                         @Override
                         public void visitBinaryModule(Object module) {
-                            lastModule = Parser.parseBinaryModule(module);
+                            lastModule = WatParser.DEFAULT.parseBinaryModule(module);
                         }
 
                         @Override
                         public void visitQuoteModule(Object module) {
-                            lastModule = Parser.parseQuoteModule(module);
+                            lastModule = WatParser.DEFAULT.parseQuoteModule(module);
                         }
                     };
                 }

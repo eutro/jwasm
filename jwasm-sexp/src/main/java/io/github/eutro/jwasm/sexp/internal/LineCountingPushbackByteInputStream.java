@@ -1,6 +1,7 @@
 package io.github.eutro.jwasm.sexp.internal;
 
 import io.github.eutro.jwasm.ByteInputStream;
+import io.github.eutro.jwasm.sexp.SrcLoc;
 
 public class LineCountingPushbackByteInputStream<E extends Exception> {
     private final ByteInputStream<E> bis;
@@ -19,6 +20,10 @@ public class LineCountingPushbackByteInputStream<E extends Exception> {
 
     public LineCountingPushbackByteInputStream(ByteInputStream<E> bis) {
         this.bis = bis;
+    }
+
+    public long position() {
+        return bis.position();
     }
 
     public int get() throws E {
@@ -48,5 +53,9 @@ public class LineCountingPushbackByteInputStream<E extends Exception> {
         }
         hasPushback = true;
         pushback = b;
+    }
+
+    public SrcLoc srcLoc() {
+        return new SrcLoc(position(), line, col);
     }
 }
