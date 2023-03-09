@@ -47,6 +47,7 @@ public class CallIndirectInsnNode extends AbstractInsnNode {
      */
     @Override
     public void accept(ExprVisitor ev) {
+        ev.visitPc(pc);
         ev.visitCallIndirectInsn(table, type);
     }
 }

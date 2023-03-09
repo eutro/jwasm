@@ -12,6 +12,7 @@ public class VectorConstOrShuffleInsnNode extends VectorInsnNode {
 
     @Override
     public void accept(ExprVisitor ev) {
+        ev.visitPc(pc);
         ev.visitVectorConstOrShuffleInsn(intOpcode, bytes);
     }
 }

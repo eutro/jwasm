@@ -519,11 +519,13 @@ public class ModuleReader<E extends Exception> {
         byte opcode;
         DataUse use = DataUse.NO_USE;
         while (true) {
+            long pc = bb.position();
             int c = bb.get();
             if (c == -1) {
                 throw new ValidationException("Expected more instructions",
                         new RuntimeException("unexpected end of section or function"));
             }
+            ev.visitPc(pc);
             opcode = (byte) c;
             switch (opcode) {
                 case Opcodes.BLOCK:

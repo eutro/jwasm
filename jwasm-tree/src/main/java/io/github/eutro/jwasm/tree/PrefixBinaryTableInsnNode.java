@@ -47,6 +47,7 @@ public class PrefixBinaryTableInsnNode extends PrefixInsnNode {
      */
     @Override
     public void accept(ExprVisitor ev) {
+        ev.visitPc(pc);
         ev.visitPrefixBinaryTableInsn(intOpcode, firstIndex, secondIndex);
     }
 }

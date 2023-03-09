@@ -12,6 +12,7 @@ public class VectorLaneInsnNode extends VectorInsnNode {
 
     @Override
     public void accept(ExprVisitor ev) {
+        ev.visitPc(pc);
         ev.visitVectorLaneInsn(intOpcode, lane);
     }
 }

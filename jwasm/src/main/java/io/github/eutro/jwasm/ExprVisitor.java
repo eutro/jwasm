@@ -8,11 +8,11 @@ import org.jetbrains.annotations.Nullable;
  * <p>
  * Methods are expected to be called in the order:
  * <p>
- * ( {@code visitInsn} | {@code visitPrefixInsn} | {@code visitConstInsn} | {@code visitNullInsn} |
+ * ( {@code visitPc} ( {@code visitInsn} | {@code visitPrefixInsn} | {@code visitConstInsn} | {@code visitNullInsn} |
  * {@code visitFuncInsn} | {@code visitSelectInsn} | {@code visitVariableInsn} | {@code visitTableInsn} |
  * {@code visitPrefixTableInsn} | {@code visitPrefixBinaryTableInsn} | {@code visitMemInsn} |
  * {@code visitIndexedMemInsn} | {@code visitBlockInsn} | {@code visitElseInsn} | {@code visitEndInsn} |
- * {@code visitBreakInsn} | {@code visitTableBreakInsn} | {@code visitCallInsn} | {@code visitCallIndirectInsn} )*
+ * {@code visitBreakInsn} | {@code visitTableBreakInsn} | {@code visitCallInsn} | {@code visitCallIndirectInsn} ) )*
  * {@code visitEnd}
  */
 public class ExprVisitor extends BaseVisitor<ExprVisitor> {
@@ -29,6 +29,15 @@ public class ExprVisitor extends BaseVisitor<ExprVisitor> {
      */
     public ExprVisitor(@Nullable ExprVisitor dl) {
         super(dl);
+    }
+
+    /**
+     * Visit the program counter, the offset in bytes from the start of the binary module.
+     *
+     * @param pc The offset in bytes from the start of the binary module, or -1 if unknown.
+     */
+    public void visitPc(long pc) {
+        if (dl != null) dl.visitPc(pc);
     }
 
     /**

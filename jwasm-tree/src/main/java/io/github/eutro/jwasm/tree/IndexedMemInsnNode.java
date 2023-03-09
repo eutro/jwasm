@@ -37,6 +37,7 @@ public class IndexedMemInsnNode extends PrefixInsnNode {
      */
     @Override
     public void accept(ExprVisitor ev) {
+        ev.visitPc(pc);
         ev.visitIndexedMemInsn(intOpcode, index);
     }
 }

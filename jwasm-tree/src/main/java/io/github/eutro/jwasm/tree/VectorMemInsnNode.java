@@ -14,6 +14,7 @@ public class VectorMemInsnNode extends VectorInsnNode {
 
     @Override
     public void accept(ExprVisitor ev) {
+        ev.visitPc(pc);
         ev.visitVectorMemInsn(intOpcode, align, offset);
     }
 }

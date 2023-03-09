@@ -39,6 +39,7 @@ public class MemInsnNode extends AbstractInsnNode {
      */
     @Override
     public void accept(ExprVisitor ev) {
+        ev.visitPc(pc);
         ev.visitMemInsn(opcode, align, offset);
     }
 }

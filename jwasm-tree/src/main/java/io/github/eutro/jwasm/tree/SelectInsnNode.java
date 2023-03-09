@@ -36,6 +36,7 @@ public class SelectInsnNode extends AbstractInsnNode {
      */
     @Override
     public void accept(ExprVisitor ev) {
+        ev.visitPc(pc);
         ev.visitSelectInsn(type);
     }
 }

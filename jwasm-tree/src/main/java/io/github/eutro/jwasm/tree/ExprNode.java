@@ -18,6 +18,11 @@ public class ExprNode extends ExprVisitor implements Iterable<AbstractInsnNode> 
     public @Nullable List<AbstractInsnNode> instructions;
 
     /**
+     * The argument to the last call to {@link #visitPc(long)}.
+     */
+    private long lastPc = -1;
+
+    /**
      * Construct a visitor with no delegate.
      */
     public ExprNode() {
@@ -46,153 +51,161 @@ public class ExprNode extends ExprVisitor implements Iterable<AbstractInsnNode> 
         ev.visitEnd();
     }
 
-    private List<AbstractInsnNode> insns() {
+    private void insn(AbstractInsnNode insn) {
         if (instructions == null) instructions = new ArrayList<>();
-        return instructions;
+        insn.pc = lastPc;
+        lastPc = -1;
+        instructions.add(insn);
+    }
+
+    @Override
+    public void visitPc(long pc) {
+        super.visitPc(pc);
+        lastPc = pc;
     }
 
     @Override
     public void visitInsn(byte opcode) {
         super.visitInsn(opcode);
-        insns().add(new InsnNode(opcode));
+        insn(new InsnNode(opcode));
     }
 
     @Override
     public void visitPrefixInsn(int opcode) {
         super.visitPrefixInsn(opcode);
-        insns().add(new PrefixInsnNode(opcode));
+        insn(new PrefixInsnNode(opcode));
     }
 
     @Override
     public void visitConstInsn(Object v) {
         super.visitConstInsn(v);
-        insns().add(new ConstInsnNode(v));
+        insn(new ConstInsnNode(v));
     }
 
     @Override
     public void visitNullInsn(byte type) {
         super.visitNullInsn(type);
-        insns().add(new NullInsnNode(type));
+        insn(new NullInsnNode(type));
     }
 
     @Override
     public void visitFuncRefInsn(int function) {
         super.visitFuncRefInsn(function);
-        insns().add(new FuncRefInsnNode(function));
+        insn(new FuncRefInsnNode(function));
     }
 
     @Override
     public void visitSelectInsn(byte[] type) {
         super.visitSelectInsn(type);
-        insns().add(new SelectInsnNode(type));
+        insn(new SelectInsnNode(type));
     }
 
     @Override
     public void visitVariableInsn(byte opcode, int variable) {
         super.visitVariableInsn(opcode, variable);
-        insns().add(new VariableInsnNode(opcode, variable));
+        insn(new VariableInsnNode(opcode, variable));
     }
 
     @Override
     public void visitTableInsn(byte opcode, int table) {
         super.visitTableInsn(opcode, table);
-        insns().add(new TableInsnNode(opcode, table));
+        insn(new TableInsnNode(opcode, table));
     }
 
     @Override
     public void visitPrefixTableInsn(int opcode, int table) {
         super.visitPrefixTableInsn(opcode, table);
-        insns().add(new PrefixTableInsnNode(opcode, table));
+        insn(new PrefixTableInsnNode(opcode, table));
     }
 
     @Override
     public void visitPrefixBinaryTableInsn(int opcode, int firstIndex, int secondIndex) {
         super.visitPrefixBinaryTableInsn(opcode, firstIndex, secondIndex);
-        insns().add(new PrefixBinaryTableInsnNode(opcode, firstIndex, secondIndex));
+        insn(new PrefixBinaryTableInsnNode(opcode, firstIndex, secondIndex));
     }
 
     @Override
     public void visitMemInsn(byte opcode, int align, int offset) {
         super.visitMemInsn(opcode, align, offset);
-        insns().add(new MemInsnNode(opcode, align, offset));
+        insn(new MemInsnNode(opcode, align, offset));
     }
 
     @Override
     public void visitIndexedMemInsn(int opcode, int index) {
         super.visitIndexedMemInsn(opcode, index);
-        insns().add(new IndexedMemInsnNode(opcode, index));
+        insn(new IndexedMemInsnNode(opcode, index));
     }
 
     @Override
     public void visitBlockInsn(byte opcode, BlockType blockType) {
         super.visitBlockInsn(opcode, blockType);
-        insns().add(new BlockInsnNode(opcode, blockType));
+        insn(new BlockInsnNode(opcode, blockType));
     }
 
     @Override
     public void visitElseInsn() {
         super.visitElseInsn();
-        insns().add(new ElseInsnNode());
+        insn(new ElseInsnNode());
     }
 
     @Override
     public void visitEndInsn() {
         super.visitEndInsn();
-        insns().add(new EndInsnNode());
+        insn(new EndInsnNode());
     }
 
     @Override
     public void visitBreakInsn(byte opcode, int label) {
         super.visitBreakInsn(opcode, label);
-        insns().add(new BreakInsnNode(opcode, label));
+        insn(new BreakInsnNode(opcode, label));
     }
 
     @Override
     public void visitTableBreakInsn(int[] labels, int defaultLabel) {
         super.visitTableBreakInsn(labels, defaultLabel);
-        insns().add(new TableBreakInsnNode(labels, defaultLabel));
+        insn(new TableBreakInsnNode(labels, defaultLabel));
     }
 
     @Override
     public void visitCallInsn(int function) {
         super.visitCallInsn(function);
-        insns().add(new CallInsnNode(function));
+        insn(new CallInsnNode(function));
     }
 
     @Override
     public void visitCallIndirectInsn(int table, int type) {
         super.visitCallIndirectInsn(table, type);
-        insns().add(new CallIndirectInsnNode(table, type));
+        insn(new CallIndirectInsnNode(table, type));
     }
 
     @Override
     public void visitVectorInsn(int opcode) {
         super.visitVectorInsn(opcode);
-        insns().add(new VectorInsnNode(opcode));
+        insn(new VectorInsnNode(opcode));
     }
 
     @Override
     public void visitVectorMemInsn(int opcode, int align, int offset) {
         super.visitVectorMemInsn(opcode, align, offset);
-        insns().add(new VectorMemInsnNode(opcode, align, offset));
+        insn(new VectorMemInsnNode(opcode, align, offset));
     }
 
     @Override
     public void visitVectorMemLaneInsn(int opcode, int align, int offset, byte lane) {
         super.visitVectorMemLaneInsn(opcode, align, offset, lane);
-        insns().add(new VectorMemLaneInsnNode(opcode, align, offset, lane));
+        insn(new VectorMemLaneInsnNode(opcode, align, offset, lane));
     }
 
     @Override
     public void visitVectorConstOrShuffleInsn(int opcode, byte[] bytes) {
         super.visitVectorConstOrShuffleInsn(opcode, bytes);
-        insns().add(new VectorConstOrShuffleInsnNode(opcode, bytes));
+        insn(new VectorConstOrShuffleInsnNode(opcode, bytes));
     }
 
     @Override
     public void visitVectorLaneInsn(int opcode, byte lane) {
         super.visitVectorLaneInsn(opcode, lane);
-        insns().add(new VectorLaneInsnNode(opcode, lane));
+        insn(new VectorLaneInsnNode(opcode, lane));
     }
 
     @NotNull

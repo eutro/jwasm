@@ -51,6 +51,7 @@ public class ConstInsnNode extends AbstractInsnNode {
      */
     @Override
     public void accept(ExprVisitor ev) {
+        ev.visitPc(pc);
         ev.visitConstInsn(value);
     }
 }

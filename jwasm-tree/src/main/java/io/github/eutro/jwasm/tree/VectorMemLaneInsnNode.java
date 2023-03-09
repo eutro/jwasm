@@ -16,6 +16,7 @@ public class VectorMemLaneInsnNode extends VectorInsnNode {
 
     @Override
     public void accept(ExprVisitor ev) {
+        ev.visitPc(pc);
         ev.visitVectorMemLaneInsn(intOpcode, align, offset, lane);
     }
 }

@@ -34,6 +34,7 @@ public class PrefixInsnNode extends AbstractInsnNode {
      */
     @Override
     public void accept(ExprVisitor ev) {
+        ev.visitPc(pc);
         ev.visitPrefixInsn(intOpcode);
     }
 }

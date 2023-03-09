@@ -26,6 +26,13 @@ public interface ByteInputStream<E extends Exception> {
     int get() throws E;
 
     /**
+     * Get the position in bytes of the underlying stream.
+     *
+     * @return The position.
+     */
+    long position();
+
+    /**
      * Get bytes in bulk from the stream.
      * <p>
      * Defaults to repeatedly getting bytes with {@link #get()}.
@@ -491,6 +498,14 @@ public interface ByteInputStream<E extends Exception> {
          * {@inheritDoc}
          */
         @Override
+        public long position() {
+            return source.position();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public int get(byte[] buf, int offset, int len) throws E {
             if (len == 0) return 0;
             int remaining = length - gotten;
@@ -552,6 +567,14 @@ public interface ByteInputStream<E extends Exception> {
          * {@inheritDoc}
          */
         @Override
+        public long position() {
+            return bb.position();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
         public int get(byte[] buf, int offset, int len) {
             if (len == 0) return 0;
             int toGet = Math.min(len, bb.remaining());
@@ -581,6 +604,11 @@ public interface ByteInputStream<E extends Exception> {
         private final InputStream is;
 
         /**
+         * The number of bytes that have been read from the stream.
+         */
+        private long position = 0;
+
+        /**
          * Construct a {@link InputStreamByteInputStream} from an input stream.
          *
          * @param is The {@link InputStream} to read from.
@@ -594,7 +622,14 @@ public interface ByteInputStream<E extends Exception> {
          */
         @Override
         public int get() throws IOException {
-            return is.read();
+            int c = is.read();
+            if (c != -1) position++;
+            return c;
+        }
+
+        @Override
+        public long position() {
+            return position;
         }
 
         /**
@@ -605,12 +640,14 @@ public interface ByteInputStream<E extends Exception> {
             int i = 0;
             while (true) {
                 int read = is.read(buf, offset, len);
-                if (read == -1) return i;
+                if (read == -1) break;
                 i += read;
-                if (read == len) return i;
+                if (read == len) break;
                 offset += read;
                 len -= read;
             }
+            position += i;
+            return i;
         }
 
         /**
@@ -619,6 +656,7 @@ public interface ByteInputStream<E extends Exception> {
         @Override
         public int skip(int count) throws IOException {
             int skipped = (int) is.skip(count);
+            position += skipped;
             if (skipped < count) {
                 while (get() != -1) skipped++;
             }

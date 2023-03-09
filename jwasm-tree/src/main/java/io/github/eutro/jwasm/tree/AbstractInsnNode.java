@@ -10,6 +10,11 @@ import io.github.eutro.jwasm.ExprVisitor;
  */
 public abstract class AbstractInsnNode {
     /**
+     * The offset in the module binary of the first byte of the instruction, or -1 if unknown.
+     */
+    public long pc = -1;
+
+    /**
      * The opcode of this instruction.
      */
     public final byte opcode;
