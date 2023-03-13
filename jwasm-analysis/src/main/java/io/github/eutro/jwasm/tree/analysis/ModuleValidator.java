@@ -19,29 +19,37 @@ public class ModuleValidator extends ModuleVisitor {
     @NotNull
     private final ModuleNode module;
 
+    /**
+     * Construct a module validator with the given delegate.
+     *
+     * @param dl The delegate.
+     */
     public ModuleValidator(@Nullable ModuleVisitor dl) {
         super(new ModuleNode(dl));
         assert this.dl instanceof ModuleNode;
         module = (ModuleNode) this.dl;
     }
 
+    /**
+     * Construct a module validator with the no delegate.
+     */
     public ModuleValidator() {
         this(null);
     }
 
     @Contract("false, _, _ -> fail")
-    public static void assertMsg(boolean cond, String fmt, Object... args) {
+    static void assertMsg(boolean cond, String fmt, Object... args) {
         if (!cond) {
             throw new ValidationException(String.format(fmt, args), null);
         }
     }
 
-    public static <T> T assertExists(List<T> list, int index, String name) {
+    static <T> T assertExists(List<T> list, int index, String name) {
         assertExists(list.size(), index, name);
         return list.get(index);
     }
 
-    public static void assertExists(int list, int index, String name) {
+    static void assertExists(int list, int index, String name) {
         if (list > index) {
             return;
         }
@@ -50,7 +58,7 @@ public class ModuleValidator extends ModuleVisitor {
     }
 
     @Contract("false, _, _, _ -> fail")
-    public static void assertMsg1(boolean cond, String msg, String fmt, Object... args) {
+    static void assertMsg1(boolean cond, String msg, String fmt, Object... args) {
         if (!cond) {
             throw new ValidationException(String.format(fmt, args),
                     new RuntimeException(msg));

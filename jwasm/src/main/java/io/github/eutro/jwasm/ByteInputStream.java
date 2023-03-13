@@ -369,6 +369,12 @@ public interface ByteInputStream<E extends Exception> {
         return decodeName(getByteArray());
     }
 
+    /**
+     * Decode UTF-8 bytes to a string, throwing a validation exception if invalid.
+     *
+     * @param bytes The bytes.
+     * @return The string.
+     */
     static String decodeName(byte[] bytes) {
         try {
             return StandardCharsets.UTF_8

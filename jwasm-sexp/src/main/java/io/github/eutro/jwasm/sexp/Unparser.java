@@ -20,6 +20,12 @@ import java.util.*;
  * @see WatWriter
  */
 public class Unparser {
+    /**
+     * Convert a module node into an unparsed representation of it.
+     *
+     * @param node The module.
+     * @return The unparsed representation.
+     */
     public static Object unparse(ModuleNode node) {
         List<Object> moduleList = new ArrayList<>();
         moduleList.add("module");
@@ -458,6 +464,12 @@ public class Unparser {
                 : Arrays.asList(ParsedNumber.of(limits.min), ParsedNumber.of(limits.max));
     }
 
+    /**
+     * Get a string name for a type, throwing an exception if it is invalid.
+     *
+     * @param type The type.
+     * @return The name.
+     */
     public static String unparseType(byte type) {
         switch (type) {
             case Opcodes.I32:

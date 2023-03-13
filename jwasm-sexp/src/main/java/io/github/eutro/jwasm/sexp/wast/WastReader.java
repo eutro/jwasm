@@ -16,6 +16,11 @@ import java.util.function.Consumer;
 
 import static io.github.eutro.jwasm.sexp.internal.ListParser.*;
 
+/**
+ * A reader for the WebAssembly spec interpreter
+ * <a href="https://github.com/WebAssembly/spec/blob/main/interpreter/README.md#scripts">script
+ * format</a>.
+ */
 public class WastReader {
     public interface Checkable {
         boolean check(Object other);
@@ -100,6 +105,11 @@ public class WastReader {
         this.sexps = sexps;
     }
 
+    /**
+     * Visit a {@link WastVisitor} with the statements in this script.
+     *
+     * @param wv The visitor.
+     */
     public void accept(WastVisitor wv) {
         for (Object sexp : sexps) {
             ListParser lp = new ListParser(expectList(sexp));
@@ -257,18 +267,45 @@ public class WastReader {
         }
     }
 
+    /**
+     * Create a {@link WastReader} from a list of {@link WatParser parsed} s-expressions.
+     *
+     * @param sexps The s-expressions.
+     * @return The reader.
+     */
     public static WastReader fromSexps(List<Object> sexps) {
         return new WastReader(sexps);
     }
 
+    /**
+     * Create a {@link WastReader} from a source string.
+     *
+     * @param source The source string.
+     * @return The reader.
+     */
     public static WastReader fromSource(CharSequence source) {
         return fromSexps(WatReader.readAll(source));
     }
 
+    /**
+     * Create a {@link WastReader} from a source stream.
+     *
+     * @param stream The source stream.
+     * @param <E> The type of exception the stream throws.
+     * @return The reader.
+     * @throws E If reading the stream fails.
+     */
     public static <E extends Exception> WastReader fromSource(ByteInputStream<E> stream) throws E {
         return fromSexps(WatReader.readAll(stream));
     }
 
+    /**
+     * Create a {@link WastReader} from a source stream.
+     *
+     * @param stream The source stream.
+     * @return The reader.
+     * @throws IOException If reading the stream fails.
+     */
     public static WastReader fromSource(InputStream stream) throws IOException {
         return fromSource(new ByteInputStream.InputStreamByteInputStream(stream));
     }

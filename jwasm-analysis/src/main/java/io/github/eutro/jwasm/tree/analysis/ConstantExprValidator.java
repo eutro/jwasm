@@ -10,18 +10,18 @@ import org.jetbrains.annotations.Nullable;
 import static io.github.eutro.jwasm.tree.analysis.ModuleValidator.assertMsg1;
 
 /**
- * An {@link ExprVisitor} that asserts that the expression is a
+ * An {@link ExprVisitor} which asserts that the expression is a
  * <a href="https://webassembly.github.io/spec/core/valid/instructions.html#constant-expressions">constant</a>.
  */
-public class ConstantExprValidator extends ExprVisitor {
+class ConstantExprValidator extends ExprVisitor {
     final VerifCtx ctx;
 
-    public ConstantExprValidator(VerifCtx ctx, @Nullable ExprVisitor dl) {
+    ConstantExprValidator(VerifCtx ctx, @Nullable ExprVisitor dl) {
         super(dl);
         this.ctx = ctx;
     }
 
-    protected void notConstant() {
+    private void notConstant() {
         throw new ValidationException("Expression is not constant",
                 new RuntimeException("constant expression required"));
     }

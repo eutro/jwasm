@@ -1,5 +1,7 @@
 package io.github.eutro.jwasm.attrs;
 
+import io.github.eutro.jwasm.ExprVisitor;
+import io.github.eutro.jwasm.Opcodes;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -9,51 +11,119 @@ import static io.github.eutro.jwasm.attrs.StackType.*;
 import static io.github.eutro.jwasm.attrs.VectorShape.*;
 import static io.github.eutro.jwasm.attrs.VisitTarget.*;
 
+/**
+ * A class for querying the attributes of WebAssembly instructions.
+ */
 public class InsnAttributes {
+    /**
+     * Get all the opcodes that JWasm currently recognises.
+     *
+     * @return The collection of opcodes.
+     */
     public static Collection<Opcode> allOpcodes() {
         return Collections.unmodifiableCollection(OPCODE_MAP.keySet());
     }
 
+    /**
+     * Look up the attributes of an instruction.
+     *
+     * @param opcode The opcode to look up.
+     * @return The attributes.
+     */
     public static InsnAttributes lookup(Opcode opcode) {
         return OPCODE_MAP.get(opcode);
     }
 
+    /**
+     * Look up the attributes of an instruction by mnemonic.
+     *
+     * @param mnemonic The mnemonic of the instruction.
+     * @return The attributes.
+     */
     public static InsnAttributes lookup(String mnemonic) {
         return MNEMONIC_MAP.get(mnemonic);
     }
 
+    /**
+     * Look up the attributes of a single-byte-opcode instruction.
+     *
+     * @param opcode The opcode to look up.
+     * @return The attributes.
+     */
     public static InsnAttributes lookup(byte opcode) {
         return lookup(new Opcode(opcode, 0));
     }
 
+    /**
+     * Look up the attributes of a {@link Opcodes#INSN_PREFIX}-prefixed instruction.
+     *
+     * @param intOpcode The integer opcode of the instruction to look up.
+     * @return The attributes.
+     */
     public static InsnAttributes lookupPrefix(int intOpcode) {
         return lookup(new Opcode(INSN_PREFIX, intOpcode));
     }
 
+    /**
+     * Look up the attributes of a {@link Opcodes#VECTOR_PREFIX}-prefixed instruction.
+     *
+     * @param intOpcode The integer opcode of the instruction to look up.
+     * @return The attributes.
+     */
     public static InsnAttributes lookupVector(int intOpcode) {
         return lookup(new Opcode(VECTOR_PREFIX, intOpcode));
     }
 
+    /**
+     * Get the mnemonic of the instruction.
+     *
+     * @return The mnemonic.
+     */
     public String getMnemonic() {
         return mnemonic;
     }
 
+    /**
+     * Get the opcode of the instruction.
+     *
+     * @return The opcode.
+     */
     public Opcode getOpcode() {
         return opcode;
     }
 
+    /**
+     * Get the method of {@link ExprVisitor} that this instruction visits.
+     *
+     * @return The visit target.
+     */
     public VisitTarget getVisitTarget() {
         return visitTarget;
     }
 
+    /**
+     * Get the type of the instruction, if it is simple.
+     *
+     * @return The stack type.
+     */
     public @Nullable StackType getType() {
         return type;
     }
 
+    /**
+     * Get the shape of the vector this instruction operates on, if any.
+     *
+     * @return The vector shape.
+     */
     public VectorShape getVectorShape() {
         return vectorShape;
     }
 
+    /**
+     * Get the number of bits a memory instruction reads or writes.
+     *
+     * @return The memory bits.
+     */
     public int getMemBits() {
         return memBits;
     }

@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class VerifCtx {
+class VerifCtx {
     final List<TypeNode> types, funcs;
     final List<TableNode> tables;
     final List<MemoryNode> mems;

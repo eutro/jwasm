@@ -24,7 +24,7 @@ import static io.github.eutro.jwasm.tree.analysis.ModuleValidator.*;
  * Based on the validation algorithm published
  * <a href="https://webassembly.github.io/spec/core/appendix/algorithm.html#algo-valid">here</a>.
  */
-public class ExprValidator extends ExprVisitor {
+class ExprValidator extends ExprVisitor {
 
     public static final String TYPE_MISMATCH = "type mismatch";
     public static final String INVALID_LANE_INDEX = "invalid lane index";
@@ -42,7 +42,7 @@ public class ExprValidator extends ExprVisitor {
     protected final VerifCtx ctx;
     protected int insn = 0;
 
-    public ExprValidator(
+    ExprValidator(
             VerifCtx ctx,
             List<Byte> expectedType,
             @Nullable ExprVisitor dl
@@ -52,7 +52,7 @@ public class ExprValidator extends ExprVisitor {
         pushC(END, Collections.emptyList(), expectedType);
     }
 
-    public static boolean isNum(@Nullable Byte ty) {
+    static boolean isNum(@Nullable Byte ty) {
         if (ty == null) return true;
         switch (ty) {
             case I32:
@@ -64,7 +64,7 @@ public class ExprValidator extends ExprVisitor {
         return false;
     }
 
-    public static boolean isRef(@Nullable Byte ty) {
+    static boolean isRef(@Nullable Byte ty) {
         if (ty == null) return true;
         switch (ty) {
             case FUNCREF:
@@ -74,7 +74,7 @@ public class ExprValidator extends ExprVisitor {
         return false;
     }
 
-    public static boolean isValType(@Nullable Byte ty) {
+    static boolean isValType(@Nullable Byte ty) {
         return isNum(ty) || isRef(ty) || ty == V128;
     }
 

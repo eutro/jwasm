@@ -4,7 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class NFA {
+class NFA {
     public static final int EOF = 1 << Byte.SIZE;
     public static final int ALPHABET_SIZE = EOF + 1;
 
